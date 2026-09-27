@@ -11,6 +11,8 @@ builder.Services.AddDbContext<QuizDbContext>(options =>
 
 var app = builder.Build();
 
+DBInit.Seed(app);
+
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
