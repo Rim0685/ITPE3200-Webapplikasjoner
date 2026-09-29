@@ -11,7 +11,7 @@ using Quizapp.DAL;
 namespace Quizapp.Migrations
 {
     [DbContext(typeof(QuizDbContext))]
-    [Migration("20260926203047_InitialQuizDatabase")]
+    [Migration("20260929132036_InitialQuizDatabase")]
     partial class InitialQuizDatabase
     {
         /// <inheritdoc />

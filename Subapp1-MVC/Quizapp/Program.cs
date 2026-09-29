@@ -9,7 +9,7 @@ builder.Services.AddControllersWithViews();
 // Registrerer databasen og kobler den til SQLite.
 builder.Services.AddDbContext<QuizDbContext>(options =>
     options.UseSqlite(
-        builder.Configuration.GetConnectionString("ItemDbContext")));
+        builder.Configuration.GetConnectionString("QuizDbContext")));
 
 // Registrerer repository slik at det kan brukes i controllers.
 builder.Services.AddScoped<IQuizRepository, QuizRepository>();
