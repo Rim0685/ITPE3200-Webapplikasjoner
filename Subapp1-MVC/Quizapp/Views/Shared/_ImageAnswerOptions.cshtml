@@ -1,0 +1,32 @@
+@model QuizApp.ViewModels.QuestionViewModel
+
+<fieldset class="answer-group">
+    <legend class="instruction-text">Choose an image option</legend>
+
+    <div class="options-grid image-options">
+        @foreach (var option in Model.Options)
+        {
+            bool isChecked = Model.SelectedOptionIds.Contains(option.Id);
+
+            <label class="option-card image-option @(isChecked ? "selected" : "")" for="opt-img-@option.Id">
+                <input type="radio" 
+                       id="opt-img-@option.Id" 
+                       name="SelectedOptionIds" 
+                       value="@option.Id" 
+                       checked="@isChecked" 
+                       aria-checked="@isChecked.ToString().ToLower()" />
+                
+                <div class="image-wrapper">
+                    <img src="@option.ImageUrl" alt="@(string.IsNullOrEmpty(option.Text) ? "Svaralternativ bilde" : option.Text)" loading="lazy" />
+                    <div class="selection-badge" aria-hidden="true">
+                        <span class="checkmark">✓</span>
+                    </div>
+                </div>
+                @if (!string.IsNullOrEmpty(option.Text))
+                {
+                    <span class="option-label">@option.Text</span>
+                }
+            </label>
+        }
+    </div>
+</fieldset>
