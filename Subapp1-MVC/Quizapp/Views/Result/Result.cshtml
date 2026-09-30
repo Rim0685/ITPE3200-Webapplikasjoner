@@ -1,0 +1,34 @@
+@model Quizapp.ViewModels.ResultViewModel
+
+<div class="container mt-5 text-center">
+    <h1 class="mb-4">@Model.QuizTitle — Result</h1>
+
+    <div class="card shadow-sm p-4 mx-auto" style="max-width: 400px;">
+        <h2 class="display-4">@Model.Score / @Model.TotalQuestions</h2>
+        @{
+            var percentage = Model.TotalQuestions > 0
+                ? (int)((double)Model.Score / Model.TotalQuestions * 100)
+                : 0;
+        }
+        <p class="text-muted">@percentage% correct</p>
+
+        @if (percentage >= 80)
+        {
+            <p class="text-success fw-bold">Great job!</p>
+        }
+        else if (percentage >= 50)
+        {
+            <p class="text-warning fw-bold">Not bad — keep practicing!</p>
+        }
+        else
+        {
+            <p class="text-danger fw-bold">Keep studying and try again!</p>
+        }
+    </div>
+
+    <div class="mt-4">
+        <a asp-controller="Result" asp-action="Solution" asp-route-id="@Model.QuizAttemptId" class="btn btn-primary">
+            View Solution
+        </a>
+    </div>
+</div>

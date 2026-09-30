@@ -1,0 +1,36 @@
+@model Quizapp.ViewModels.SolutionViewModel
+
+<div class="container mt-5">
+    <h1 class="mb-4">Solution</h1>
+
+    @foreach (var q in Model.Questions)
+    {
+        <div class="card mb-3 @(q.IsCorrect ? "border-success" : "border-danger")">
+            <div class="card-body">
+                <h5 class="card-title">@q.QuestionText</h5>
+
+                <p class="mb-1">
+                    Your answer:
+                    <span class="@(q.IsCorrect ? "text-success" : "text-danger")">
+                        @q.SelectedAnswerText
+                    </span>
+                    @if (q.IsCorrect)
+                    {
+                        <span class="badge bg-success ms-2">Correct</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger ms-2">Incorrect</span>
+                    }
+                </p>
+
+                @if (!q.IsCorrect)
+                {
+                    <p class="mb-0 text-muted">Correct answer: @q.CorrectAnswerText</p>
+                }
+            </div>
+        </div>
+    }
+
+    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary mt-3">Back to Home</a>
+</div>
