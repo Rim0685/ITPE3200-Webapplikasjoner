@@ -12,6 +12,7 @@ namespace Quizapp.DAL
         Task<bool> Delete(int id);
 
         Task AddQuizAttempt(QuizAttempt quizAttempt);
+        Task<QuizAttempt?> GetQuizAttemptById(int id);
         Task<QuizAttempt?> GetLatestQuizAttempt(int quizId);
         Task<int> GetQuizAttemptCount(int quizId);
     }

@@ -60,6 +60,19 @@ namespace Quizapp.DAL
             _db.QuizAttempts.Add(quizAttempt);
             await _db.SaveChangesAsync();
         }
+        
+        // Henter et quizforsøk med alle tilhørende svar, spørsmål og svaralternativer,
+        // brukt av resultat- og fasitsiden.
+        public async Task<QuizAttempt?> GetQuizAttemptById(int id)
+        {
+            return await _db.QuizAttempts
+                .Include(attempt => attempt.Quiz)
+                .Include(attempt => attempt.AttemptAnswers)
+                    .ThenInclude(attemptAnswer => attemptAnswer.AnswerOption)
+                        .ThenInclude(answerOption => answerOption!.Question)
+                            .ThenInclude(question => question!.AnswerOptions)
+                .FirstOrDefaultAsync(attempt => attempt.QuizAttemptId == id);
+        }
 
         public async Task<QuizAttempt?> GetLatestQuizAttempt(int quizId)
         {
