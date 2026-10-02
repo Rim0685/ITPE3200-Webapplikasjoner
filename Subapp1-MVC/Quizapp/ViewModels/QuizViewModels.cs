@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.SignalR;
-
 namespace Quizapp.ViewModels
 {
     public class QuizListItemViewModel
