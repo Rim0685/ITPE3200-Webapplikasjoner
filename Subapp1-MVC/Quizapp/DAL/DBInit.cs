@@ -85,7 +85,8 @@ namespace Quizapp.DAL
                         {
                             new AnswerOption { AnswerText = "Mennesker, prosesser, teknologi", IsCorrect = false },
                             new AnswerOption { AnswerText = "System, krav, konsekvenser", IsCorrect = false },
-                            new AnswerOption { AnswerText = "Tid, funksjonalitet, kostnad", IsCorrect = true }
+                            new AnswerOption { AnswerText = "Tid, funksjonalitet, kostnad", IsCorrect = true },
+                            new AnswerOption { AnswerText = "Kostnad, kvalitet, tid", IsCorrect = false }
                         }
                     },
 
