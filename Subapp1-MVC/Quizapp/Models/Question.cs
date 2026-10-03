@@ -19,6 +19,8 @@ namespace Quizapp.Models
 
         public Quiz? Quiz { get; set; }
 
+        public string? ImageUrl { get; set; }
+
         public ICollection<AnswerOption> AnswerOptions { get; set; }
             = new List<AnswerOption>();
     }
