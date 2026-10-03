@@ -42,5 +42,42 @@ namespace Quizapp.Controllers
                 return RedirectToAction("Error", "Home");    
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(int id)
+        {
+            try
+            {
+                var quiz = await _quizRepository.GetQuizById(id);
+
+                if (quiz == null)
+                {
+                    _logger.LogWarning(
+                        "Fant ikke quiz med QuizId {QuizId}.",
+                        id);
+
+                    return NotFound();    
+                }
+
+                var viewModel = new QuizDetailsViewModel
+                {
+                    QuizId = quiz.QuizId,
+                    PageTitle = quiz.Title,
+                    Description = quiz.Description,
+                    QuestionCount = quiz.Questions.Count
+                };
+
+                return View(viewModel);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Feil ved henting av quiz med QuizId {QuizId}.",
+                    id);
+
+                return RedirectToAction("Error", "Home");    
+            }
+        }
     }
 }
