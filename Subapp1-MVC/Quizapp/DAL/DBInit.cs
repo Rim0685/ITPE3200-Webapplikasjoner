@@ -76,9 +76,91 @@ namespace Quizapp.DAL
                                 AnswerText = "Microsoft Word",
                                 IsCorrect = false
                             }
+                            // Spørsmål 1: Tekstspørsmål med ett riktig svar[cite: 4, 34]
+                    new Question
+                    {
+                        QuestionText = "Hvilke tre dimensjoner utgjør det klassiske \"magic triangle\" / prosjekttrianglet innen prosjektledelse?",
+                        QuestionType = QuestionType.TextSingle,
+                        AnswerOptions = new List<AnswerOption>
+                        {
+                            new AnswerOption { AnswerText = "Mennesker, prosesser, teknologi", IsCorrect = false },
+                            new AnswerOption { AnswerText = "System, krav, konsekvenser", IsCorrect = false },
+                            new AnswerOption { AnswerText = "Tid, funksjonalitet, kostnad", IsCorrect = true }
+                        }
+                    },
+
+                    // Spørsmål 2: Bildespørsmål med ett riktig svar[cite: 4, 34]
+                    new Question
+                    {
+                        QuestionText = "Hvilken type diagram vises i bildet under?",
+                        QuestionType = QuestionType.ImageSingle,
+                        ImageUrl = "/images/diagram1.png", // Legg bildet ditt i wwwroot/images/
+                        AnswerOptions = new List<AnswerOption>
+                        {
+                            new AnswerOption { AnswerText = "Klassediagram", IsCorrect = false },
+                            new AnswerOption { AnswerText = "Aktivitetsdiagram", IsCorrect = false },
+                            new AnswerOption { AnswerText = "Usecase-diagram", IsCorrect = false },
+                            new AnswerOption { AnswerText = "Sekvensdiagram", IsCorrect = true }
+                        }
+                    },
+
+                    // Spørsmål 3: Bildespørsmål med ett riktig svar[cite: 4, 34]
+                    new Question
+                    {
+                        QuestionText = "Hvilken type diagram viser interaksjon over tid mellom objekter og aktører, som illustrert nedenfor?",
+                        QuestionType = QuestionType.ImageSingle,
+                        ImageUrl = "/images/diagram2.png", // Legg bildet ditt i wwwroot/images/[cite: 4]
+                        AnswerOptions = new List<AnswerOption>
+                        {
+                            new AnswerOption { AnswerText = "Aktivitetsdiagram", IsCorrect = false },
+                            new AnswerOption { AnswerText = "Usecase-diagram", IsCorrect = false },
+                            new AnswerOption { AnswerText = "Sekvensdiagram", IsCorrect = true },
+                            new AnswerOption { AnswerText = "Klassediagram", IsCorrect = false }
+                        }
+                    },
+
+                    // Spørsmål 4: Tekstspørsmål med ett riktig svar[cite: 4, 34]
+                    new Question
+                    {
+                        QuestionText = "Se på matrisen nedenfor hentet fra Det Smidige Manifest. Hvilken verdi passer sammen med \"Programvare som virker fremfor...\"?",
+                        QuestionType = QuestionType.TextSingle,
+                        AnswerOptions = new List<AnswerOption>
+                        {
+                            new AnswerOption { AnswerText = "...omfattende dokumentasjon", IsCorrect = true },
+                            new AnswerOption { AnswerText = "...kontraktsforhandlinger", IsCorrect = false },
+                            new AnswerOption { AnswerText = "...prosesser og verktøy", IsCorrect = false },
+                            new AnswerOption { AnswerText = "...å følge en plan", IsCorrect = false }
+                        }
+                    },
+
+                    // Spørsmål 5: Flervalg med FLERE riktige svar[cite: 4, 34]
+                    new Question
+                    {
+                        QuestionText = "Hvilke påstander om verktøyet Mermaid og diagrammer i kildekode er korrekte? (Flervalg - velg alle som gjelder)",
+                        QuestionType = QuestionType.TextMultiple,
+                        AnswerOptions = new List<AnswerOption>
+                        {
+                            new AnswerOption { AnswerText = "Det er en stor ulempe å ha diagrammer i kildekoden", IsCorrect = false },
+                            new AnswerOption { AnswerText = "En felles måte å modellere diagrammer på i kildekode", IsCorrect = true },
+                            new AnswerOption { AnswerText = "Diagrammene blir en del av versjonsstyringen", IsCorrect = true },
+                            new AnswerOption { AnswerText = "Du trenger ingen tekniske kunnskaper for å modellere Mermaid-diagrammer", IsCorrect = false }
+                        }
+                    },
+
+                    // Spørsmål 6: Tekstspørsmål med ett riktig svar[cite: 4, 34]
+                    new Question
+                    {
+                        QuestionText = "Hvilket av følgende krav til en billettautomat er et funksjonelt krav?",
+                        QuestionType = QuestionType.TextSingle,
+                        AnswerOptions = new List<AnswerOption>
+                        {
+                            new AnswerOption { AnswerText = "Det skal være et valg for utskrift av kvittering", IsCorrect = true },
+                            new AnswerOption { AnswerText = "Teksten på skjermen skal være svart med hvit bakgrunn", IsCorrect = false }
+                        }
                         }
                     }
                 }
+                 }
             };
 
             context.Quizzes.Add(quiz);
