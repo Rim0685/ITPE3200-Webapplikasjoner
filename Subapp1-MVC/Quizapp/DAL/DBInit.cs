@@ -99,7 +99,7 @@ namespace Quizapp.DAL
                     {
                         QuestionText = "Hvilken type diagram vises i bildet under?",
                         QuestionType = QuestionType.ImageSingle,
-                        ImageUrl = "Subapp1-MVC/Quizapp/wwroot/diagram1.png", // Legg bildet ditt i wwwroot/images/ 
+                        ImageUrl = "/images/diagram1.png", // Legg bildet ditt i wwwroot/images/ 
                         AnswerOptions = new List<AnswerOption>
                         {
                             new AnswerOption { AnswerText = "Klassediagram", IsCorrect = false },
@@ -114,7 +114,7 @@ namespace Quizapp.DAL
                     {
                         QuestionText = "Hvilken type diagram vises i bildet under?",
                         QuestionType = QuestionType.ImageSingle,
-                        ImageUrl = "Subapp1-MVC/Quizapp/wwroot/diagram2.png", // Legg bildet ditt i wwwroot/images/[cite: 4]
+                        ImageUrl = "/images/diagram2.png", // Legg bildet ditt i wwwroot/images/[cite: 4]
                         AnswerOptions = new List<AnswerOption>
                         {
                             new AnswerOption { AnswerText = "Aktivitetsdiagram", IsCorrect = false },
