@@ -75,7 +75,7 @@ namespace Quizapp.DAL
                             {
                                 AnswerText = "Microsoft Word",
                                 IsCorrect = false
-                            }
+                            },
                             // Spørsmål 1: Tekstspørsmål med ett riktig svar[cite: 4, 34]
                     new Question
                     {
@@ -107,14 +107,14 @@ namespace Quizapp.DAL
                     // Spørsmål 3: Bildespørsmål med ett riktig svar[cite: 4, 34]
                     new Question
                     {
-                        QuestionText = "Hvilken type diagram viser interaksjon over tid mellom objekter og aktører, som illustrert nedenfor?",
+                        QuestionText = "Hvilken type diagram vises i bildet under?",
                         QuestionType = QuestionType.ImageSingle,
                         ImageUrl = "/images/diagram2.png", // Legg bildet ditt i wwwroot/images/[cite: 4]
                         AnswerOptions = new List<AnswerOption>
                         {
                             new AnswerOption { AnswerText = "Aktivitetsdiagram", IsCorrect = false },
-                            new AnswerOption { AnswerText = "Usecase-diagram", IsCorrect = false },
-                            new AnswerOption { AnswerText = "Sekvensdiagram", IsCorrect = true },
+                            new AnswerOption { AnswerText = "Usecase-diagram", IsCorrect = true },
+                            new AnswerOption { AnswerText = "Sekvensdiagram", IsCorrect = false },
                             new AnswerOption { AnswerText = "Klassediagram", IsCorrect = false }
                         }
                     },
