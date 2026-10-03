@@ -1,0 +1,21 @@
+@model Quizapp.ViewModels.QuizDetailsViewModel
+
+@{
+    ViewData["Title"] = Model.PageTitle;
+}
+
+<h1>@Model.PageTitle</h1>
+
+@if (!string.IsNullOrWhiteSpace(Model.Description))
+{
+    <p>@Model.Description</p>
+}
+
+<p>
+    Antall spørsmål: @Model.QuestionCount
+</p>
+
+<a asp-controller="Quiz"
+    asp-action="Index">
+    Tilbake til quizoversikt
+</a>
