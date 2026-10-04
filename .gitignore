@@ -1,0 +1,12 @@
+# Genererte .NET-mapper
+**/bin/
+**/obj/
+
+# Lokal SQLite-database
+*.db
+*.db-shm
+*.db-wal
+
+# Lokale editorinnstillinger
+.vs/
+.vscode/

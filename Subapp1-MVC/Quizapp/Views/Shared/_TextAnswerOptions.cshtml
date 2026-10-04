@@ -1,0 +1,27 @@
+@model Quizapp.ViewModels.QuestionViewModel
+
+<fieldset class="answer-group">
+    <legend class="instruction-text">
+        @(Model.IsMultipleChoice ? "Choose one or multiple answers" : "choose one answer")
+    </legend>
+
+    <div class="options-container text-options">
+        @foreach (var option in Model.Options)
+        {
+            bool isChecked = Model.SelectedOptionIds.Contains(option.Id);
+            string inputType = Model.IsMultipleChoice ? "checkbox" : "radio";
+
+            <label class="option-card text-option @(isChecked ? "selected" : "")" for="opt-text-@option.Id">
+                <input type="@inputType" 
+                       id="opt-text-@option.Id" 
+                       name="SelectedOptionIds" 
+                       value="@option.Id" 
+                       checked="@isChecked" 
+                       aria-checked="@isChecked.ToString().ToLower()" />
+                
+                <span class="custom-indicator" aria-hidden="true"></span>
+                <span class="option-text">@option.Text</span>
+            </label>
+        }
+    </div>
+</fieldset>
