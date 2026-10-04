@@ -16,6 +16,12 @@
 </p>
 
 <a asp-controller="Quiz"
+    asp-action="Play">
+    asp-route-id="@Model.QuizId">
+    Start quiz
+</a>
+
+<a asp-controller="Quiz"
     asp-action="Index">
     Tilbake til quizoversikt
 </a>

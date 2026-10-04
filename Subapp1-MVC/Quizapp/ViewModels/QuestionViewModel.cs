@@ -9,6 +9,8 @@ namespace Quizapp.ViewModels
 
         public bool IsMultipleChoice { get; set; }
 
+        public bool IsImageQuestion { get; set; }
+        
         public List<AnswerOptionViewModel> Options { get; set; } = new();
 
         public List<int> SelectedOptionIds { get; set; } = new();
