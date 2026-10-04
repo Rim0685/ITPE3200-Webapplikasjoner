@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Quizapp.DAL;
+using Quizapp.Models;
 using Quizapp.ViewModels;
 
 namespace Quizapp.Controllers
@@ -77,6 +78,60 @@ namespace Quizapp.Controllers
                     id);
 
                 return RedirectToAction("Error", "Home");    
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Play(int id)
+        {
+            try
+            {
+                var quiz = await _quizRepository.GetQuizById(id);
+
+                if (quiz == null)
+                {
+                    _logger.LogWarning(
+                        "Fant ikke quiz med QuizId {QuizId} ved oppstart av quiz.",
+                        id);
+
+                    return NotFound();    
+                }
+
+                var viewModel = new QuizPlayViewModel
+                {
+                    QuizId = quiz.QuizId,
+                    PageTitle = quiz.Title,
+
+                    Questions = quiz.Questions.Select(question => new QuestionViewModel
+                    {
+                        IsMultipleChoice =
+                            question.QuestionType == QuestionType.TextMultiple ||
+                            question.QuestionType == QuestionType.ImageMultiple,
+
+                        IsImageQuestion =
+                            question.QuestionType == QuestionType.ImageSingle ||
+                            question.QuestionType == QuestionType.ImageMultiple,
+
+                        
+                        Options = question.AnswerOptions.Select(option => new AnswerOptionViewModel
+                        {
+                            Id = option.AnswerOptionId,
+                            Text = option.AnswerText,
+                            ImageUrl = option.ImageUrl
+                        }).ToList()
+                    }).ToList()
+                };
+
+                return View(viewModel);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Feil ved oppstart av quiz med QuizId {QuizId}.",
+                    id);
+
+                return RedirectToAction("Error", "Home");
             }
         }
     }

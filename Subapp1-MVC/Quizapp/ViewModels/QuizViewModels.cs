@@ -19,4 +19,13 @@ namespace Quizapp.ViewModels
 
         public int QuestionCount { get; set; }
     }
+
+    public class QuizPlayViewModel
+    {
+        public int QuizId { get; set; }
+
+        public string PageTitle { get; set; } = string.Empty;
+
+        public List<QuestionViewModel> Questions { get; set; } = new();
+    }
 }
