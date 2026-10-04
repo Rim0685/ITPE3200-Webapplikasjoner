@@ -4,6 +4,47 @@
     ViewData["Title"] = Model.PageTitle;
 }
 
+<div class="quiz-play-container">
+
+    <h1 class="quiz-play-title">@Model.PageTitle</h1>
+
+    @if (!Model.Questions.Any())
+    {
+        <p>Denne quizen har ingen spørsmål ennå</p>
+    }
+    else
+    {
+        @foreach (var question in Model.Questions)
+        {
+            <section class="quiz-question">
+                <h2>@question.QuestionText</h2>
+
+                @if (question.IsImageQuestion)
+                {
+                    <partial name="_ImageAnswerOptions" model="question" />
+                }
+                else
+                {
+                    <partial name="_TextAnswerOptions" model="question" />
+                }
+
+            </section>
+        }
+    }
+
+    <a asp-controller="Quiz"
+        asp-action="Details"
+        asp-route-id="@Model.QuizId">
+        Tilbake til quiz
+    </a>
+
+@* Tidligere kode...
+@model Quizapp.ViewModels.QuizPlayViewModel
+
+@{
+    ViewData["Title"] = Model.PageTitle;
+}
+
 <h1>@Model.PageTitle</h1>
 
 @if (!Model.Questions.Any())
@@ -14,7 +55,7 @@ else
 {
     @foreach (var question in Model.Questions)
     {
-        <section class="quix-question">
+        <section class="quiz-question">
             <h2>@question.QuestionText</h2>
 
             @if (question.IsImageQuestion)
@@ -23,10 +64,10 @@ else
             }
             else
             {
-                <partial name="TextAnswerOptions" model="question" />
-            }
+                    <partial name="_TextAnswerOptions" model="question" />
+                }
 
-        </section>
+            </section>
     }
 }
 
@@ -34,4 +75,4 @@ else
     asp-action="Details"
     asp-route-id="@Model.QuizId">
     Tilbake til quiz
-</a>
+</a> *@

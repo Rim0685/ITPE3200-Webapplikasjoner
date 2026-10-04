@@ -104,6 +104,10 @@ namespace Quizapp.Controllers
 
                     Questions = quiz.Questions.Select(question => new QuestionViewModel
                     {
+                        QuestionId = question.QuestionId,
+
+                        QuestionText = question.QuestionText,
+                        
                         IsMultipleChoice =
                             question.QuestionType == QuestionType.TextMultiple ||
                             question.QuestionType == QuestionType.ImageMultiple,
