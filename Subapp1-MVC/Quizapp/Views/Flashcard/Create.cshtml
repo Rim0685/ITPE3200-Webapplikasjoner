@@ -1,0 +1,24 @@
+@model Flashcard
+@* Skjema for å lage et nytt flashcard. *@
+
+<h1>New flashcard</h1>
+
+@* method="post" sender skjemaet til [HttpPost] Create i controlleren.
+   asp-for kobler hvert felt til riktig property i Flashcard-modellen,
+   og asp-validation-for viser feilmelding hvis feltet er ugyldig. *@
+<form asp-action="Create" method="post">
+   <div>
+        <label asp-for="QuestionText">Question</label><br />
+        <input asp-for="QuestionText" />
+        <span asp-validation-for="QuestionText"></span>
+    </div>
+
+    <div>
+        <label asp-for="AnswerText">Answer</label><br />
+        <textarea asp-for="AnswerText"></textarea>
+        <span asp-validation-for="AnswerText"></span>
+    </div>
+
+    <button type="submit">Save</button>
+    <a asp-action="Index">Cancel</a>
+</form>

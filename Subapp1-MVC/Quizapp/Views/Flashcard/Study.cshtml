@@ -1,0 +1,31 @@
+@model Flashcard
+@* Øvemodus: viser ett kort om gangen med skjult svar og knapper for forrige/neste. *@
+
+@* Henter posisjon og antall kort som controlleren sendte via ViewBag. *@
+@{
+    int index = ViewBag.Index;
+    int total = ViewBag.Total;
+}
+
+<h1>Study</h1>
+@* index starter på 0, så vi legger til 1 for å vise "Card 1" i stedet for "Card 0". *@
+<p>Card @(index + 1) of @total</p>
+
+<h2>@Model.QuestionText</h2>
+
+@* <details> skjuler svaret til brukeren klikker på "Show answer" – ingen JavaScript trengs. *@
+<details>
+    <summary>Show answer</summary>
+    <p>@Model.AnswerText</p>
+</details>
+
+@* asp-route-index legger ?index=... i lenken. "Previous" vises ikke på første kort. *@
+<div>
+    @if (index > 0)
+    {
+        <a asp-action="Study" asp-route-index="@(index - 1)">← Previous</a>
+    }
+    <a asp-action="Study" asp-route-index="@(index + 1)">Next →</a>
+</div>
+
+<a asp-action="Index">Back to list</a>

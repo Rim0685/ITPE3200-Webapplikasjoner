@@ -1,0 +1,23 @@
+@model IEnumerable<Flashcard>
+@* Viser alle flashcards med knapper for å lage nye, endre, slette og øve. *@
+
+<h1>Flashcards</h1>
+
+@* Disse knappene gjelder alle kortene, så de står utenfor løkken og vises bare én gang. *@
+<a asp-action="Create">+ New flashcard</a>
+ <a asp-action="Study">Study</a>
+
+
+@* Løkken lager én boks per kort. asp-route-id legger kortets ID i lenken, f.eks. /Flashcard/Update/3. *@
+@foreach (var card in Model)
+{
+    <div>
+        <strong>@card.QuestionText</strong>
+        <p>@card.AnswerText</p>
+        <a asp-action="Update" asp-route-id="@card.FlashcardId">Edit</a>
+        <a asp-action="Delete" asp-route-id="@card.FlashcardId">Delete</a>
+     
+
+
+    </div>
+}
