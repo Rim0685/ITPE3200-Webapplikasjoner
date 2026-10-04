@@ -22,16 +22,16 @@ namespace Quizapp.DAL
                 return;
             }
 
-            var quiz = new Quiz
+           var quiz = new Quiz
             {
-                Title = "Grunnleggende IT",
-                Description = "En quiz med grunnleggende spørsmål om IT.",
+                Title = "Basic IT",
+                Description = "A quiz with basic IT questions.",
 
                 Questions = new List<Question>
                 {
                     new Question
                     {
-                        QuestionText = "Hva står HTML for?",
+                        QuestionText = "What does HTML stand for?",
                         QuestionType = QuestionType.TextSingle,
 
                         AnswerOptions = new List<AnswerOption>
@@ -56,7 +56,7 @@ namespace Quizapp.DAL
 
                     new Question
                     {
-                        QuestionText = "Hvilke av disse er programmeringsspråk?",
+                        QuestionText = "Which of these are programming languages?",
                         QuestionType = QuestionType.TextMultiple,
 
                         AnswerOptions = new List<AnswerOption>
@@ -75,97 +75,180 @@ namespace Quizapp.DAL
                             {
                                 AnswerText = "Microsoft Word",
                                 IsCorrect = false
-                    
-                             },
-                             }
-                             },
+                            }
+                        }
+                    },
 
-                            // Spørsmål 1
-                     new Question
+                    // Question 1
+                    new Question
                     {
-                        QuestionText = "Hvilke tre dimensjoner utgjør det klassiske \"magic triangle\" / prosjekttrianglet innen prosjektledelse?",
+                        QuestionText = "Which three dimensions form the classic \"magic triangle\" / project triangle in project management?",
                         QuestionType = QuestionType.TextSingle,
                         AnswerOptions = new List<AnswerOption>
                         {
-                            new AnswerOption { AnswerText = "Mennesker, prosesser, teknologi", IsCorrect = false },
-                            new AnswerOption { AnswerText = "System, krav, konsekvenser", IsCorrect = false },
-                            new AnswerOption { AnswerText = "Tid, funksjonalitet, kostnad", IsCorrect = true },
-                            new AnswerOption { AnswerText = "Kostnad, kvalitet, tid", IsCorrect = false }
+                            new AnswerOption 
+                            { 
+                                AnswerText = "People, processes, technology", 
+                                IsCorrect = false 
+                                },
+                            new() 
+                            { 
+                                AnswerText = "System, requirements, consequences", 
+                                IsCorrect = false 
+                                },
+                            new AnswerOption 
+                            { 
+                                AnswerText = "Time, functionality, cost", 
+                                IsCorrect = true },
+                            new AnswerOption 
+                            { 
+                                AnswerText = "Cost, quality, time", 
+                                IsCorrect = false }
                         }
                     },
 
-                    // Spørsmål 2: Bildespørsmål med ett riktig svar[cite: 4, 34]
+                    // Question 2: Image question with one correct answer
                     new Question
                     {
-                        QuestionText = "Hvilken type diagram vises i bildet under?",
+                        QuestionText = "Which type of diagram is shown in the image below?",
                         QuestionType = QuestionType.ImageSingle,
-                        ImageUrl = "/images/diagram1.png", // Legg bildet ditt i wwwroot/images/ 
+                        ImageUrl = "/images/diagram1.png",
                         AnswerOptions = new List<AnswerOption>
                         {
-                            new AnswerOption { AnswerText = "Klassediagram", IsCorrect = false },
-                            new AnswerOption { AnswerText = "Aktivitetsdiagram", IsCorrect = false },
-                            new AnswerOption { AnswerText = "Usecase-diagram", IsCorrect = false },
-                            new AnswerOption { AnswerText = "Sekvensdiagram", IsCorrect = true }
+                            new AnswerOption 
+                            { 
+                                AnswerText = "Class diagram", 
+                                IsCorrect = false 
+                                },
+                            new AnswerOption 
+                            { 
+                                AnswerText = "Activity diagram", 
+                                IsCorrect = false 
+                                },
+                            new AnswerOption 
+                            { 
+                                AnswerText = "Use case diagram", 
+                                IsCorrect = false 
+                                },
+                            new AnswerOption 
+                            { 
+                                AnswerText = "Sequence diagram", 
+                                IsCorrect = true 
+                                }
                         }
                     },
 
-                    // Spørsmål 3: Bildespørsmål med ett riktig svar[cite: 4, 34]
+                    // Question 3: Image question with one correct answer
                     new Question
                     {
-                        QuestionText = "Hvilken type diagram vises i bildet under?",
+                        QuestionText = "Which type of diagram is shown in the image below?",
                         QuestionType = QuestionType.ImageSingle,
-                        ImageUrl = "/images/diagram2.png", // Legg bildet ditt i wwwroot/images/[cite: 4]
+                        ImageUrl = "/images/diagram2.png",
                         AnswerOptions = new List<AnswerOption>
                         {
-                            new AnswerOption { AnswerText = "Aktivitetsdiagram", IsCorrect = false },
-                            new AnswerOption { AnswerText = "Usecase-diagram", IsCorrect = true },
-                            new AnswerOption { AnswerText = "Sekvensdiagram", IsCorrect = false },
-                            new AnswerOption { AnswerText = "Klassediagram", IsCorrect = false }
+                            new AnswerOption 
+                            { 
+                                AnswerText = "Activity diagram", 
+                                IsCorrect = false 
+                                },
+                            new AnswerOption 
+                            { 
+                                AnswerText = "Use case diagram", 
+                                IsCorrect = true 
+                                },
+                            new AnswerOption 
+                            { 
+                                AnswerText = "Sequence diagram", 
+                                IsCorrect = false 
+                                },
+                            new AnswerOption 
+                            { 
+                                AnswerText = "Class diagram", 
+                                IsCorrect = false 
+                                }
                         }
                     },
 
-                    // Spørsmål 4: Tekstspørsmål med ett riktig svar[cite: 4, 34]
+                    // Question 4: Text question with one correct answer
                     new Question
                     {
-                        QuestionText = "Se på matrisen nedenfor hentet fra Det Smidige Manifest. Hvilken verdi passer sammen med \"Programvare som virker fremfor...\"?",
+                        QuestionText = "Look at the matrix below taken from the Agile Manifesto. Which value pairs with \"Working software over...\"?",
                         QuestionType = QuestionType.TextSingle,
                         AnswerOptions = new List<AnswerOption>
                         {
-                            new AnswerOption { AnswerText = "...omfattende dokumentasjon", IsCorrect = true },
-                            new AnswerOption { AnswerText = "...kontraktsforhandlinger", IsCorrect = false },
-                            new AnswerOption { AnswerText = "...prosesser og verktøy", IsCorrect = false },
-                            new AnswerOption { AnswerText = "...å følge en plan", IsCorrect = false }
+                            new AnswerOption 
+                            { 
+                                AnswerText = "...comprehensive documentation", 
+                                IsCorrect = true 
+                                },
+                            new AnswerOption 
+                            { 
+                                AnswerText = "...contract negotiation", 
+                                IsCorrect = false 
+                                },
+                            new AnswerOption 
+                            { 
+                                AnswerText = "...processes and tools", 
+                                IsCorrect = false 
+                                },
+                            new AnswerOption 
+                            { 
+                                AnswerText = "...following a plan", 
+                                IsCorrect = false 
+                                }
                         }
                     },
 
-                    // Spørsmål 5: Flervalg med FLERE riktige svar[cite: 4, 34]
+                    // Question 5: Multiple choice with MULTIPLE correct answers
                     new Question
                     {
-                        QuestionText = "Hvilke påstander om verktøyet Mermaid og diagrammer i kildekode er korrekte? (Flervalg - velg alle som gjelder)",
+                        QuestionText = "Which statements about the tool Mermaid and diagrams as code are correct? (Multiple choice - select all that apply)",
                         QuestionType = QuestionType.TextMultiple,
                         AnswerOptions = new List<AnswerOption>
                         {
-                            new AnswerOption { AnswerText = "Det er en stor ulempe å ha diagrammer i kildekoden", IsCorrect = false },
-                            new AnswerOption { AnswerText = "En felles måte å modellere diagrammer på i kildekode", IsCorrect = true },
-                            new AnswerOption { AnswerText = "Diagrammene blir en del av versjonsstyringen", IsCorrect = true },
-                            new AnswerOption { AnswerText = "Du trenger ingen tekniske kunnskaper for å modellere Mermaid-diagrammer", IsCorrect = false }
+                            new AnswerOption 
+                            { 
+                                AnswerText = "It is a major disadvantage to have diagrams in the source code", 
+                                IsCorrect = false 
+                                },
+                            new AnswerOption 
+                            { 
+                                AnswerText = "A common way to model diagrams in source code", 
+                                IsCorrect = true 
+                                },
+                            new AnswerOption 
+                            { 
+                                AnswerText = "Diagrams become part of version control", 
+                                IsCorrect = true 
+                                },
+                            new AnswerOption 
+                            { 
+                                AnswerText = "You need no technical skills to model Mermaid diagrams", 
+                                IsCorrect = false 
+                                }
                         }
                     },
 
-                    // Spørsmål 6: Tekstspørsmål med ett riktig svar[cite: 4, 34]
+                    // Question 6: Text question with one correct answer
                     new Question
                     {
-                        QuestionText = "Hvilket av følgende krav til en billettautomat er et funksjonelt krav?",
+                        QuestionText = "Which of the following requirements for a ticket vending machine is a functional requirement?",
                         QuestionType = QuestionType.TextSingle,
                         AnswerOptions = new List<AnswerOption>
                         {
-                            new AnswerOption { AnswerText = "Det skal være et valg for utskrift av kvittering", IsCorrect = true },
-                            new AnswerOption { AnswerText = "Teksten på skjermen skal være svart med hvit bakgrunn", IsCorrect = false }
-                        }
+                            new AnswerOption 
+                            { 
+                                AnswerText = "There shall be an option to print a receipt", 
+                                IsCorrect = true 
+                                },
+                            new AnswerOption 
+                            { 
+                                AnswerText = "The text on the screen shall be black with a white background", 
+                                IsCorrect = false 
+                                }
                         }
                     }
-                
-                 
+                }
             };
 
             context.Quizzes.Add(quiz);
