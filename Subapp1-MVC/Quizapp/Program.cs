@@ -3,38 +3,38 @@ using Quizapp.DAL;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Registrerer MVC med controllers og views.
+// Registers MVC with controllers and views.
 builder.Services.AddControllersWithViews();
 
-// Registrerer databasen og kobler den til SQLite.
+// Registers the database and connects it to SQLite.
 builder.Services.AddDbContext<QuizDbContext>(options =>
     options.UseSqlite(
         builder.Configuration.GetConnectionString("QuizDbContext")));
 
-// Registrerer repository slik at det kan brukes i controllers.
+// Registers the repository so it can be used in controllers.
 builder.Services.AddScoped<IQuizRepository, QuizRepository>();
 
 var app = builder.Build();
 
-// Viser en detaljert feilside når prosjektet kjøres i utviklingsmiljø.
+// Shows a detailed error page when the project runs in the development environment.
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
 }
 
-// Gjør filer i wwwroot tilgjengelige, for eksempel CSS, JavaScript og bilder.
+// Makes files in wwwroot available, for example CSS, JavaScript and images.
 app.UseStaticFiles();
 
-// Klargjør ruting mellom URL-er og controllers.
+// Sets up routing between URLs and controllers.
 app.UseRouting();
 
-// Klargjør autorisasjon dersom det legges til senere.
+// Sets up authorization in case it is added later.
 app.UseAuthorization();
 
-// Oppretter databasen, kjører migrations og legger inn testdata.
+// Creates the database, runs migrations and adds seed data.
 DBInit.Seed(app);
 
-// Bruker standardruten: Controller/Action/Id.
+// Uses the default route: Controller/Action/Id.
 app.MapDefaultControllerRoute();
 
 app.Run();

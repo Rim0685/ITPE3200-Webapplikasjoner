@@ -1,5 +1,5 @@
-// Denne klassen er modellen for et flashcard.
-// Den lagrer spørsmålet på forsiden og svaret på baksiden av kortet.
+// This class is the model for a flashcard.
+// It stores the question on the front and the answer on the back of the card.
 
 using System.ComponentModel.DataAnnotations;
 

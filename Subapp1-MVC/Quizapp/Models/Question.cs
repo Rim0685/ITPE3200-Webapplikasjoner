@@ -1,5 +1,5 @@
-// Denne klassen er modellen for ett spørsmål i en quiz.
-// Den kobler spørsmålet til riktig quiz og til svaralternativene brukeren kan velge mellom.
+// This class is the model for one question in a quiz.
+// It links the question to its quiz and to the answer options the user can choose from.
 
 using System.ComponentModel.DataAnnotations;
 

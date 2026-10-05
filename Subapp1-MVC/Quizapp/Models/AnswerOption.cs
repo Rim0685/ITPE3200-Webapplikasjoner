@@ -1,9 +1,9 @@
-// This class represents a single possible answer to a question.
-// It is used to store either text or an image, along with information indicating whether the answer
+// This class is the model for one possible answer to a question.
+// It stores text or an image, and whether the answer option is correct.
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Quizapp.Models // Indicates that this class belongs to the models in the Quizapp project.
+namespace Quizapp.Models // The class belongs to the models in the Quizapp project.
 {
     public class AnswerOption
     {

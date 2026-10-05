@@ -29,4 +29,5 @@ Universitetet i Oslo. (2023). UML-modellering [Forelesningsnotater, IN1030]. htt
 
 W3Schools. (n.d.). HTML form elements. Hentet 5. oktober 2026 fra https://www.w3schools.com/html/html_form_elements.asp
 
-W3Schools. (n.d.). HTML form elements. Hentet 5. oktober 2026 fra https://www.w3schools.com/html/html_form_elements.asp
+
+Font: Figtree, Google Fonts. https://fonts.google.com/specimen/Figtree
