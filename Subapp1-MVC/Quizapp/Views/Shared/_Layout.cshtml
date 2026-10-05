@@ -3,10 +3,21 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Quizapp</title>
+    <title>@(ViewData["Title"] != null ? ViewData["Title"] + " – Quizapp" : "Quizapp")</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700;800&display=swap" />
+    <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
-    <main>
+    @* Navigation bar shown on every page. *@
+    <nav class="nav">
+        <a class="logo" asp-controller="Home" asp-action="Index">quizapp</a>
+        <div>
+            <a asp-controller="Home" asp-action="Index">Home</a>
+            <a asp-controller="Quiz" asp-action="Index">Quiz</a>
+            <a asp-controller="Flashcard" asp-action="Index">Flashcards</a>
+        </div>
+    </nav>
+    <main class="container">
         @RenderBody()
     </main>
 </body>

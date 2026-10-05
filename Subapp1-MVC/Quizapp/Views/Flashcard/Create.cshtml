@@ -1,24 +1,25 @@
 @model Flashcard
-@* Skjema for å lage et nytt flashcard. *@
+@* Form for creating a new flashcard. *@
+@{
+    ViewData["Title"] = "New flashcard";
+}
 
-<h1>New flashcard</h1>
+<h1>New <span class="highlight">flashcard</span></h1>
 
-@* method="post" sender skjemaet til [HttpPost] Create i controlleren.
-   asp-for kobler hvert felt til riktig property i Flashcard-modellen,
-   og asp-validation-for viser feilmelding hvis feltet er ugyldig. *@
-<form asp-action="Create" method="post">
-   <div>
-        <label asp-for="QuestionText">Question</label><br />
-        <input asp-for="QuestionText" />
-        <span asp-validation-for="QuestionText"></span>
-    </div>
+@* method="post" sends the form to [HttpPost] Create in the controller.
+   asp-for connects each field to the matching property in the Flashcard model,
+   and asp-validation-for shows an error message if the field is invalid. *@
+<form asp-action="Create" method="post" class="card">
+    <label asp-for="QuestionText">Question</label>
+    <input asp-for="QuestionText" />
+    <span asp-validation-for="QuestionText"></span>
 
-    <div>
-        <label asp-for="AnswerText">Answer</label><br />
-        <textarea asp-for="AnswerText"></textarea>
-        <span asp-validation-for="AnswerText"></span>
-    </div>
+    <label asp-for="AnswerText">Answer</label>
+    <textarea asp-for="AnswerText" rows="4"></textarea>
+    <span asp-validation-for="AnswerText"></span>
 
-    <button type="submit">Save</button>
-    <a asp-action="Index">Cancel</a>
+    <p>
+        <button type="submit" class="btn btn-dark">Save</button>
+        <a asp-action="Index" class="btn btn-light">Cancel</a>
+    </p>
 </form>

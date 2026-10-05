@@ -1,23 +1,32 @@
 @model IEnumerable<Flashcard>
-@* Viser alle flashcards med knapper for å lage nye, endre, slette og øve. *@
-
-<h1>Flashcards</h1>
-
-@* Disse knappene gjelder alle kortene, så de står utenfor løkken og vises bare én gang. *@
-<a asp-action="Create">+ New flashcard</a>
- <a asp-action="Study">Study</a>
-
-
-@* Løkken lager én boks per kort. asp-route-id legger kortets ID i lenken, f.eks. /Flashcard/Update/3. *@
-@foreach (var card in Model)
-{
-    <div>
-        <strong>@card.QuestionText</strong>
-        <p>@card.AnswerText</p>
-        <a asp-action="Update" asp-route-id="@card.FlashcardId">Edit</a>
-        <a asp-action="Delete" asp-route-id="@card.FlashcardId">Delete</a>
-     
-
-
-    </div>
+@* Shows all flashcards with buttons to create, edit, delete and study them. *@
+@{
+    ViewData["Title"] = "Flashcards";
 }
+
+<h1>Your <span class="highlight">flashcards</span></h1>
+
+@* These buttons apply to all cards, so they are outside the loop and shown only once. *@
+<p>
+    <a asp-action="Create" class="btn btn-light">+ New flashcard</a>
+    <a asp-action="Study" class="btn btn-dark">Study</a>
+</p>
+
+@if (!Model.Any())
+{
+    <p class="muted">You have no flashcards yet. Create your first one!</p>
+}
+
+@* The loop creates one card per flashcard. asp-route-id adds the card's ID to the link, e.g. /Flashcard/Update/3. *@
+<div class="grid">
+    @foreach (var card in Model)
+    {
+        <div class="card">
+            <span class="pill">Flashcard</span>
+            <h3>@card.QuestionText</h3>
+            <p class="muted">@card.AnswerText</p>
+            <a asp-action="Update" asp-route-id="@card.FlashcardId" class="btn btn-light">Edit</a>
+            <a asp-action="Delete" asp-route-id="@card.FlashcardId" class="btn btn-danger">Delete</a>
+        </div>
+    }
+</div>

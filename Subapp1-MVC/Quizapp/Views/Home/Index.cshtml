@@ -1,7 +1,21 @@
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Welcome to the QuizApp!</p>
+<h1>What do you want to <span class="highlight">practice</span> today?</h1>
+<p class="muted">Take a quiz or practice with your own flashcards.</p>
+
+<div class="grid">
+    <div class="card">
+        <span class="pill">Quiz</span>
+        <h3>Quizzes</h3>
+        <p class="muted">Text and image questions with answers.</p>
+        <a asp-controller="Quiz" asp-action="Index" class="btn btn-dark">View quizzes</a>
+    </div>
+    <div class="card">
+        <span class="pill">Flashcards</span>
+        <h3>Flashcards</h3>
+        <p class="muted">Create your own cards and practice them.</p>
+        <a asp-controller="Flashcard" asp-action="Index" class="btn btn-dark">My flashcards</a>
+    </div>
+</div>

@@ -6,22 +6,24 @@
 
 <h1>@Model.PageTitle</h1>
 
-@if (!string.IsNullOrWhiteSpace(Model.Description))
-{
-    <p>@Model.Description</p>
-}
+<div class="card">
+    @if (!string.IsNullOrWhiteSpace(Model.Description))
+    {
+        <p class="muted">@Model.Description</p>
+    }
 
-<p>
-    Antall spørsmål: @Model.QuestionCount
-</p>
+    <p><span class="pill">@Model.QuestionCount questions</span></p>
 
-<a asp-controller="Quiz"
-    asp-action="Play"
-    asp-route-id="@Model.QuizId">
-    Start quiz
-</a>
+    <a asp-controller="Quiz"
+       asp-action="Play"
+       asp-route-id="@Model.QuizId"
+       class="btn btn-dark">
+        Start quiz
+    </a>
 
-<a asp-controller="Quiz"
-    asp-action="Index">
-    Tilbake til quizoversikt
-</a>
+    <a asp-controller="Quiz"
+       asp-action="Index"
+       class="btn btn-light">
+        Back to quizzes
+    </a>
+</div>
