@@ -6,18 +6,17 @@ This project requires:
 .NET SDK 10.0 or higher
 
 This is how to start the application:
-1. First open the ITPE3200- Webapplikasjoner folder. 
-2. Then open the Subapp1-MVC folder. 
-3. Open the Quizapp folder. 
-4. navigate to the Quizapp.csproj file. 
-4. Open det terminal inside the file. 
-5. Inside the terminal commit one at a time:
+1. Open a terminal in the root directory of the repository (ITPE3200-Webapplikasjoner)
 
+2. Inside the terminal commit one at a time:
+
+-To vanigate to the project folder:
 cd Subapp1-MVC/Quizapp
 
+-Run the application: 
 dotnet run
 
-6. Press command+ click on the link. 
+3. Press command+ click on the link. 
 
 Make sure that the link has "Quiz" at the end of the link. 
 Write it manually if it does not appear. 
