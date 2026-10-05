@@ -5,7 +5,7 @@ This project is a game application quiz.
 This is how to start the application:
 1. First open the ITPE3200- Webapplikasjoner folder. 
 2. Then open the Subapp1-MVC folder. 
-3. Open the Quizapp folder. 
+3. Open the Quizapp folder.
 4. navigate to the Quizapp.csproj file. 
 4. Open det terminal inside the file. 
 5. Inside the terminal commit one at a time:
