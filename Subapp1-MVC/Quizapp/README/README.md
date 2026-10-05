@@ -21,7 +21,7 @@ dotnet run
 Make sure that the link has "Quiz" at the end of the link. 
 Write it manually if it does not appear. 
 
-sources for the pictures used in the quiz:
+sources:
 
 Universitetet i Oslo. (2023). Sekvensdiagram og klassediagram [Forelesningsnotater, IN1030]. https://www.uio.no/studier/emner/matnat/ifi/IN1030/v23/materiale-fra-gruppetimer/gruppe-8/sekvensdiagram-og-klassediagram.pdf
 
@@ -29,3 +29,4 @@ Universitetet i Oslo. (2023). UML-modellering [Forelesningsnotater, IN1030]. htt
 
 W3Schools. (n.d.). HTML form elements. Hentet 5. oktober 2026 fra https://www.w3schools.com/html/html_form_elements.asp
 
+W3Schools. (n.d.). HTML form elements. Hentet 5. oktober 2026 fra https://www.w3schools.com/html/html_form_elements.asp

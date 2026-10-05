@@ -12,11 +12,18 @@
     <legend class="instruction-text">Choose an image option</legend>
 
     <div class="options-grid image-options">
+        @* Runs through every available answeroption from the model *@
+
         @foreach (var option in Model.Options)
         {
-            bool isChecked = Model.SelectedOptionIds.Contains(option.Id);
+
+            @* Check if the current option is selected *@
+          bool isChecked = Model.SelectedOptionIds.Contains(option.Id);
 
             <label class="option-card image-option @(isChecked ? "selected" : "")" for="opt-img-@option.Id">
+
+                @* Radio button for single selection *@
+
                 <input type="radio" 
                        id="opt-img-@option.Id" 
                        name="Answers[@Model.QuestionIndex].SelectedAnswerOptionIds" 
@@ -25,7 +32,13 @@
                        aria-checked="@isChecked.ToString().ToLower()" />
                 
                 <div class="image-wrapper">
+
+                    @* Image display with alt-text fallback *@
+
                     <img src="@option.ImageUrl" alt="@(string.IsNullOrEmpty(option.Text) ? "Svaralternativ bilde" : option.Text)" loading="lazy" />
+
+                    @* Selection badge for visual feedback *@
+
                     <div class="selection-badge" aria-hidden="true">
                         <span class="checkmark">✓</span>
                     </div>

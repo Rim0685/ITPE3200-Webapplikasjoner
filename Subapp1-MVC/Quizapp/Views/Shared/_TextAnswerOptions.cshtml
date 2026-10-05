@@ -1,22 +1,35 @@
 @*  This is a partial view for rendering text answer options in a quiz application. 
     It uses the QuestionViewModel to display the options and handle user selections.
-    
+    The HTML structure is based on the standard form structure form W3School (HTML form elements and radio buttons and checkboxes).
+    The reference: https://www.w3schools.com/html/html_form_elements.asp
 *@
 
 @model Quizapp.ViewModels.QuestionViewModel
 
+@* Groups response options universally for accessibility.*@
+
 <fieldset class="answer-group">
+    @* Dynamic instructional text based on whether the question allows multiple choices or only a single answer*@
+
     <legend class="instruction-text">
         @(Model.IsMultipleChoice ? "Choose one or multiple answers" : "choose one answer")
     </legend>
 
     <div class="options-container text-options">
+        @* Runs through every available answeroption from the model. *@
+
         @foreach (var option in Model.Options)
         {
+            @* Check if the current option is selected *@
             bool isChecked = Model.SelectedOptionIds.Contains(option.Id);
+
+            @* Determine the input type based on whether it is multiple choice or single choice. *@
             string inputType = Model.IsMultipleChoice ? "checkbox" : "radio";
 
+            @* Create a label for each answer option *@
             <label class="option-card text-option @(isChecked ? "selected" : "")" for="opt-text-@option.Id">
+
+                @* Input element for the answer option.*@
                 <input type="@inputType" 
                        id="opt-text-@option.Id" 
                        name="Answers[@Model.QuestionIndex].SelectedAnswerOptionIds" 
@@ -24,7 +37,10 @@
                        checked="@isChecked" 
                        aria-checked="@isChecked.ToString().ToLower()" />
                 
+                @* Custom indicator for visual feedback *@
                 <span class="custom-indicator" aria-hidden="true"></span>
+
+                @* Display the text for the answer option *@
                 <span class="option-text">@option.Text</span>
             </label>
         }
