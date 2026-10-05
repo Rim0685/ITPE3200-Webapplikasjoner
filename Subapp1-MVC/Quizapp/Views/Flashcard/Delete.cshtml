@@ -12,7 +12,7 @@
 
     @* Deleting uses POST (not a normal link), so cards cannot be deleted by accident.
        The hidden field sends the ID of the card to delete. *@
-    <form asp-action="DeleteConfirmed" method="post">
+    <form asp-action="DeleteConfirmed" asp-route-id="@Model.FlashcardId" method="post">
         <input type="hidden" asp-for="FlashcardId" />
         <button type="submit" class="btn btn-danger">Yes, delete</button>
         <a asp-action="Index" class="btn btn-light">Cancel</a>
