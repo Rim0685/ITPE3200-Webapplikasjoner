@@ -1,0 +1,15 @@
+@model Flashcard
+@* Bekreftelsesside før et flashcard slettes. Viser kortet så brukeren ser hva som slettes. *@
+
+<h1>Delete flashcard?</h1>
+
+<p><strong>@Model.QuestionText</strong></p>
+<p>@Model.AnswerText</p>
+
+@* Sletting skjer med POST (ikke en vanlig lenke), så kort ikke kan slettes ved et uhell.
+   Det skjulte feltet sender med ID-en til kortet som skal slettes. *@
+<form asp-action="DeleteConfirmed" method="post">
+    <input type="hidden" asp-for="FlashcardId" />
+    <button type="submit">Yes, delete</button>
+    <a asp-action="Index">Cancel</a>
+</form>
