@@ -36,14 +36,6 @@ namespace Quizapp.Controllers
 
             try
             {
-                /* Tester å gjøre noen endringer for multiple chocie. Setter denne som kmt foreløpig 
-
-                // Bygger en oppslagstabell over alle svaralternativer som hører til denne quizen,
-                // siden repositoriet ikke har en direkte GetAnswerOptionById-metode.
-                var allOptions = quiz.Questions
-                    .SelectMany(q => q.AnswerOptions)
-                    .ToDictionary(o => o.AnswerOptionId); */
-
                 var attempt = new QuizAttempt
                 {
                     QuizId = submission.QuizId,
@@ -91,25 +83,6 @@ namespace Quizapp.Controllers
                         });
                     }
                 }
-
-            /* Skal prøve å gjøre endringer slik at det passer med multiple choice oppgaver. Setter den gamle koden som kommentar foreløpig.
-               foreach (var answer in submission.Answers)
-                {
-                    if (!allOptions.TryGetValue(answer.SelectedAnswerOptionId, out var selectedOption))
-                    {
-                        _logger.LogWarning("[ResultController] Fant ikke AnswerOptionId {Id} i QuizId {QuizId}.", answer.SelectedAnswerOptionId, submission.QuizId);
-                        continue;
-                    }
-
-                    if (selectedOption.IsCorrect)
-                        score++;
-
-                    attempt.AttemptAnswers.Add(new AttemptAnswer
-                    {
-                        AnswerOptionId = selectedOption.AnswerOptionId
-                    });
-                }
-            */
 
                 attempt.Score = score;
 
