@@ -1,9 +1,9 @@
-// Denne klassen er modellen for ett mulig svar på et spørsmål.
-// Den brukes til å lagre tekst eller bilde og informasjon om svaralternativet er riktig.
+// This class represents a single possible answer to a question.
+// It is used to store either text or an image, along with information indicating whether the answer
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Quizapp.Models // Angir at klassen tilhører modellene i Quizapp-prosjektet.
+namespace Quizapp.Models // Indicates that this class belongs to the models in the Quizapp project.
 {
     public class AnswerOption
     {
