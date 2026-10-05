@@ -44,7 +44,7 @@ namespace Quizapp.Controllers
                     ex,
                     "Feil ved henting av quizoversikten.");
 
-                return RedirectToAction("Error", "Home");    
+                return View("Error");    
             }
         }
 
@@ -82,7 +82,7 @@ namespace Quizapp.Controllers
                     "Feil ved henting av quiz med QuizId {QuizId}.",
                     id);
 
-                return RedirectToAction("Error", "Home");    
+                return View("Error");    
             }
         }
 
@@ -149,7 +149,7 @@ namespace Quizapp.Controllers
                     "Feil ved oppstart av quiz med QuizId {QuizId}.",
                     id);
 
-                return RedirectToAction("Error", "Home");
+                return View("Error");
             }
         }
     }
