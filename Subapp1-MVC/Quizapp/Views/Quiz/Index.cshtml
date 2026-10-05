@@ -20,6 +20,7 @@ else
             <div class="card">
                 <h3>@quiz.PageTitle</h3>
 
+                @* Displays the description only when the quiz has one. *@
                 @if (!string.IsNullOrWhiteSpace(quiz.Description))
                 {
                     <p class="muted">@quiz.Description</p>

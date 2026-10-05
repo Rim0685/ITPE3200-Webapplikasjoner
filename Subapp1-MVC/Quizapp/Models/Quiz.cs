@@ -1,5 +1,5 @@
-// Denne klassen er hovedmodellen for en quiz.
-// Den brukes til å samle informasjon om quizen og koble den til spørsmål og quizforsøk.
+// Represents a quiz and contains its basic information,
+// questions, and related quiz attempts.
 
 using System.ComponentModel.DataAnnotations;
 

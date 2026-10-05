@@ -3,7 +3,7 @@ using Quizapp.Models;
 
 namespace Quizapp.DAL
 {
-    // Utfører databaseoperasjonene som er definert i IQuizRepository.
+    // Handles database operations defined by IQuizRepository.
     public class QuizRepository : IQuizRepository
     {
         private readonly QuizDbContext _db;
@@ -13,6 +13,7 @@ namespace Quizapp.DAL
             _db = db;
         }
 
+        // Retrieves all quizzes without tracking them for changes.
         public async Task<IEnumerable<Quiz>> GetAll()
         {
             return await _db.Quizzes
@@ -20,6 +21,7 @@ namespace Quizapp.DAL
                 .ToListAsync();
         }
 
+        // Retrieves one quiz together with its questions and answer options.
         public async Task<Quiz?> GetQuizById(int id)
         {
             return await _db.Quizzes
@@ -28,18 +30,21 @@ namespace Quizapp.DAL
                 .FirstOrDefaultAsync(quiz => quiz.QuizId == id);
         }
 
+        // Creates a new quiz and saves it to the database.
         public async Task Create(Quiz quiz)
         {
             _db.Quizzes.Add(quiz);
             await _db.SaveChangesAsync();
         }
 
+        // Update and exisiting quiz and saves the changes.
         public async Task Update(Quiz quiz)
         {
             _db.Quizzes.Update(quiz);
             await _db.SaveChangesAsync();
         }
 
+        // Deletes a quiz by id. Returns flase if the quiz does not exist.
         public async Task<bool> Delete(int id)
         {
             var quiz = await _db.Quizzes.FindAsync(id);
@@ -55,14 +60,15 @@ namespace Quizapp.DAL
             return true;
         }
 
+        // Saves a completed quiz attempt to the database.
         public async Task AddQuizAttempt(QuizAttempt quizAttempt)
         {
             _db.QuizAttempts.Add(quizAttempt);
             await _db.SaveChangesAsync();
         }
         
-        // Henter et quizforsøk med alle tilhørende svar, spørsmål og svaralternativer,
-        // brukt av resultat- og fasitsiden.
+        // Retrieves a quiz attempt with the related quiz, submitted answers,
+        // questions, and answer options needed by the result and solution pages.
         public async Task<QuizAttempt?> GetQuizAttemptById(int id)
         {
             return await _db.QuizAttempts
@@ -74,6 +80,7 @@ namespace Quizapp.DAL
                 .FirstOrDefaultAsync(attempt => attempt.QuizAttemptId == id);
         }
 
+        // Retrieves the most recently completed attempt for a quiz.
         public async Task<QuizAttempt?> GetLatestQuizAttempt(int quizId)
         {
             return await _db.QuizAttempts
@@ -83,6 +90,7 @@ namespace Quizapp.DAL
                 .FirstOrDefaultAsync();
         }
 
+        // Returns the number of attempts made for a specific quiz.
         public async Task<int> GetQuizAttemptCount(int quizId)
         {
             return await _db.QuizAttempts

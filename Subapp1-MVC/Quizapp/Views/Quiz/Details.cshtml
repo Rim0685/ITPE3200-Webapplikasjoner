@@ -7,6 +7,7 @@
 <h1>@Model.PageTitle</h1>
 
 <div class="card">
+    @* Displays the description when the quiz has one. *@
     @if (!string.IsNullOrWhiteSpace(Model.Description))
     {
         <p class="muted">@Model.Description</p>

@@ -8,13 +8,14 @@
 
     <h1 class="quiz-play-title">@Model.PageTitle</h1>
 
+    @* Displays a message instead of the form when quiz has no question. *@
     @if (!Model.Questions.Any())
     {
         <p class="muted">This quiz has no questions yet.</p>
     }
     else
     {
-
+        @* Submits the quix and the selected answers to ResultController. *@
         <form asp-controller="Result"
             asp-action="Submit"
             method="post">
@@ -28,16 +29,20 @@
                 <section class="quiz-question">
                     <h2>@question.QuestionText</h2>
                 
+                    @*  The question index connects each sumbitted answer to the
+                        correct question during model binding *@
                     <input type="hidden"
                         name="Answers[@question.QuestionIndex].QuestionId"
                         value="@question.QuestionId" />
 
+                    @* Image questions display an image as part of the question. *@
                     @if (!string.IsNullOrWhiteSpace(question.ImageUrl))
                     {
                         <img src="@question.ImageUrl"
                             alt="Image for the question" />
                     }
 
+                    @* Reuses the answer option UI for each question. *@
                     <partial name="_TextAnswerOptions" model="question" />
             
                 </section>
