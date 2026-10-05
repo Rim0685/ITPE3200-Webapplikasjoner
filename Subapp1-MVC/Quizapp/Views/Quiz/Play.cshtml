@@ -10,7 +10,7 @@
 
     @if (!Model.Questions.Any())
     {
-        <p>Denne quizen har ingen spørsmål ennå</p>
+        <p class="muted">This quiz has no questions yet.</p>
     }
     else
     {
@@ -35,7 +35,7 @@
                     @if (!string.IsNullOrWhiteSpace(question.ImageUrl))
                     {
                         <img src="@question.ImageUrl"
-                            alt="Bilde til spørsmålet" />
+                            alt="Image for the question" />
                     }
 
                     <partial name="_TextAnswerOptions" model="question" />
@@ -43,8 +43,8 @@
                 </section>
             }
 
-            <button type="submit">
-                Send inn quiz
+            <button type="submit" class="btn btn-dark">
+                Submit quiz
             </button>
 
         </form>
@@ -52,8 +52,9 @@
 
     <a asp-controller="Quiz"
         asp-action="Details"
-        asp-route-id="@Model.QuizId">
-        Tilbake til quiz
+        asp-route-id="@Model.QuizId"
+        class="btn btn-light">
+        Back to quiz
     </a>
 
 </div>

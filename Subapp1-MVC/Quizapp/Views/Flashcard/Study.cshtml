@@ -1,31 +1,34 @@
 @model Flashcard
-@* Øvemodus: viser ett kort om gangen med skjult svar og knapper for forrige/neste. *@
-
-@* Henter posisjon og antall kort som controlleren sendte via ViewBag. *@
+@* Study mode: shows one card at a time with a hidden answer and previous/next buttons. *@
 @{
+    ViewData["Title"] = "Study";
+
+    // Position and number of cards, sent from the controller through ViewBag.
     int index = ViewBag.Index;
     int total = ViewBag.Total;
 }
 
-<h1>Study</h1>
-@* index starter på 0, så vi legger til 1 for å vise "Card 1" i stedet for "Card 0". *@
-<p>Card @(index + 1) of @total</p>
+@* index starts at 0, so 1 is added to show "Card 1" instead of "Card 0". *@
+<p class="muted center">Card @(index + 1) of @total</p>
 
-<h2>@Model.QuestionText</h2>
+<div class="card center">
+    <span class="pill">Question</span>
+    <h2 class="study-question">@Model.QuestionText</h2>
 
-@* <details> skjuler svaret til brukeren klikker på "Show answer" – ingen JavaScript trengs. *@
-<details>
-    <summary>Show answer</summary>
-    <p>@Model.AnswerText</p>
-</details>
-
-@* asp-route-index legger ?index=... i lenken. "Previous" vises ikke på første kort. *@
-<div>
-    @if (index > 0)
-    {
-        <a asp-action="Study" asp-route-index="@(index - 1)">← Previous</a>
-    }
-    <a asp-action="Study" asp-route-index="@(index + 1)">Next →</a>
+    @* <details> hides the answer until the user clicks "Show answer" – no JavaScript needed. *@
+    <details>
+        <summary class="btn btn-light">Show answer</summary>
+        <p><span class="highlight">@Model.AnswerText</span></p>
+    </details>
 </div>
 
-<a asp-action="Index">Back to list</a>
+@* asp-route-index adds ?index=... to the link. "Previous" is not shown on the first card. *@
+<p class="center">
+    @if (index > 0)
+    {
+        <a asp-action="Study" asp-route-index="@(index - 1)" class="btn btn-light">← Previous</a>
+    }
+    <a asp-action="Study" asp-route-index="@(index + 1)" class="btn btn-dark">Next →</a>
+</p>
+
+<p class="center"><a asp-action="Index">Back to list</a></p>
