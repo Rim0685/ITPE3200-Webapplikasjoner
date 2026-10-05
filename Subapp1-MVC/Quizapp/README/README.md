@@ -1,6 +1,9 @@
 ITPE3200: QuizApp
 
-This project is a game application quiz. 
+This project is a game application qui built with .NET Core 10.0 MVC. 
+
+This project requires:
+.NET SDK 10.0 or higher
 
 This is how to start the application:
 1. First open the ITPE3200- Webapplikasjoner folder. 
@@ -19,7 +22,8 @@ dotnet run
 Make sure that the link has "Quiz" at the end of the link. 
 Write it manually if it does not appear. 
 
-sources:
+sources for the pictures used in the quiz:
+
 Universitetet i Oslo. (2023). Sekvensdiagram og klassediagram [Forelesningsnotater, IN1030]. https://www.uio.no/studier/emner/matnat/ifi/IN1030/v23/materiale-fra-gruppetimer/gruppe-8/sekvensdiagram-og-klassediagram.pdf
 
 Universitetet i Oslo. (2023). UML-modellering [Forelesningsnotater, IN1030]. https://www.uio.no/studier/emner/matnat/ifi/IN1030/v23/materiale-fra-gruppetimer/gruppe-1/uml-modellering-.pdf
