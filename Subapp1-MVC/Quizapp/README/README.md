@@ -1,6 +1,6 @@
 ITPE3200: QuizApp
 
-This project is a game application qui built with .NET Core 10.0 MVC. 
+This project is a game application quiz built with .NET Core 10.0 MVC. 
 
 This project requires:
 .NET SDK 10.0 or higher
@@ -8,9 +8,9 @@ This project requires:
 This is how to start the application:
 1. Open a terminal in the root directory of the repository (ITPE3200-Webapplikasjoner)
 
-2. Inside the terminal commit one at a time:
+2. Inside the terminal run the comands one at a time:
 
--To vanigate to the project folder:
+-To navigate to the project folder:
 cd Subapp1-MVC/Quizapp
 
 -Run the application: 
