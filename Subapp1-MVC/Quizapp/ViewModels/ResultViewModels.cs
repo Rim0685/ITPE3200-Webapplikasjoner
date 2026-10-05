@@ -1,20 +1,20 @@
 namespace Quizapp.ViewModels
 {
-    // Representerer ett svar eleven har valgt for ett spørsmål.
+    // Represents the answer the student selected for one question.
     public class SubmitAnswerViewModel
     {
         public int QuestionId { get; set; }
         public List<int> SelectedAnswerOptionIds { get; set; } = new();
     }
 
-    // Representerer hele den innsendte quizen.
+    // Represents the whole submitted quiz.
     public class SubmitQuizViewModel
     {
         public int QuizId { get; set; }
         public List<SubmitAnswerViewModel> Answers { get; set; } = new();
     }
 
-    // Det som vises på resultatsiden.
+    // What is shown on the result page.
     public class ResultViewModel
     {
         public int QuizAttemptId { get; set; }
@@ -23,7 +23,7 @@ namespace Quizapp.ViewModels
         public int TotalQuestions { get; set; }
     }
 
-    // Én rad i oversikten på fasitsiden.
+    // One row in the overview on the solution page.
     public class QuestionResultViewModel
     {
         public string QuestionText { get; set; } = string.Empty;
@@ -32,7 +32,7 @@ namespace Quizapp.ViewModels
         public bool IsCorrect { get; set; }
     }
 
-    // Det som vises på fasitsiden.
+    // What is shown on the solution page.
     public class SolutionViewModel
     {
         public int QuizAttemptId { get; set; }

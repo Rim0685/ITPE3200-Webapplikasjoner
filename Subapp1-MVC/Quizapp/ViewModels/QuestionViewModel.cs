@@ -1,6 +1,6 @@
 namespace Quizapp.ViewModels
 {
-    // Brukes til å sende ett spørsmål og svaralternativene til visningen.
+    // Used to send one question and its answer options to the view.
     public class QuestionViewModel
     {
         public int QuestionId { get; set; }
@@ -20,7 +20,7 @@ namespace Quizapp.ViewModels
         public List<int> SelectedOptionIds { get; set; } = new();
     }
 
-    // Representerer ett svaralternativ som skal vises i quizen.
+    // Represents one answer option shown in the quiz.
     public class AnswerOptionViewModel
     {
         public int Id { get; set; }

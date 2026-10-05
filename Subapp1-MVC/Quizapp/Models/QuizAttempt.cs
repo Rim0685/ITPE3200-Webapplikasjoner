@@ -1,5 +1,5 @@
-// Denne klassen er modellen for én fullført gjennomføring av en quiz.
-// Den brukes til å lagre resultatet, tidspunktet og hvilke svar brukeren valgte.
+// This class is the model for one completed attempt at a quiz.
+// It stores the result, the time and which answers the user selected.
 
 namespace Quizapp.Models
 {

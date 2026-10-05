@@ -1,5 +1,5 @@
-// Denne klassen er en koblingsmodell mellom et quizforsøk og et valgt svaralternativ.
-// Den gjør det mulig å lagre flere valgte svar i samme quizforsøk.
+// This class links a quiz attempt to a selected answer option.
+// It makes it possible to store several selected answers in the same quiz attempt.
 
 namespace Quizapp.Models
 {
