@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Quizapp.Models;
 
-namespace Quizapp.DAL // Angir at klassen tilhører applikasjonens datatilgangslag.
+namespace Quizapp.DAL // Indicates that the class belongs to the application's data access layer.
 {
-    // Denne klassen representerer forbindelsen mellom applikasjonen og databasen.
-    // Hver DbSet-egenskap representerer en tabell som Entity Framework skal opprette.
+    // Represents the connection between the application and the database.
+    // Each DbSet property represents a table managed by Entity Framework.
     public class QuizDbContext : DbContext
     {
         public QuizDbContext(DbContextOptions<QuizDbContext> options)

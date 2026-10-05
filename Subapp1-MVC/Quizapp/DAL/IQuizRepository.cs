@@ -2,7 +2,7 @@ using Quizapp.Models;
 
 namespace Quizapp.DAL
 {
-    // Bestemmer hvilke databaseoperasjoner som kan utføres for quizer.
+    // Defines the database operations that can be performed for quizzes.
     public interface IQuizRepository
     {
         Task<IEnumerable<Quiz>> GetAll();

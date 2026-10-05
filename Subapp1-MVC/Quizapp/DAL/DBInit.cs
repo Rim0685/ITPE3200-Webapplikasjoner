@@ -3,7 +3,7 @@ using Quizapp.Models;
 
 namespace Quizapp.DAL
 {
-    // Legger inn startdata i databasen når applikasjonen kjøres.
+    // Adds initial data to the database when the application starts.
     public static class DBInit
     {
         public static void Seed(IApplicationBuilder app)
@@ -13,10 +13,10 @@ namespace Quizapp.DAL
             var context = serviceScope.ServiceProvider
                 .GetRequiredService<QuizDbContext>();
 
-            // Oppdaterer databasen med eventuelle nye migrasjoner.
+            // Updates the database with any new migrations.
             context.Database.Migrate();
 
-            // Hindrer at samme quiz blir lagt inn flere ganger.
+            // Prevents the same quiz from being added multiple times.
             if (context.Quizzes.Any())
             {
                 return;

@@ -17,7 +17,7 @@ namespace Quizapp.Controllers
             _logger = logger;
         }
 
-        // POST: kalles når eleven sender inn svarene sine på quizen
+        // POST: Called when the student submits their answers to the quiz.
         [HttpPost]
         public async Task<IActionResult> Submit(SubmitQuizViewModel submission)
         {
@@ -87,8 +87,8 @@ namespace Quizapp.Controllers
                 attempt.Score = score;
 
                 await _quizRepository.AddQuizAttempt(attempt);
-                // attempt.QuizAttemptId fylles ut av EF Core etter SaveChangesAsync,
-                // siden 'attempt' er den samme sporede entiteten.
+                // attempt.QuizAttemptId is populated by EF Core after SaveChangesAsync,
+                // because 'attempt' is the same tracked entity.
 
                 return RedirectToAction(nameof(Result), new { id = attempt.QuizAttemptId });
             }
@@ -99,7 +99,7 @@ namespace Quizapp.Controllers
             }
         }
 
-        // GET: viser oppsummeringen av resultatet
+        // GET: Displays a summary of the quiz result.
         [HttpGet]
         public async Task<IActionResult> Result(int id)
         {
@@ -122,7 +122,7 @@ namespace Quizapp.Controllers
             return View(viewModel);
         }
 
-        // GET: viser full oversikt med riktige svar
+        // GET: Displays a full overview with correct answer.
         [HttpGet]
         public async Task<IActionResult> Solution(int id)
         {
