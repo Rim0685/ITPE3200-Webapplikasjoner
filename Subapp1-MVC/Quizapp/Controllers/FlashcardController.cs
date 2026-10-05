@@ -4,8 +4,8 @@ using Quizapp.Models;
 
 namespace Quizapp.Controllers
 {
-    // Handles everything related to flashcards:
-    // listing, creating, editing, deleting and studying cards.
+// Handles all flashcard-related functionality:
+// listing, creating, editing, deleting, and studying flashcards.
     public class FlashcardController : Controller
     {
         private readonly QuizDbContext _db;
