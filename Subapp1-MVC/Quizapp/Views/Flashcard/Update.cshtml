@@ -1,24 +1,25 @@
 @model Flashcard
-@* Skjema for å endre et flashcard. Feltene fylles automatisk ut med kortets nåværende tekst. *@
+@* Form for editing a flashcard. The fields are filled in with the card's current text. *@
+@{
+    ViewData["Title"] = "Edit flashcard";
+}
 
-<h1>Edit flashcard</h1>
+<h1>Edit <span class="highlight">flashcard</span></h1>
 
-<form asp-action="Update" method="post">
-    @* Skjult felt som sender med kortets ID, så controlleren vet hvilket kort som skal oppdateres. *@
+<form asp-action="Update" method="post" class="card">
+    @* Hidden field that sends the card's ID, so the controller knows which card to update. *@
     <input type="hidden" asp-for="FlashcardId" />
 
-    <div>
-        <label asp-for="QuestionText">Question</label><br />
-        <input asp-for="QuestionText" />
-        <span asp-validation-for="QuestionText"></span>
-    </div>
+    <label asp-for="QuestionText">Question</label>
+    <input asp-for="QuestionText" />
+    <span asp-validation-for="QuestionText"></span>
 
-    <div>
-        <label asp-for="AnswerText">Answer</label><br />
-        <textarea asp-for="AnswerText"></textarea>
-        <span asp-validation-for="AnswerText"></span>
-    </div>
+    <label asp-for="AnswerText">Answer</label>
+    <textarea asp-for="AnswerText" rows="4"></textarea>
+    <span asp-validation-for="AnswerText"></span>
 
-    <button type="submit">Save changes</button>
-    <a asp-action="Index">Cancel</a>
+    <p>
+        <button type="submit" class="btn btn-dark">Save changes</button>
+        <a asp-action="Index" class="btn btn-light">Cancel</a>
+    </p>
 </form>

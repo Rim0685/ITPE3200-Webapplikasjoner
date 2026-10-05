@@ -1,0 +1,97 @@
+/* Shared styling for the whole app.
+   Colors are defined once here, so they can be changed in one place. */
+:root {
+    --purple: #4B3FD6;
+    --purple-light: #E9E6FD;
+    --yellow: #F2D57E;
+    --text: #1E1B33;
+    --muted: #5A5770;
+    --background: #F3F2F8;
+    --border: #E3E1EE;
+    --danger: #B0302A;
+    --danger-light: #FDF1F0;
+}
+
+body { margin: 0; font-family: 'Figtree', sans-serif; background: var(--background); color: var(--text); }
+img { max-width: 100%; }
+
+/* Navigation bar */
+.nav { max-width: 1100px; margin: 16px auto 0; padding: 8px 8px 8px 20px; display: flex; flex-wrap: wrap;
+       justify-content: space-between; align-items: center; gap: 8px; background: white; border-radius: 999px; }
+.nav a { padding: 8px 16px; border-radius: 999px; color: var(--muted); text-decoration: none; font-weight: 600; }
+.nav a:hover { background: var(--background); color: var(--text); }
+.nav .logo { font-weight: 800; font-size: 20px; color: var(--text); padding-left: 0; }
+.nav .logo:hover { background: none; }
+
+/* Page content */
+.container { max-width: 1100px; margin: 0 auto; padding: 32px 20px; box-sizing: border-box; }
+h1 { font-size: 44px; font-weight: 800; letter-spacing: -0.03em; margin: 0 0 12px; }
+h2, h3 { font-weight: 700; }
+a { color: var(--purple); }
+.highlight { background: var(--yellow); border-radius: 14px; padding: 0 10px; }
+.muted { color: var(--muted); }
+.center { text-align: center; }
+
+/* Cards and grid */
+.card { background: white; border-radius: 24px; padding: 24px; margin-bottom: 16px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.grid .card { margin-bottom: 0; }
+.pill { display: inline-block; background: var(--purple-light); color: var(--purple); border-radius: 999px;
+        padding: 4px 12px; font-size: 13px; font-weight: 700; }
+
+/* Buttons */
+.btn { display: inline-block; padding: 12px 24px; border-radius: 999px; border: none; font: inherit;
+       font-weight: 700; text-decoration: none; cursor: pointer; margin: 4px 4px 4px 0; }
+.btn-dark { background: var(--text); color: white; }
+.btn-light { background: white; color: var(--text); border: 1px solid var(--border); }
+.btn-danger { background: var(--danger-light); color: var(--danger); }
+.btn:hover { opacity: 0.85; }
+
+/* Forms */
+label { display: block; font-weight: 600; margin: 16px 0 6px; }
+input[type=text], textarea { width: 100%; box-sizing: border-box; padding: 14px 16px;
+       border: 1px solid #DADDE6; border-radius: 14px; font: inherit; }
+.field-validation-error { color: var(--danger); font-weight: 600; }
+
+/* Flashcard study mode */
+details summary { list-style: none; }
+details summary::-webkit-details-marker { display: none; }
+.study-question { font-size: 34px; margin: 16px 0 28px; }
+
+/* Bootstrap class names already used in the Result views.
+   Bootstrap is not loaded, so these give them the same look as the rest of the app. */
+.btn-primary { background: var(--text); color: white; }
+.btn-secondary { background: white; color: var(--text); border: 1px solid var(--border); }
+.text-center { text-align: center; }
+.text-muted { color: var(--muted); }
+.text-success { color: var(--purple); }
+.text-danger { color: var(--danger); }
+.text-warning { color: #8A6100; }
+.fw-bold { font-weight: 700; }
+.display-4 { font-size: 72px; font-weight: 800; letter-spacing: -0.04em; margin: 8px 0; }
+.card-body { padding: 0; }
+.card-title { font-size: 20px; font-weight: 700; margin: 0 0 8px; }
+.border-success { border: 2px solid var(--purple-light); }
+.border-danger { border: 2px solid var(--danger-light); }
+.badge { display: inline-block; border-radius: 999px; padding: 4px 12px; font-size: 13px; font-weight: 700; }
+.bg-success { background: var(--purple-light); color: var(--purple); }
+.bg-danger { background: var(--danger-light); color: var(--danger); }
+.mx-auto { margin-left: auto; margin-right: auto; }
+.mt-3, .mt-4, .mt-5 { margin-top: 24px; }
+.mb-3, .mb-4 { margin-bottom: 16px; }
+.ms-2 { margin-left: 8px; }
+
+/* Quiz play page and answer options (partial views) */
+.quiz-play-container { max-width: 800px; margin: 0 auto; }
+.quiz-question { background: white; border-radius: 24px; padding: 24px; margin-bottom: 16px; }
+.quiz-question h2 { font-size: 20px; margin: 0 0 12px; }
+.quiz-question img { border-radius: 14px; margin-bottom: 12px; }
+.answer-group { border: none; padding: 0; margin: 0; }
+.instruction-text { color: var(--muted); font-weight: 600; margin-bottom: 12px; padding: 0; }
+.option-card { display: flex; gap: 12px; align-items: center; padding: 14px 16px; margin: 0 0 8px;
+               border: 1px solid var(--border); border-radius: 14px; background: white; cursor: pointer; font-weight: 400; }
+.option-card:has(input:checked) { border: 2px solid var(--purple); background: #F5F3FF; }
+.option-card input { accent-color: var(--purple); width: 18px; height: 18px; margin: 0; }
+.options-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+.image-wrapper img { width: 100%; border-radius: 10px; }
+.selection-badge { display: none; }

@@ -1,33 +1,36 @@
 @model IEnumerable<Quizapp.ViewModels.QuizListItemViewModel>
 
 @{
-    ViewData["Title"] = "Quizoversikt";
+    ViewData["Title"] = "Quizzes";
 }
 
-<h1>Quizoversikt</h1>
+<h1>Choose a <span class="highlight">quiz</span></h1>
 
-<p>Velg en quiz for å teste kunnskapene dine.</p>
+<p class="muted">Choose a quiz to test your knowledge.</p>
 
 @if (!Model.Any())
 {
-    <p>Ingen quizer er tilgjengelige akkurat nå.</p>
+    <p class="muted">No quizzes are available right now.</p>
 }
 else
 {
-    @foreach (var quiz in Model)
-    {
-        <div>
-            <h2>@quiz.PageTitle</h2>
+    <div class="grid">
+        @foreach (var quiz in Model)
+        {
+            <div class="card">
+                <h3>@quiz.PageTitle</h3>
 
-            @if (!string.IsNullOrWhiteSpace(quiz.Description))
-            {
-                <p>@quiz.Description</p>
-            }
-            <a asp-controller="Quiz"
-                asp-action="Details"
-                asp-route-id="@quiz.QuizId">
-                Se quiz
-            </a>
-        </div>
-    }
+                @if (!string.IsNullOrWhiteSpace(quiz.Description))
+                {
+                    <p class="muted">@quiz.Description</p>
+                }
+                <a asp-controller="Quiz"
+                   asp-action="Details"
+                   asp-route-id="@quiz.QuizId"
+                   class="btn btn-dark">
+                    View quiz
+                </a>
+            </div>
+        }
+    </div>
 }
