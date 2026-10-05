@@ -19,6 +19,14 @@
             <section class="quiz-question">
                 <h2>@question.QuestionText</h2>
 
+                @if (!string.IsNullOrWhiteSpace(question.ImageUrl))
+                {
+                    <img src="@question.ImageUrl"
+                        alt="Bilde til spørsmålet" />
+                }
+
+                <partial name="_TextAnswerOptions" model="question" />
+                @* Tror ikke vi trenger denne delen fordi bilder ikke skal være svaralternativer. 
                 @if (question.IsImageQuestion)
                 {
                     <partial name="_ImageAnswerOptions" model="question" />
@@ -27,6 +35,7 @@
                 {
                     <partial name="_TextAnswerOptions" model="question" />
                 }
+                *@
 
             </section>
         }
@@ -37,6 +46,8 @@
         asp-route-id="@Model.QuizId">
         Tilbake til quiz
     </a>
+
+</div>
 
 @* Tidligere kode...
 @model Quizapp.ViewModels.QuizPlayViewModel

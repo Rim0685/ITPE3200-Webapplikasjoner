@@ -19,7 +19,7 @@
             <label class="option-card image-option @(isChecked ? "selected" : "")" for="opt-img-@option.Id">
                 <input type="radio" 
                        id="opt-img-@option.Id" 
-                       name="SelectedOptionIds" 
+                       name="Answers[@Model.QuestionIndex].SelectedAnswerOptionIds" 
                        value="@option.Id" 
                        checked="@isChecked" 
                        aria-checked="@isChecked.ToString().ToLower()" />

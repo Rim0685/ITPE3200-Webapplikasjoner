@@ -102,11 +102,15 @@ namespace Quizapp.Controllers
                     QuizId = quiz.QuizId,
                     PageTitle = quiz.Title,
 
-                    Questions = quiz.Questions.Select(question => new QuestionViewModel
+                    Questions = quiz.Questions.Select((question, index) => new QuestionViewModel
                     {
                         QuestionId = question.QuestionId,
 
                         QuestionText = question.QuestionText,
+
+                        ImageUrl = question.ImageUrl,
+
+                        QuestionIndex = index,
                         
                         IsMultipleChoice =
                             question.QuestionType == QuestionType.TextMultiple ||

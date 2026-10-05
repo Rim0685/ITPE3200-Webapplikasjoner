@@ -36,22 +36,64 @@ namespace Quizapp.Controllers
 
             try
             {
+                /* Tester å gjøre noen endringer for multiple chocie. Setter denne som kmt foreløpig 
+
                 // Bygger en oppslagstabell over alle svaralternativer som hører til denne quizen,
                 // siden repositoriet ikke har en direkte GetAnswerOptionById-metode.
                 var allOptions = quiz.Questions
                     .SelectMany(q => q.AnswerOptions)
-                    .ToDictionary(o => o.AnswerOptionId);
+                    .ToDictionary(o => o.AnswerOptionId); */
 
                 var attempt = new QuizAttempt
                 {
                     QuizId = submission.QuizId,
-                    TotalQuestions = submission.Answers.Count,
+                    TotalQuestions = quiz.Questions.Count,
                     CompletedAt = DateTime.UtcNow
                 };
 
                 int score = 0;
 
                 foreach (var answer in submission.Answers)
+                {
+                    var question = quiz.Questions
+                        .FirstOrDefault(q => q.QuestionId == answer.QuestionId);
+
+                    if (question == null)
+                    {
+                        _logger.LogWarning(
+                            "[ResultController] Fant ikke QuestionId {QuestionId} i QuizId {QuizId}.",
+                            answer.QuestionId,
+                            submission.QuizId);
+
+                        continue;    
+                    }
+
+                    var selectedIds = answer.SelectedAnswerOptionIds
+                        .OrderBy(id => id)
+                        .ToList();
+
+                    var correctIds = question.AnswerOptions
+                        .Where(option => option.IsCorrect)
+                        .Select(option => option.AnswerOptionId)
+                        .OrderBy(id => id)
+                        .ToList();
+
+                    if (selectedIds.SequenceEqual(correctIds))
+                    {
+                        score++;
+                    }        
+
+                    foreach (var selectedId in selectedIds)
+                    {
+                        attempt.AttemptAnswers.Add(new AttemptAnswer
+                        {
+                            AnswerOptionId = selectedId
+                        });
+                    }
+                }
+
+            /* Skal prøve å gjøre endringer slik at det passer med multiple choice oppgaver. Setter den gamle koden som kommentar foreløpig.
+               foreach (var answer in submission.Answers)
                 {
                     if (!allOptions.TryGetValue(answer.SelectedAnswerOptionId, out var selectedOption))
                     {
@@ -67,6 +109,7 @@ namespace Quizapp.Controllers
                         AnswerOptionId = selectedOption.AnswerOptionId
                     });
                 }
+            */
 
                 attempt.Score = score;
 

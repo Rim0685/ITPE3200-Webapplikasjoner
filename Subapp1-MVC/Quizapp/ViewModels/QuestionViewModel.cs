@@ -7,6 +7,10 @@ namespace Quizapp.ViewModels
 
         public string QuestionText { get; set; } = string.Empty;
 
+        public string? ImageUrl { get; set; }
+        
+        public int QuestionIndex { get; set; }
+
         public bool IsMultipleChoice { get; set; }
 
         public bool IsImageQuestion { get; set; }

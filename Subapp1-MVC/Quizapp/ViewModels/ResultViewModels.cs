@@ -4,7 +4,7 @@ namespace Quizapp.ViewModels
     public class SubmitAnswerViewModel
     {
         public int QuestionId { get; set; }
-        public int SelectedAnswerOptionId { get; set; }
+        public List<int> SelectedAnswerOptionIds { get; set; } = new();
     }
 
     // Representerer hele den innsendte quizen.
