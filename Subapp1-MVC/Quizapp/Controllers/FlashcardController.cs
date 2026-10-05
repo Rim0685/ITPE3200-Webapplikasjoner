@@ -4,131 +4,197 @@ using Quizapp.Models;
 
 namespace Quizapp.Controllers
 {
-    // Denne controlleren håndterer alt som har med flashcards å gjøre:
-    // vise, opprette, endre, slette og øve på kortene.
+    // Handles everything related to flashcards:
+    // listing, creating, editing, deleting and studying cards.
     public class FlashcardController : Controller
     {
         private readonly QuizDbContext _db;
+        private readonly ILogger<FlashcardController> _logger;
 
-        // Databasekonteksten blir gitt automatisk via dependency injection (registrert i Program.cs).
-        public FlashcardController(QuizDbContext db)
+        // The database context and logger are provided through dependency injection (see Program.cs).
+        public FlashcardController(QuizDbContext db, ILogger<FlashcardController> logger)
         {
-            _db=db;
+            _db = db;
+            _logger = logger;
         }
 
-        // Viser en liste over alle flashcards.
+        // Shows a list of all flashcards.
         public IActionResult Index()
         {
-            List<Flashcard> flashcards= _db.Flashcards.ToList();
-            return View(flashcards);
+            try
+            {
+                List<Flashcard> flashcards = _db.Flashcards.ToList();
+                return View(flashcards);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[FlashcardController] Failed to load the flashcard list.");
+                return View("Error");
+            }
         }
 
-        // Viser et tomt skjema for å lage et nytt flashcard.
+        // Shows an empty form for creating a new flashcard.
         [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
 
-        // Tar imot skjemaet og lagrer det nye kortet i databasen.
+        // Receives the form and saves the new card in the database.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(Flashcard flashcard)
         {
-            // Viser skjemaet på nytt med feilmeldinger hvis noe mangler eller er for langt.
+            // Shows the form again with error messages if a field is missing or too long.
             if (!ModelState.IsValid)
             {
+                _logger.LogWarning("[FlashcardController] Invalid input when creating a flashcard.");
                 return View(flashcard);
             }
 
-            _db.Flashcards.Add(flashcard);
-            _db.SaveChanges();
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                _db.Flashcards.Add(flashcard);
+                _db.SaveChanges();
+                _logger.LogInformation("[FlashcardController] Created flashcard {FlashcardId}.", flashcard.FlashcardId);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[FlashcardController] Failed to create a flashcard.");
+                return View("Error");
+            }
         }
 
-        // Henter kortet som skal endres og viser skjemaet ferdig utfylt.
+        // Loads the card to edit and shows the form with its current values.
         [HttpGet]
         public IActionResult Update(int id)
         {
-            var flashcard = _db.Flashcards.Find(id);
-
-            // Gir 404 hvis det ikke finnes et kort med denne ID-en.
-            if (flashcard == null)
+            try
             {
-                return NotFound();
+                var flashcard = _db.Flashcards.Find(id);
+
+                // Returns 404 if no card has this ID.
+                if (flashcard == null)
+                {
+                    _logger.LogWarning("[FlashcardController] Flashcard {FlashcardId} not found for update.", id);
+                    return NotFound();
+                }
+                return View(flashcard);
             }
-            return View(flashcard);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[FlashcardController] Failed to load flashcard {FlashcardId} for update.", id);
+                return View("Error");
+            }
         }
 
-        // Lagrer endringene på et eksisterende kort.
+        // Saves the changes to an existing card.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Update(Flashcard flashcard)
         {
             if (!ModelState.IsValid)
             {
+                _logger.LogWarning("[FlashcardController] Invalid input when updating flashcard {FlashcardId}.", flashcard.FlashcardId);
                 return View(flashcard);
             }
 
-            _db.Flashcards.Update(flashcard);
-            _db.SaveChanges();
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                _db.Flashcards.Update(flashcard);
+                _db.SaveChanges();
+                _logger.LogInformation("[FlashcardController] Updated flashcard {FlashcardId}.", flashcard.FlashcardId);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[FlashcardController] Failed to update flashcard {FlashcardId}.", flashcard.FlashcardId);
+                return View("Error");
+            }
         }
 
-        // Viser en bekreftelsesside før kortet slettes.
+        // Shows a confirmation page before the card is deleted.
         [HttpGet]
         public IActionResult Delete(int id)
         {
-            var flashcard = _db.Flashcards.Find(id);
-            if (flashcard == null)
+            try
             {
-                return NotFound();
+                var flashcard = _db.Flashcards.Find(id);
+                if (flashcard == null)
+                {
+                    _logger.LogWarning("[FlashcardController] Flashcard {FlashcardId} not found for delete.", id);
+                    return NotFound();
+                }
+                return View(flashcard);
             }
-            return View(flashcard);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[FlashcardController] Failed to load flashcard {FlashcardId} for delete.", id);
+                return View("Error");
+            }
         }
 
-        // Sletter kortet etter at brukeren har bekreftet.
-        // Heter DeleteConfirmed fordi Delete(int id) allerede finnes med samme parameter.
+        // Deletes the card after the user has confirmed.
+        // Named DeleteConfirmed because Delete(int id) already exists with the same parameter.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
-            var flashcard = _db.Flashcards.Find(id);
-            if (flashcard == null)
+            try
             {
-                return NotFound();
-            }
+                var flashcard = _db.Flashcards.Find(id);
+                if (flashcard == null)
+                {
+                    _logger.LogWarning("[FlashcardController] Flashcard {FlashcardId} not found when confirming delete.", id);
+                    return NotFound();
+                }
 
-            _db.Flashcards.Remove(flashcard);
-            _db.SaveChanges();
-            return RedirectToAction(nameof(Index));
+                _db.Flashcards.Remove(flashcard);
+                _db.SaveChanges();
+                _logger.LogInformation("[FlashcardController] Deleted flashcard {FlashcardId}.", id);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[FlashcardController] Failed to delete flashcard {FlashcardId}.", id);
+                return View("Error");
+            }
         }
 
-        // Øvemodus: viser ett kort om gangen. "index" bestemmer hvilket kort som vises (0 = første).
+        // Study mode: shows one card at a time. "index" decides which card is shown (0 = first).
         [HttpGet]
         public IActionResult Study(int index = 0)
         {
-            // Sorterer etter ID så rekkefølgen er lik hver gang.
-            List<Flashcard> flashcards = _db.Flashcards
-                .OrderBy(f => f.FlashcardId)
-                .ToList();
-
-            // Ingen kort å øve på, så brukeren sendes tilbake til listen.
-            if (flashcards.Count == 0)
+            try
             {
-                return RedirectToAction(nameof(Index));
-            }
+                // Sorted by ID so the order is the same every time.
+                List<Flashcard> flashcards = _db.Flashcards
+                    .OrderBy(f => f.FlashcardId)
+                    .ToList();
 
-            // Starter på første kort igjen etter det siste (eller hvis index er ugyldig).
-            if (index < 0 || index >= flashcards.Count)
+                // No cards to study, so the user is sent back to the list.
+                if (flashcards.Count == 0)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+
+                // Starts from the first card again after the last one (or if the index is invalid).
+                if (index < 0 || index >= flashcards.Count)
+                {
+                    index = 0;
+                }
+
+                // Sends the position and number of cards to the view, so it can show "Card 2 of 5".
+                ViewBag.Index = index;
+                ViewBag.Total = flashcards.Count;
+                return View(flashcards[index]);
+            }
+            catch (Exception ex)
             {
-                index = 0;
+                _logger.LogError(ex, "[FlashcardController] Failed to load study mode (index {Index}).", index);
+                return View("Error");
             }
-
-            // Sender posisjon og antall kort til viewet, så det kan vise "Card 2 of 5".
-            ViewBag.Index = index;
-            ViewBag.Total = flashcards.Count;
-            return View(flashcards[index]);
         }
     }
 }

@@ -1,0 +1,9 @@
+@* Shared error page. Any controller can show it with View("Error") when something goes wrong.
+   The technical details are written to the log, not shown to the user. *@
+@{
+    ViewData["Title"] = "Error";
+}
+
+<h1>Something went wrong</h1>
+<p>Sorry, we could not complete your request. Please try again.</p>
+<a asp-controller="Home" asp-action="Index">Back to Home</a>
