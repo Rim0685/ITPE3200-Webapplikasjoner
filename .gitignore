@@ -1,12 +1,16 @@
-# Genererte .NET-mapper
+# Generated .NET folders
 **/bin/
 **/obj/
 
-# Lokal SQLite-database
+# Local SQLite database files
 *.db
 *.db-shm
 *.db-wal
 
-# Lokale editorinnstillinger
+# Local editor settings
 .vs/
 .vscode/
+
+# Installed frontend dependencies and build output
+**/node_modules/
+**/dist/

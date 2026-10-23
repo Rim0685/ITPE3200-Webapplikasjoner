@@ -8,6 +8,18 @@ var builder = WebApplication.CreateBuilder(args);
 // Registers OpenAPI document generation.
 builder.Services.AddOpenApi();
 
+// Registers the quiz repository for dependency injection.
+builder.Services.AddScoped<IQuizRepository, QuizRepository>();
+
+// Registers the question repository for dependency injection.
+builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
+
+// Registers the flashcard repository for dependency injection.
+builder.Services.AddScoped<IFlashcardRepository, FlashcardRepository>();
+
+// Registers the quiz attempt repository for dependency injection.
+builder.Services.AddScoped<IQuizAttemptRepository, QuizAttemptRepository>();
+
 // Registers the database context with an SQLite connection.
 builder.Services.AddDbContext<QuizDbContext>(options =>
     options.UseSqlite(

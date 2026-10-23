@@ -168,7 +168,7 @@ namespace QuizApi.DAL
 
                     new Question
                     {
-                        Text = "Look at the matrix below taken from the Agile Manifesto. Which value pairs with \"Working software over...\"?",
+                        Text = "Which value pairs with \"Working software over...\" in the Agile Manifesto?",
                         AllowMultipleAnswers = false,
                         AnswerOptions = new List<AnswerOption>
                         {
