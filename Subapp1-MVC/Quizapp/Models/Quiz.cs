@@ -1,5 +1,5 @@
-// Represents a quiz and contains its basic information,
-// questions, and related quiz attempts.
+// This class is the primary model for a quiz.
+// It is used to store quiz information and link the quiz to its questions and quiz attempts.
 
 using System.ComponentModel.DataAnnotations;
 
