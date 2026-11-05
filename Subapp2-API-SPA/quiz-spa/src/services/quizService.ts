@@ -1,4 +1,4 @@
-import { Quiz, QuizResultResponse, QuizSubmission } from '../types/quiz';
+import type { Quiz, QuizResultResponse, QuizSubmission } from '../types/quiz';
 
 const API_URL = '/api/quizzes'; // Tilpasset ASP.NET Web API endpoint
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { AnswerOption as AnswerOptionType } from '../../types/quiz';
+import type { AnswerOption as AnswerOptionType } from '../../types/quiz';
 
 interface Props {
   option: AnswerOptionType;

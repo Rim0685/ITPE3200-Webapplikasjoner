@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Quiz } from '../types/quiz';
+import type { Quiz } from '../types/quiz';
 import { quizService } from '../services/quizService';
 import { QuestionCard } from '../components/quiz/QuestionCard';
 
