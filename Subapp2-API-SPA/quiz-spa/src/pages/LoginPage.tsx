@@ -1,15 +1,28 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { login } from "../services/authService";
+
 
 function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const navigate = useNavigate();
 
-    // Handles the login form submission
-    const handleSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
+    // Handles login and stores the JWT token
+    const handleSubmit = async (event: React.SyntheticEvent<HTMLFormElement>) => {
         event.preventDefault();
+        setError("");
 
-        console.log("Email:", email);
-        console.log("Password:", password);
+        try {
+            const data = await login(email, password);
+
+            localStorage.setItem("token", data.token);
+
+            navigate("/flashcards");
+        } catch {
+            setError("Invalid email or password.");
+        }
     };
     
     return (
@@ -39,6 +52,8 @@ function LoginPage() {
                     />
                 </div>
 
+                {error && <p role="alert">{error}</p>}
+                
                 <button type="submit">Login</button>
             </form>
         </div>
