@@ -8,6 +8,11 @@ namespace QuizApi.Models
     // IdentityUser already provides Id, UserName, Email and PasswordHash.
     public class ApplicationUser : IdentityUser
     {
+        // Stays empty until the user fills in their profile.
+        public string FirstName { get; set; } = string.Empty;
+
+        public string LastName { get; set; } = string.Empty;
+
         // Contains the personal flashcards owned by this user.
         public List<Flashcard> Flashcards { get; set; }
             = new List<Flashcard>();
