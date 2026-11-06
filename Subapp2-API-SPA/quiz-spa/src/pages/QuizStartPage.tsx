@@ -4,21 +4,21 @@ import { quizService } from '../services/quizService';
 
 export const QuizStartPage: React.FC = () => {
   const [quiz, setQuiz] = useState<Quiz | null>(null);
-
-  // Eksempel på henting basert på URL-path
-  const quizId = 1; 
+  const quizId = 1; // Eksempel-ID
 
   useEffect(() => {
     quizService.getQuizById(quizId).then(setQuiz).catch(console.error);
-  }, [quizId]);
+  }, []);
 
-  if (!quiz) return <div>Laster startside...</div>;
+  if (!quiz) return <div>Laster...</div>;
 
   return (
-    <div className="quiz-start-page">
+    <div style={{ padding: '20px' }}>
       <h1>{quiz.title}</h1>
       <p>{quiz.description}</p>
-      <a href={`/quiz/${quiz.id}/take`} className="start-btn">Start gjennomføring</a>
+      <a href={`/quiz/${quiz.id}/take`}>
+        <button>Start quizen</button>
+      </a>
     </div>
   );
 };

@@ -7,35 +7,43 @@ export const QuizListPage: React.FC = () => {
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [search, setSearch] = useState<string>('');
-  const [filter, setFilter] = useState<string>('');
+
+  const loadQuizzes = async (search?: string) => {
+    try {
+      setLoading(true);
+      const data = await quizService.getQuizzes(search);
+      setQuizzes(data);
+      setError(null);
+    } catch (err) {
+      setError('Kunne ikke laste inn quizer.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    setLoading(true);
-    quizService.getAllQuizzes(search, filter)
-      .then(data => { setQuizzes(data); setLoading(false); })
-      .catch(err => { setError(err.message); setLoading(false); });
-  }, [search, filter]);
+    loadQuizzes();
+  }, []);
 
-  if (loading) return <div role="status">Laster quizer...</div>;
-  if (error) return <div role="alert" className="error">API-feil: {error}</div>;
+  if (loading) return <div>Laster quizer...</div>;
+  if (error) return <div style={{ color: 'red' }}>{error}</div>;
 
   return (
-    <div className="quiz-list-page">
+    <div style={{ padding: '20px' }}>
       <h1>Tilgjengelige Quizer</h1>
-      <QuizFilters onSearchChange={setSearch} onFilterChange={setFilter} />
+      <QuizFilters onSearch={(term) => loadQuizzes(term)} />
 
       {quizzes.length === 0 ? (
         <p>Ingen quizer funnet.</p>
       ) : (
         <ul>
-          {quizzes.map(quiz => (
-            <li key={quiz.id}>
-              <h2>{quiz.title}</h2>
+          {quizzes.map((quiz) => (
+            <li key={quiz.id} style={{ marginBottom: '15px', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>
+              <h3>{quiz.title}</h3>
               <p>{quiz.description}</p>
-              <p>Siste resultat: {quiz.lastResult ?? 'Ingen'} | Forsøk: {quiz.attemptsCount ?? 0}</p>
-              <p>Fasitstatus: {quiz.isSolutionAvailable ? 'Tilgjengelig' : 'Ikke tilgjengelig'}</p>
-              <a href={`/quiz/${quiz.id}/start`}>Start Quiz</a>
+              <p>Forsøk: {quiz.attemptsCount || 0} | Siste resultat: {quiz.lastResult !== undefined ? `${quiz.lastResult} poeng` : 'Ingen forsøk'}</p>
+              <a href={`/quiz/${quiz.id}`}>Start Quiz</a>
+              {quiz.isSolutionAvailable && <a href={`/quiz/${quiz.id}/solution`} style={{ marginLeft: '10px' }}>Se fasit</a>}
             </li>
           ))}
         </ul>

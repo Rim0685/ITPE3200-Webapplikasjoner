@@ -10,7 +10,7 @@ interface Props {
 
 export const QuestionCard: React.FC<Props> = ({ question, selectedAnswers, onAnswerChange }) => {
   return (
-    <div className="question-card" tabIndex={0}>
+    <div className="question-card" style={{ marginBottom: '20px', padding: '15px', border: '1px solid #ddd' }}>
       <h3>{question.text}</h3>
       <div className="options-container">
         {question.answerOptions.map((option) => (

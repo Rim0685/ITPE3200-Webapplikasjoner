@@ -2,14 +2,14 @@ export interface AnswerOption {
   id: number;
   text: string;
   imageUrl?: string;
-  isCorrect?: boolean; // Brukes i fasit/admin
+  isCorrect?: boolean;
 }
 
 export interface Question {
   id: number;
   quizId: number;
   text: string;
-  isMultipleChoice: boolean; // Avgjør radioknapp vs avkrysningsboks
+  isMultipleChoice: boolean;
   answerOptions: AnswerOption[];
 }
 
@@ -25,21 +25,5 @@ export interface Quiz {
 
 export interface QuizSubmission {
   quizId: number;
-  answers: { [questionId: number]: number[] }; // questionId -> array av valgte answerOption-ID-er
-}
-
-export interface QuestionResultEvaluation {
-  questionId: number;
-  questionText: string;
-  userAnswers: number[];
-  correctAnswers: number[];
-  isCorrect: boolean;
-  points: number;
-}
-
-export interface QuizResultResponse {
-  quizId: number;
-  totalScore: number;
-  maxScore: number;
-  evaluations: QuestionResultEvaluation[];
+  answers: { [questionId: number]: number[] };
 }
