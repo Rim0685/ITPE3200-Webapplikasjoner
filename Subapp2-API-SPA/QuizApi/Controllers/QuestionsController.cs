@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using QuizApi.DAL;
 using QuizApi.DTOs;
@@ -5,7 +6,9 @@ using QuizApi.Models;
 
 namespace QuizApi.Controllers
 {
+    // Question management includes the correct answers, so it requires a login.
     [ApiController]
+    [Authorize]
     [Route("api/[controller]")]
     public class QuestionsController : ControllerBase
     {
