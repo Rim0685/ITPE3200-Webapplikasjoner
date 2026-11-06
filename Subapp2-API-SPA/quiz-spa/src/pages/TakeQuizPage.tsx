@@ -10,7 +10,7 @@ export const TakeQuizPage: React.FC = () => {
 
   useEffect(() => {
     quizService.getQuizById(quizId).then(setQuiz).catch(console.error);
-  }, [quizId]);
+  }, []);
 
   const handleAnswerChange = (questionId: number, optionId: number) => {
     const question = quiz?.questions?.find(q => q.id === questionId);
@@ -42,7 +42,7 @@ export const TakeQuizPage: React.FC = () => {
   if (!quiz) return <div>Laster quiz...</div>;
 
   return (
-    <div className="take-quiz-page">
+    <div style={{ padding: '20px' }}>
       <h1>{quiz.title}</h1>
       {quiz.questions?.map(question => (
         <QuestionCard 
@@ -52,7 +52,9 @@ export const TakeQuizPage: React.FC = () => {
           onAnswerChange={handleAnswerChange} 
         />
       ))}
-      <button onClick={handleSubmit}>Send inn svar (tillater ubesvarte)</button>
+      <button onClick={handleSubmit} style={{ padding: '10px 20px', marginTop: '20px' }}>
+        Send inn svar (tillater ubesvarte)
+      </button>
     </div>
   );
 };

@@ -1,15 +1,12 @@
-import type { Quiz, QuizResultResponse, QuizSubmission } from '../types/quiz';
+import type { Quiz, QuizSubmission } from '../types/quiz';
 
-const API_URL = '/api/quizzes'; // Tilpasset ASP.NET Web API endpoint
+const API_URL = '/api/quizzes';
 
 export const quizService = {
-  async getAllQuizzes(searchQuery?: string, filterStatus?: string): Promise<Quiz[]> {
-    const params = new URLSearchParams();
-    if (searchQuery) params.append('search', searchQuery);
-    if (filterStatus) params.append('status', filterStatus);
-
-    const response = await fetch(`${API_URL}?${params.toString()}`);
-    if (!response.ok) throw new Error('Kunne ikke hente quizer fra API-et.');
+  async getQuizzes(search?: string): Promise<Quiz[]> {
+    const url = search ? `${API_URL}?search=${encodeURIComponent(search)}` : API_URL;
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Kunne ikke hente quizer.');
     return response.json();
   },
 
@@ -19,13 +16,13 @@ export const quizService = {
     return response.json();
   },
 
-  async submitQuiz(submission: QuizSubmission): Promise<QuizResultResponse> {
+  async submitQuiz(submission: QuizSubmission): Promise<any> {
     const response = await fetch(`${API_URL}/submit`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(submission),
     });
-    if (!response.ok) throw new Error('Feil ved innsending av quiz.');
+    if (!response.ok) throw new Error('Innsending feilet.');
     return response.json();
   },
 
@@ -37,15 +34,6 @@ export const quizService = {
     });
     if (!response.ok) throw new Error('Kunne ikke opprette quiz.');
     return response.json();
-  },
-
-  async updateQuiz(id: number, quiz: Quiz): Promise<void> {
-    const response = await fetch(`${API_URL}/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(quiz),
-    });
-    if (!response.ok) throw new Error('Kunne ikke oppdatere quizen.');
   },
 
   async deleteQuiz(id: number): Promise<void> {

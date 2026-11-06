@@ -1,32 +1,26 @@
 import React, { useState } from 'react';
 
 interface Props {
-  onSearchChange: (search: string) => void;
-  onFilterChange: (status: string) => void;
+  onSearch: (searchTerm: string) => void;
 }
 
-export const QuizFilters: React.FC<Props> = ({ onSearchChange, onFilterChange }) => {
-  const [searchTerm, setSearchTerm] = useState('');
+export const QuizFilters: React.FC<Props> = ({ onSearch }) => {
+  const [text, setText] = useState('');
 
-  const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-    onSearchChange(e.target.value);
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSearch(text);
   };
 
   return (
-    <div className="quiz-filters" role="search">
-      <label htmlFor="search-input">Søk i quizer: </label>
-      <input
-        id="search-input"
-        type="text"
-        value={searchTerm}
-        onChange={handleSearchInput}
-        placeholder="Søk tittel..."
+    <form onSubmit={handleSubmit} style={{ marginBottom: '20px' }}>
+      <input 
+        type="text" 
+        placeholder="Søk etter quiz..." 
+        value={text} 
+        onChange={(e) => setText(e.target.value)} 
       />
-      <select onChange={(e) => onFilterChange(e.target.value)} aria-label="Filtrer fasitstatus">
-        <option value="">Alle</option>
-        <option value="available">Fasit tilgjengelig</option>
-      </select>
-    </div>
+      <button type="submit">Søk</button>
+    </form>
   );
 };

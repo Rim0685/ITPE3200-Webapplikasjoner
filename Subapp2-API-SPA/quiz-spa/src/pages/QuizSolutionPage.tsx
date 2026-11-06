@@ -8,19 +8,19 @@ export const QuizSolutionPage: React.FC = () => {
 
   useEffect(() => {
     quizService.getQuizById(quizId).then(setQuiz).catch(console.error);
-  }, [quizId]);
+  }, []);
 
   if (!quiz) return <div>Laster...</div>;
 
   return (
-    <div className="quiz-solution-page">
+    <div style={{ padding: '20px' }}>
       <h1>Fasit for {quiz.title}</h1>
 
-      {/* 2. Konkrete type betinget rendering: Logisk AND && for å vise fasit når tilgjengelig */}
+      {/* Logisk AND for å vise fasit når den er tilgjengelig */}
       {quiz.isSolutionAvailable && (
-        <div className="solution-container" tabIndex={0}>
+        <div style={{ marginTop: '20px', padding: '15px', background: '#f0f0f0' }}>
           <h2>Rette svar og forklaringer</h2>
-          <p>Fasiten er nå åpen og tilgjengelig.</p>
+          <p>Fasiten er nå åpen og tilgjengelig for denne quizen.</p>
         </div>
       )}
     </div>

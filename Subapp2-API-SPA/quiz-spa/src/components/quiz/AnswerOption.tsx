@@ -13,33 +13,23 @@ export const AnswerOption: React.FC<Props> = ({ option, isMultipleChoice, isSele
     <div 
       className={`answer-option ${isSelected ? 'selected' : ''}`}
       onClick={() => onSelect(option.id)}
+      style={{ cursor: 'pointer', margin: '8px 0', padding: '8px', border: isSelected ? '2px solid blue' : '1px solid #ccc' }}
     >
-      {/* 1. Konkrete type betinget rendering: Ternær operator ? : for radioknapp vs avkrysningsboks */}
       {isMultipleChoice ? (
-        <input 
-          type="checkbox" 
-          checked={isSelected} 
-          onChange={() => onSelect(option.id)} 
-          aria-label={option.text}
-        />
+        <input type="checkbox" checked={isSelected} onChange={() => {}} />
       ) : (
-        <input 
-          type="radio" 
-          checked={isSelected} 
-          onChange={() => onSelect(option.id)} 
-          aria-label={option.text}
-        />
+        <input type="radio" checked={isSelected} onChange={() => {}} />
       )}
 
       {option.imageUrl && (
         <img 
           src={option.imageUrl} 
           alt="Svaralternativ" 
-          className={`answer-image ${isSelected ? 'highlighted-image' : ''}`} 
+          style={{ width: '100px', display: 'block', marginTop: '5px' }} 
         />
       )}
       
-      <span>{option.text}</span>
+      <span style={{ marginLeft: '8px' }}>{option.text}</span>
     </div>
   );
 };
