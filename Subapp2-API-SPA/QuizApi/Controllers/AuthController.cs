@@ -16,6 +16,11 @@ namespace QuizApi.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
+        // Uses one message for all failed logins, so the response does not reveal
+        // which email addresses are registered or which accounts are locked.
+        private const string InvalidLoginMessage =
+            "Invalid email or password. An account is locked for 5 minutes after 5 failed attempts.";
+
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _configuration;
         private readonly ILogger<AuthController> _logger;
@@ -80,13 +85,33 @@ namespace QuizApi.Controllers
             {
                 var user = await _userManager.FindByEmailAsync(dto.Email);
 
-                // Uses one message for both cases, so the response does not reveal
-                // which email addresses are registered.
-                if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password))
+                if (user == null)
                 {
                     _logger.LogWarning("[AuthController] Failed login attempt.");
-                    return Unauthorized("Invalid email or password.");
+                    return Unauthorized(InvalidLoginMessage);
                 }
+
+                // A locked account is rejected even if the password is correct.
+                if (await _userManager.IsLockedOutAsync(user))
+                {
+                    _logger.LogWarning(
+                        "[AuthController] Login attempt on locked user {UserId}.", user.Id);
+
+                    return Unauthorized(InvalidLoginMessage);
+                }
+
+                if (!await _userManager.CheckPasswordAsync(user, dto.Password))
+                {
+                    // Counts the failed attempt, and locks the account at the limit.
+                    await _userManager.AccessFailedAsync(user);
+
+                    _logger.LogWarning(
+                        "[AuthController] Wrong password for user {UserId}.", user.Id);
+
+                    return Unauthorized(InvalidLoginMessage);
+                }
+
+                await _userManager.ResetAccessFailedCountAsync(user);
 
                 _logger.LogInformation(
                     "[AuthController] User {UserId} logged in.", user.Id);

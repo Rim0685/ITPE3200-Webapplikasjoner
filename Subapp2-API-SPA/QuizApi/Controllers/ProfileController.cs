@@ -37,7 +37,7 @@ namespace QuizApi.Controllers
             {
                 var user = await GetCurrentUserAsync();
 
-                // A token stays valid for a while after its account has been deleted.
+                // Only happens if the account is deleted while the request is running.
                 if (user == null)
                 {
                     return NotFound(AccountNotFoundMessage);
