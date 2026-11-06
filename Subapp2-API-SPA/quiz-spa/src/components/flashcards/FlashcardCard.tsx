@@ -7,8 +7,8 @@ interface FlashcardCardProps {
 function FlashcardCard({ flashcard }: FlashcardCardProps) {
     return (
         <div>
-            <h2>{flashcard.question}</h2>
-            <p>{flashcard.answer}</p>
+            <h2>{flashcard.front}</h2>
+            <p>{flashcard.back}</p>
         </div>
     );
 }
