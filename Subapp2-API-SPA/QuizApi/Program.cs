@@ -42,6 +42,9 @@ builder.Services.AddScoped<IQuizAttemptRepository, QuizAttemptRepository>();
 // Registers the quiz evaluation service (scoring and fasit-unlock logic).
 builder.Services.AddScoped<IQuizEvaluationService, QuizEvaluationService>();
 
+// Registers the flashcard service (flashcard limit and DTO mapping).
+builder.Services.AddScoped<IFlashcardService, FlashcardService>();
+
 // Registers the database context with an SQLite connection.
 builder.Services.AddDbContext<QuizDbContext>(options =>
     options.UseSqlite(
