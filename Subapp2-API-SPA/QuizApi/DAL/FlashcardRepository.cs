@@ -36,6 +36,21 @@ namespace QuizApi.DAL
             }
         }
 
+        // Counts the flashcards belonging to the specified user.
+        public async Task<int> CountAsync(string userId)
+        {
+            try
+            {
+                return await _db.Flashcards
+                    .CountAsync(f => f.UserId == userId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to count flashcards.");
+                throw;
+            }
+        }
+
         // Retrieves a flashcard only if it belongs to the specified user.
         public async Task<Flashcard?> GetByIdAsync(
             int flashcardId, string userId)

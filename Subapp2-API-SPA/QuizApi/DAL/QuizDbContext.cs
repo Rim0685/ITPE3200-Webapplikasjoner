@@ -1,12 +1,14 @@
 // The DAL folder contains database configuration and data access code.
 // This class defines the database entities and their relationships.
 
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using QuizApi.Models;
 
 namespace QuizApi.DAL
 {
-    public class QuizDbContext : DbContext
+    // IdentityDbContext adds the user and role tables used by ASP.NET Core Identity.
+    public class QuizDbContext : IdentityDbContext<ApplicationUser>
     {
         // Receives database settings through dependency injection.
         public QuizDbContext(DbContextOptions<QuizDbContext> options)
@@ -24,7 +26,20 @@ namespace QuizApi.DAL
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Configures the Identity tables, so this call must stay first.
             base.OnModelCreating(modelBuilder);
+
+            // A user owns multiple personal flashcards.
+            modelBuilder.Entity<Flashcard>()
+                .HasOne(f => f.User)
+                .WithMany(u => u.Flashcards)
+                .HasForeignKey(f => f.UserId);
+
+            // A user can complete multiple quiz attempts.
+            modelBuilder.Entity<QuizAttempt>()
+                .HasOne(a => a.User)
+                .WithMany(u => u.QuizAttempts)
+                .HasForeignKey(a => a.UserId);
 
             // Uses both foreign keys as the junction table's primary key.
             modelBuilder.Entity<QuizQuestion>()

@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using QuizApi.DAL;
 using QuizApi.DTOs;
@@ -5,7 +7,9 @@ using QuizApi.Models;
 
 namespace QuizApi.Controllers
 {
+    // Requires a login by default. Browsing quizzes is opened with [AllowAnonymous].
     [ApiController]
+    [Authorize]
     [Route("api/[controller]")]
     public class QuizzesController : ControllerBase
     {
@@ -24,6 +28,7 @@ namespace QuizApi.Controllers
         }
 
         // GET /api/quizzes?search=...&topic=...
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<QuizDto>>> GetAll([FromQuery] string? search, [FromQuery] string? topic)
         {
@@ -67,6 +72,7 @@ namespace QuizApi.Controllers
             return Ok(result);
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<ActionResult<QuizDto>> GetById(int id)
         {
@@ -207,7 +213,8 @@ namespace QuizApi.Controllers
             return NoContent();
         }
 
-        // Placeholder !!! Replace with: User.FindFirstValue(ClaimTypes.NameIdentifier)
-        private string GetUserId() => User.Identity?.Name ?? "demo-user";
+        // Reads the user's ID from the token. A visitor who is not logged in
+        // gets an empty ID, which matches no attempts.
+        private string GetUserId() => User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
     }
 }
