@@ -11,18 +11,23 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Pages nested inside this route share the same layout 
-        Slett etter på: <Route path="/flashcards" element={<FlashcardListPage />} />
-        
-        */}
+        {/* Pages nested inside this route share the same layout */}
         <Route element={<Layout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/quizzes" element={<QuizListPage />} />
-          <Route path="/flashcards" element={<FlashcardListPage />} />
+          <Route
+            path="/quizzes"
+            element={
+              localStorage.getItem("token") ? (
+                <QuizListPage />  
+              ) : (
+                <Navigate to="/login" replace />
+              )   
+            }
+          />
           {/* Redirect users without a token to the login page */}
-          <Router
+          <Route
             path="/flashcards"
             element={
               localStorage.getItem("token") ? (
