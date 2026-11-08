@@ -14,6 +14,8 @@ namespace QuizApi.Models
         // Identifies the user who completed the attempt.
         public string UserId { get; set; } = string.Empty;
 
+        public ApplicationUser? User { get; set; }
+
         public DateTime CompletedAt { get; set; }
 
         // Stores the awarded points, including partial points.

@@ -11,6 +11,8 @@ namespace QuizApi.DAL
 
         Task<Flashcard?> GetByIdAsync(int flashcardId, string userId);
 
+        Task<int> CountAsync(string userId);
+
         Task<bool> CreateAsync(Flashcard flashcard);
 
         Task<bool> UpdateAsync(Flashcard flashcard, string userId);

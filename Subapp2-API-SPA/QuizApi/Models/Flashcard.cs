@@ -13,5 +13,7 @@ namespace QuizApi.Models
 
         // Identifies the user who owns this flashcard.
         public string UserId { get; set; } = string.Empty;
+
+        public ApplicationUser? User { get; set; }
     }
 }

@@ -1,10 +1,14 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using QuizApi.DTOs;
 using QuizApi.Services;
 
 namespace QuizApi.Controllers
 {
+    // Attempts always belong to a user, so every endpoint requires a login.
     [ApiController]
+    [Authorize]
     [Route("api/[controller]")]
     public class QuizAttemptsController : ControllerBase
     {
@@ -51,7 +55,7 @@ namespace QuizApi.Controllers
             return Ok(solution);
         }
 
-        // Placeholder !!!
-        private string GetUserId() => User.Identity?.Name ?? "demo-user";
+        // Reads the user's ID from the token. [Authorize] guarantees that a user exists.
+        private string GetUserId() => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
     }
 }
