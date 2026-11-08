@@ -1,0 +1,53 @@
+@* The Account folder contains views for user account functionality. *@
+@* This view displays the login form. *@
+
+@model Quizapp.ViewModels.LoginViewModel
+
+@{
+    ViewData["Title"] = "Log in";
+}
+
+<h1>Log in</h1>
+
+<div class="card">
+    <form asp-controller="Account" asp-action="Login" method="post">
+        @* Preserves the requested destination when the form is submitted. *@
+        <input type="hidden" asp-for="ReturnUrl" />
+
+        <div asp-validation-summary="ModelOnly"
+             class="text-danger"></div>
+
+        <div class="mb-3">
+            <label asp-for="Email"></label>
+            <input asp-for="Email" autocomplete="username" />
+            <span asp-validation-for="Email"
+                  class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Password"></label>
+            <input asp-for="Password" autocomplete="current-password" />
+            <span asp-validation-for="Password"
+                  class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <input asp-for="RememberMe" />
+            <label asp-for="RememberMe"></label>
+        </div>
+
+        <button type="submit" class="btn btn-dark">
+            Log in
+        </button>
+
+        <a asp-controller="Account"
+           asp-action="Register"
+           class="btn btn-light">
+            Register
+        </a>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

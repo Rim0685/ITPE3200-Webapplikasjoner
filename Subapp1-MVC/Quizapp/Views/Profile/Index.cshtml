@@ -1,0 +1,196 @@
+@* The Profile folder contains views for the user's profile. *@
+@* This view displays the profile form and personal content overviews. *@
+
+@model Quizapp.ViewModels.ProfileViewModel
+
+@{
+    ViewData["Title"] = "My profile";
+}
+
+<h1>My profile</h1>
+
+@if (TempData["SuccessMessage"] is string message)
+{
+    <p role="status">@message</p>
+}
+
+<section class="card">
+    <h2>Profile information</h2>
+
+    <form asp-controller="Profile" asp-action="Index" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="mb-3">
+            <label asp-for="DisplayName"></label>
+            <input asp-for="DisplayName" />
+            <span asp-validation-for="DisplayName"
+                  class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="FullName"></label>
+            <input asp-for="FullName" autocomplete="name" />
+            <span asp-validation-for="FullName"
+                  class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="AboutMe"></label>
+            <textarea asp-for="AboutMe" rows="4"></textarea>
+            <span asp-validation-for="AboutMe"
+                  class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-dark">
+            Save profile
+        </button>
+    </form>
+</section>
+
+<section class="card">
+    <h2>My quiz results</h2>
+
+    @if (Model.QuizAttempts.Count == 0)
+    {
+        <p>You have no saved quiz results.</p>
+    }
+    else
+    {
+        <p>Deleting a result also removes the answers saved for that attempt.</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th scope="col">Quiz</th>
+                    <th scope="col">Score</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var attempt in Model.QuizAttempts)
+                {
+                    <tr>
+                        <td>@attempt.QuizTitle</td>
+                        <td>
+                            @attempt.Score out of @attempt.TotalQuestions
+                        </td>
+                        <td>
+                            @attempt.CompletedAt.ToString("dd.MM.yyyy HH:mm") UTC
+                        </td>
+                        <td>
+                            <form asp-controller="Profile"
+                                  asp-action="DeleteQuizAttempt"
+                                  method="post">
+                                <input type="hidden"
+                                       name="id"
+                                       value="@attempt.QuizAttemptId" />
+
+                                <button type="submit"
+                                        class="btn btn-light"
+                                        aria-label="Delete result for @attempt.QuizTitle">
+                                    Delete result
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</section>
+
+<section class="card">
+    <h2>My flashcards</h2>
+
+    <a asp-controller="Flashcard"
+       asp-action="Create"
+       class="btn btn-dark">
+        Create flashcard
+    </a>
+
+    @if (Model.Flashcards.Count == 0)
+    {
+        <p>You have not created any flashcards yet.</p>
+    }
+    else
+    {
+        <ul>
+            @foreach (var card in Model.Flashcards)
+            {
+                <li>
+                    <p>@card.QuestionText</p>
+
+                    <a asp-controller="Flashcard"
+                       asp-action="Update"
+                       asp-route-id="@card.FlashcardId"
+                       class="btn btn-light">
+                        Edit
+                    </a>
+
+                    <a asp-controller="Flashcard"
+                       asp-action="Delete"
+                       asp-route-id="@card.FlashcardId"
+                       class="btn btn-light">
+                        Delete
+                    </a>
+                </li>
+            }
+        </ul>
+    }
+</section>
+
+<section class="card">
+    <h2>My study notes</h2>
+
+    <a asp-controller="StudyNote"
+       asp-action="Create"
+       class="btn btn-dark">
+        Create study note
+    </a>
+
+    @if (Model.StudyNotes.Count == 0)
+    {
+        <p>You have not created any study notes yet.</p>
+    }
+    else
+    {
+        <ul>
+            @foreach (var note in Model.StudyNotes)
+            {
+                <li>
+                    <h3>
+                        <a asp-controller="StudyNote"
+                           asp-action="Details"
+                           asp-route-id="@note.StudyNoteId">
+                            @note.Title
+                        </a>
+                    </h3>
+
+                    <p>
+                        Created:
+                        @note.CreatedAt.ToString("dd.MM.yyyy HH:mm") UTC
+                    </p>
+
+                    <a asp-controller="StudyNote"
+                       asp-action="Update"
+                       asp-route-id="@note.StudyNoteId"
+                       class="btn btn-light">
+                        Edit
+                    </a>
+
+                    <a asp-controller="StudyNote"
+                       asp-action="Delete"
+                       asp-route-id="@note.StudyNoteId"
+                       class="btn btn-light">
+                        Delete
+                    </a>
+                </li>
+            }
+        </ul>
+    }
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

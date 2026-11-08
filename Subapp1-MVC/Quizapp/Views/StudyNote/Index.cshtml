@@ -1,0 +1,61 @@
+@* The StudyNote folder contains views for personal study notes. *@
+@* This view displays the authenticated user's study notes. *@
+
+@model IEnumerable<Quizapp.ViewModels.StudyNoteViewModel>
+
+@{
+    ViewData["Title"] = "My study notes";
+}
+
+<h1>My study notes</h1>
+
+<a asp-controller="StudyNote"
+   asp-action="Create"
+   class="btn btn-dark">
+    Create study note
+</a>
+
+<a asp-controller="Profile"
+   asp-action="Index"
+   class="btn btn-light">
+    Back to profile
+</a>
+
+@if (!Model.Any())
+{
+    <p>You have not created any study notes yet.</p>
+}
+else
+{
+    @foreach (var note in Model)
+    {
+        <article class="card">
+            <h2>
+                <a asp-controller="StudyNote"
+                   asp-action="Details"
+                   asp-route-id="@note.StudyNoteId">
+                    @note.Title
+                </a>
+            </h2>
+
+            <p>
+                Created:
+                @note.CreatedAt.ToString("dd.MM.yyyy HH:mm") UTC
+            </p>
+
+            <a asp-controller="StudyNote"
+               asp-action="Update"
+               asp-route-id="@note.StudyNoteId"
+               class="btn btn-light">
+                Edit
+            </a>
+
+            <a asp-controller="StudyNote"
+               asp-action="Delete"
+               asp-route-id="@note.StudyNoteId"
+               class="btn btn-light">
+                Delete
+            </a>
+        </article>
+    }
+}

@@ -1,12 +1,15 @@
+// The DAL folder contains database configuration and data access code.
+// This context manages application data and Identity user tables.
+
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Quizapp.Models;
 
-namespace Quizapp.DAL // Indicates that the class belongs to the application's data access layer.
+namespace Quizapp.DAL
 {
-    // Represents the connection between the application and the database.
-    // Each DbSet property represents a table managed by Entity Framework.
-    public class QuizDbContext : DbContext
+    public class QuizDbContext : IdentityDbContext<ApplicationUser>
     {
+        // Receives database settings through dependency injection.
         public QuizDbContext(DbContextOptions<QuizDbContext> options)
             : base(options)
         {
@@ -23,5 +26,7 @@ namespace Quizapp.DAL // Indicates that the class belongs to the application's d
         public DbSet<AttemptAnswer> AttemptAnswers { get; set; }
 
         public DbSet<Flashcard> Flashcards { get; set; }
+
+        public DbSet<StudyNote> StudyNotes { get; set; }
     }
 }

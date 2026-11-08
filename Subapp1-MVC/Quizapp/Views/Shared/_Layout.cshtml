@@ -1,24 +1,49 @@
+@* The Shared folder contains views reused across multiple pages. *@
+@* This layout defines the page structure, navigation and shared scripts. *@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@(ViewData["Title"] != null ? ViewData["Title"] + " – Quizapp" : "Quizapp")</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700;800&display=swap" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>@(ViewData["Title"] != null
+        ? ViewData["Title"] + " – Quizapp"
+        : "Quizapp")</title>
+
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700;800&display=swap" />
+
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
-    @* Navigation bar shown on every page. *@
+    @* Displays the navigation bar on every page. *@
     <nav class="nav">
-        <a class="logo" asp-controller="Home" asp-action="Index">quizapp</a>
+        <a class="logo"
+           asp-controller="Home"
+           asp-action="Index">
+            quizapp
+        </a>
+
         <div>
             <a asp-controller="Home" asp-action="Index">Home</a>
-            <a asp-controller="Quiz" asp-action="Index">Quiz</a>
+            <a asp-controller="Quiz" asp-action="Index">Quizzes</a>
             <a asp-controller="Flashcard" asp-action="Index">Flashcards</a>
+            <a asp-controller="StudyNote" asp-action="Index">Study notes</a>
+
+            <partial name="_LoginPartial" />
         </div>
     </nav>
+
     <main class="container">
         @RenderBody()
     </main>
+
+    @* Loads jQuery before page-specific validation scripts. *@
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+    @* Loads optional scripts defined by individual views. *@
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

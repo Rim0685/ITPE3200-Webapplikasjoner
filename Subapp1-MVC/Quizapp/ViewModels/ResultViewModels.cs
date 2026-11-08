@@ -15,13 +15,18 @@ namespace Quizapp.ViewModels
     }
 
     // What is shown on the result page.
-    public class ResultViewModel
-    {
-        public int QuizAttemptId { get; set; }
-        public string QuizTitle { get; set; } = string.Empty;
-        public int Score { get; set; }
-        public int TotalQuestions { get; set; }
-    }
+        // Contains the result and the server-calculated solution status.
+    // Contains the result and the server-calculated solution status.
+public class ResultViewModel
+{
+    public int QuizAttemptId { get; set; }
+    public string QuizTitle { get; set; } = string.Empty;
+    public int Score { get; set; }
+    public int TotalQuestions { get; set; }
+
+    public int AttemptCount { get; set; }
+    public bool SolutionUnlocked { get; set; }
+}
 
     // One row in the overview on the solution page.
     public class QuestionResultViewModel

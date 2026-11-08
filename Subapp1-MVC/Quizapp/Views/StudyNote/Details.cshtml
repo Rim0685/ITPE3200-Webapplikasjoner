@@ -1,0 +1,42 @@
+@* The StudyNote folder contains views for personal study notes. *@
+@* This view displays a study note and links to editing and deletion. *@
+
+@model Quizapp.ViewModels.StudyNoteViewModel
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<h1>@Model.Title</h1>
+
+<div class="card">
+    <p>
+        Created:
+        @Model.CreatedAt.ToString("dd.MM.yyyy HH:mm") UTC
+    </p>
+
+    @* Preserves line breaks while Razor encodes the note text. *@
+    <div style="white-space: pre-wrap;">@Model.Content</div>
+</div>
+
+<div>
+    <a asp-controller="StudyNote"
+       asp-action="Update"
+       asp-route-id="@Model.StudyNoteId"
+       class="btn btn-dark">
+        Edit
+    </a>
+
+    <a asp-controller="StudyNote"
+       asp-action="Delete"
+       asp-route-id="@Model.StudyNoteId"
+       class="btn btn-light">
+        Delete
+    </a>
+
+    <a asp-controller="Profile"
+       asp-action="Index"
+       class="btn btn-light">
+        Back to profile
+    </a>
+</div>

@@ -1,0 +1,41 @@
+@* The Shared folder contains views reused across multiple pages. *@
+@* This partial displays account navigation and the user's display name. *@
+
+@using Microsoft.AspNetCore.Identity
+@using Quizapp.Models
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@if (SignInManager.IsSignedIn(User))
+{
+    var currentUser = await UserManager.GetUserAsync(User);
+
+    var displayName = string.IsNullOrWhiteSpace(currentUser?.DisplayName)
+        ? "user"
+        : currentUser.DisplayName;
+
+    <a asp-controller="Profile" asp-action="Index">
+        Hello, @displayName!
+    </a>
+
+    <a asp-controller="Profile" asp-action="Index">
+        My profile
+    </a>
+
+    <form asp-controller="Account" asp-action="Logout" method="post">
+        <button type="submit" class="btn btn-light">
+            Log out
+        </button>
+    </form>
+}
+else
+{
+    <a asp-controller="Account" asp-action="Register">
+        Register
+    </a>
+
+    <a asp-controller="Account" asp-action="Login">
+        Log in
+    </a>
+}

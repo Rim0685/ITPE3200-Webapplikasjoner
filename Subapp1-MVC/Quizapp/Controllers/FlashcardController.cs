@@ -1,199 +1,330 @@
+// The Controllers folder contains classes that handle web requests.
+// This controller manages the authenticated user's flashcards.
+
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Quizapp.DAL;
 using Quizapp.Models;
 
 namespace Quizapp.Controllers
 {
-// Handles all flashcard-related functionality:
-// listing, creating, editing, deleting, and studying flashcards.
+    [Authorize]
     public class FlashcardController : Controller
     {
         private readonly QuizDbContext _db;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<FlashcardController> _logger;
 
-        // The database context and logger are provided through dependency injection (see Program.cs).
-        public FlashcardController(QuizDbContext db, ILogger<FlashcardController> logger)
+        // Receives database, user management and logging services.
+        public FlashcardController(
+            QuizDbContext db,
+            UserManager<ApplicationUser> userManager,
+            ILogger<FlashcardController> logger)
         {
             _db = db;
+            _userManager = userManager;
             _logger = logger;
         }
 
-        // Shows a list of all flashcards.
-        public IActionResult Index()
+        // Displays the authenticated user's flashcards.
+        public async Task<IActionResult> Index()
         {
             try
             {
-                List<Flashcard> flashcards = _db.Flashcards.ToList();
+                var userId = _userManager.GetUserId(User);
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Challenge();
+                }
+
+                var flashcards = await _db.Flashcards
+                    .Where(card => card.UserId == userId)
+                    .OrderByDescending(card => card.CreatedAt)
+                    .ToListAsync();
+
                 return View(flashcards);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "[FlashcardController] Failed to load the flashcard list.");
-                return View("Error");
+                _logger.LogError(ex, "Failed to load flashcards.");
+
+                return StatusCode(
+                    500,
+                    "The flashcards could not be loaded. Please try again.");
             }
         }
 
-        // Shows an empty form for creating a new flashcard.
+        // Displays the form for creating a flashcard.
         [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
 
-        // Receives the form and saves the new card in the database.
+        // Creates a flashcard belonging to the authenticated user.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Flashcard flashcard)
+        public async Task<IActionResult> Create(
+            [Bind("QuestionText,AnswerText")] Flashcard model)
         {
-            // Shows the form again with error messages if a field is missing or too long.
             if (!ModelState.IsValid)
             {
-                _logger.LogWarning("[FlashcardController] Invalid input when creating a flashcard.");
-                return View(flashcard);
+                return View(model);
             }
 
             try
             {
+                var userId = _userManager.GetUserId(User);
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Challenge();
+                }
+
+                // Sets ownership and creation time on the server.
+                var flashcard = new Flashcard
+                {
+                    QuestionText = model.QuestionText,
+                    AnswerText = model.AnswerText,
+                    UserId = userId,
+                    CreatedAt = DateTime.UtcNow
+                };
+
                 _db.Flashcards.Add(flashcard);
-                _db.SaveChanges();
-                _logger.LogInformation("[FlashcardController] Created flashcard {FlashcardId}.", flashcard.FlashcardId);
+                await _db.SaveChangesAsync();
+
+                _logger.LogInformation(
+                    "Created flashcard {FlashcardId}.",
+                    flashcard.FlashcardId);
+
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "[FlashcardController] Failed to create a flashcard.");
-                return View("Error");
+                _logger.LogError(ex, "Failed to create a flashcard.");
+
+                ModelState.AddModelError(
+                    string.Empty,
+                    "The flashcard could not be saved. Please try again.");
+
+                return View(model);
             }
         }
 
-        // Loads the card to edit and shows the form with its current values.
+        // Displays the edit form for a card owned by the user.
         [HttpGet]
-        public IActionResult Update(int id)
+        public async Task<IActionResult> Update(int id)
         {
             try
             {
-                var flashcard = _db.Flashcards.Find(id);
+                var userId = _userManager.GetUserId(User);
 
-                // Returns 404 if no card has this ID.
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Challenge();
+                }
+
+                var flashcard = await _db.Flashcards
+                    .FirstOrDefaultAsync(card =>
+                        card.FlashcardId == id && card.UserId == userId);
+
                 if (flashcard == null)
                 {
-                    _logger.LogWarning("[FlashcardController] Flashcard {FlashcardId} not found for update.", id);
                     return NotFound();
                 }
+
                 return View(flashcard);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "[FlashcardController] Failed to load flashcard {FlashcardId} for update.", id);
-                return View("Error");
+                _logger.LogError(
+                    ex, "Failed to load flashcard {FlashcardId}.", id);
+
+                return StatusCode(
+                    500,
+                    "The flashcard could not be loaded. Please try again.");
             }
         }
 
-        // Saves the changes to an existing card.
+        // Updates only the editable fields of a card owned by the user.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Update(Flashcard flashcard)
+        public async Task<IActionResult> Update(
+            [Bind("FlashcardId,QuestionText,AnswerText")] Flashcard model)
         {
-            if (!ModelState.IsValid)
-            {
-                _logger.LogWarning("[FlashcardController] Invalid input when updating flashcard {FlashcardId}.", flashcard.FlashcardId);
-                return View(flashcard);
-            }
-
             try
             {
-                _db.Flashcards.Update(flashcard);
-                _db.SaveChanges();
-                _logger.LogInformation("[FlashcardController] Updated flashcard {FlashcardId}.", flashcard.FlashcardId);
+                var userId = _userManager.GetUserId(User);
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Challenge();
+                }
+
+                var flashcard = await _db.Flashcards
+                    .FirstOrDefaultAsync(card =>
+                        card.FlashcardId == model.FlashcardId
+                        && card.UserId == userId);
+
+                if (flashcard == null)
+                {
+                    return NotFound();
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    return View(model);
+                }
+
+                flashcard.QuestionText = model.QuestionText;
+                flashcard.AnswerText = model.AnswerText;
+
+                await _db.SaveChangesAsync();
+
+                _logger.LogInformation(
+                    "Updated flashcard {FlashcardId}.",
+                    flashcard.FlashcardId);
+
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "[FlashcardController] Failed to update flashcard {FlashcardId}.", flashcard.FlashcardId);
-                return View("Error");
+                _logger.LogError(
+                    ex,
+                    "Failed to update flashcard {FlashcardId}.",
+                    model.FlashcardId);
+
+                ModelState.AddModelError(
+                    string.Empty,
+                    "The changes could not be saved. Please try again.");
+
+                return View(model);
             }
         }
 
-        // Shows a confirmation page before the card is deleted.
+        // Displays a deletion confirmation for a card owned by the user.
         [HttpGet]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                var flashcard = _db.Flashcards.Find(id);
+                var userId = _userManager.GetUserId(User);
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Challenge();
+                }
+
+                var flashcard = await _db.Flashcards
+                    .FirstOrDefaultAsync(card =>
+                        card.FlashcardId == id && card.UserId == userId);
+
                 if (flashcard == null)
                 {
-                    _logger.LogWarning("[FlashcardController] Flashcard {FlashcardId} not found for delete.", id);
                     return NotFound();
                 }
+
                 return View(flashcard);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "[FlashcardController] Failed to load flashcard {FlashcardId} for delete.", id);
-                return View("Error");
+                _logger.LogError(
+                    ex,
+                    "Failed to load flashcard {FlashcardId} for deletion.",
+                    id);
+
+                return StatusCode(
+                    500,
+                    "The flashcard could not be loaded. Please try again.");
             }
         }
 
-        // Deletes the card after the user has confirmed.
-        // Named DeleteConfirmed because Delete(int id) already exists with the same parameter.
+        // Deletes a card after confirming its ownership.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             try
             {
-                var flashcard = _db.Flashcards.Find(id);
+                var userId = _userManager.GetUserId(User);
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Challenge();
+                }
+
+                var flashcard = await _db.Flashcards
+                    .FirstOrDefaultAsync(card =>
+                        card.FlashcardId == id && card.UserId == userId);
+
                 if (flashcard == null)
                 {
-                    _logger.LogWarning("[FlashcardController] Flashcard {FlashcardId} not found when confirming delete.", id);
                     return NotFound();
                 }
 
                 _db.Flashcards.Remove(flashcard);
-                _db.SaveChanges();
-                _logger.LogInformation("[FlashcardController] Deleted flashcard {FlashcardId}.", id);
+                await _db.SaveChangesAsync();
+
+                _logger.LogInformation(
+                    "Deleted flashcard {FlashcardId}.", id);
+
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "[FlashcardController] Failed to delete flashcard {FlashcardId}.", id);
-                return View("Error");
+                _logger.LogError(
+                    ex, "Failed to delete flashcard {FlashcardId}.", id);
+
+                return StatusCode(
+                    500,
+                    "The flashcard could not be deleted. Please try again.");
             }
         }
 
-        // Study mode: shows one card at a time. "index" decides which card is shown (0 = first).
+        // Displays one of the user's cards at a time for studying.
         [HttpGet]
-        public IActionResult Study(int index = 0)
+        public async Task<IActionResult> Study(int index = 0)
         {
             try
             {
-                // Sorted by ID so the order is the same every time.
-                List<Flashcard> flashcards = _db.Flashcards
-                    .OrderBy(f => f.FlashcardId)
-                    .ToList();
+                var userId = _userManager.GetUserId(User);
 
-                // No cards to study, so the user is sent back to the list.
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Challenge();
+                }
+
+                var flashcards = await _db.Flashcards
+                    .Where(card => card.UserId == userId)
+                    .OrderBy(card => card.FlashcardId)
+                    .ToListAsync();
+
                 if (flashcards.Count == 0)
                 {
                     return RedirectToAction(nameof(Index));
                 }
 
-                // Starts from the first card again after the last one (or if the index is invalid).
                 if (index < 0 || index >= flashcards.Count)
                 {
                     index = 0;
                 }
 
-                // Sends the position and number of cards to the view, so it can show "Card 2 of 5".
                 ViewBag.Index = index;
                 ViewBag.Total = flashcards.Count;
+
                 return View(flashcards[index]);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "[FlashcardController] Failed to load study mode (index {Index}).", index);
-                return View("Error");
+                _logger.LogError(
+                    ex, "Failed to load flashcard study mode.");
+
+                return StatusCode(
+                    500,
+                    "Study mode could not be loaded. Please try again.");
             }
         }
     }

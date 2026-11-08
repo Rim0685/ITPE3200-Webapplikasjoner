@@ -15,5 +15,11 @@ namespace Quizapp.DAL
         Task<QuizAttempt?> GetQuizAttemptById(int id);
         Task<QuizAttempt?> GetLatestQuizAttempt(int quizId);
         Task<int> GetQuizAttemptCount(int quizId);
+
+        // Retrieves all completed quiz attempts belonging to a user.
+        Task<IEnumerable<QuizAttempt>> GetUserQuizAttempts(string userId);
+
+        // Deletes a quiz attempt only if it belongs to the specified user.
+        Task<bool> DeleteUserQuizAttempt(int attemptId, string userId);
     }
 }

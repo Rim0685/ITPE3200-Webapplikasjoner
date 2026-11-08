@@ -1,37 +1,65 @@
+// Program.cs configures MVC, database access and Identity authentication.
+
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Quizapp.DAL;
+using Quizapp.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Registers MVC with controllers and views.
 builder.Services.AddControllersWithViews();
 
-// Registers the database and connects it to SQLite.
+// Registers the database context with an SQLite connection.
 builder.Services.AddDbContext<QuizDbContext>(options =>
     options.UseSqlite(
-        builder.Configuration.GetConnectionString("QuizDbContext")));
+        builder.Configuration.GetConnectionString("QuizDbContext")
+        ?? throw new InvalidOperationException(
+            "Connection string 'QuizDbContext' was not found.")));
 
-// Registers the repository so it can be used in controllers.
+// Registers Identity with the application's custom user model.
+builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
+{
+    // Allows users to sign in without email confirmation.
+    options.SignIn.RequireConfirmedAccount = false;
+})
+.AddEntityFrameworkStores<QuizDbContext>();
+
+
+// Configures routes used when authentication or access is required.
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Login";
+    options.AccessDeniedPath = "/Account/AccessDenied";
+});
+
+// Registers the quiz repository for dependency injection.
 builder.Services.AddScoped<IQuizRepository, QuizRepository>();
+
+// Registers the study note repository for dependency injection.
+builder.Services.AddScoped<IStudyNoteRepository, StudyNoteRepository>();
 
 var app = builder.Build();
 
-// Shows a detailed error page when the project runs in the development environment.
+// Shows detailed errors during development.
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
 }
 
-// Makes files in wwwroot available, for example CSS, JavaScript and images.
+// Makes CSS, JavaScript and images in wwwroot available.
 app.UseStaticFiles();
 
-// Sets up routing between URLs and controllers.
+// Matches requests to controller routes.
 app.UseRouting();
 
-// Sets up authorization in case it is added later.
+// Identifies the signed-in user from the authentication cookie.
+app.UseAuthentication();
+
+// Checks whether the user may access protected actions.
 app.UseAuthorization();
 
-// Creates the database, runs migrations and adds seed data.
+// Applies existing migrations and adds example data.
 DBInit.Seed(app);
 
 // Uses the default route: Controller/Action/Id.

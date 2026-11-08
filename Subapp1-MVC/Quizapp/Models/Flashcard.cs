@@ -1,9 +1,9 @@
-// This class is the model for a flashcard.
-// It stores the question on the front and the answer on the back of the card.
+// The Models folder contains classes that represent application data.
+// This class stores a flashcard and its associated user.
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Quizapp.Models 
+namespace Quizapp.Models
 {
     public class Flashcard
     {
@@ -18,5 +18,12 @@ namespace Quizapp.Models
         public string AnswerText { get; set; } = string.Empty;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        // Identifies the user who created the flashcard.
+        // Nullable to preserve existing cards without an assigned user.
+        public string? UserId { get; set; }
+
+        // Provides access to the associated user.
+        public ApplicationUser? User { get; set; }
     }
 }

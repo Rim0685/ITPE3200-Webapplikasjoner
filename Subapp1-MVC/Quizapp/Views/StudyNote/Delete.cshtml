@@ -1,0 +1,37 @@
+@* The StudyNote folder contains views for personal study notes. *@
+@* This view asks the user to confirm deletion of a study note. *@
+
+@model Quizapp.ViewModels.StudyNoteViewModel
+
+@{
+    ViewData["Title"] = "Delete study note";
+}
+
+<h1>Delete study note</h1>
+
+<div class="card">
+    <p>Are you sure you want to delete this note?</p>
+
+    <h2>@Model.Title</h2>
+
+    <p>The note will be permanently deleted.</p>
+
+    <form asp-controller="StudyNote"
+          asp-action="DeleteConfirmed"
+          method="post">
+        <input type="hidden"
+               name="id"
+               value="@Model.StudyNoteId" />
+
+        <button type="submit" class="btn btn-dark">
+            Yes, delete note
+        </button>
+
+        <a asp-controller="StudyNote"
+           asp-action="Details"
+           asp-route-id="@Model.StudyNoteId"
+           class="btn btn-light">
+            Cancel
+        </a>
+    </form>
+</div>
