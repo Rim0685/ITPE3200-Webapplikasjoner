@@ -1,5 +1,5 @@
 // Base URL for the ASP.NET Core API
-const API_BASE_URL = "https://localhost:7262";
+const API_BASE_URL = "http://localhost:5268";
 
 export async function apiRequest(
     endpoint: string,

@@ -31,7 +31,7 @@ function FlashcardCard({
             // Delete the flashcard through the API
             await deleteFlashcard(flashcard.flashcardId);
 
-            // Refresh the flashcard list after delection
+            // Refresh the flashcard list after deletion
             onFlashcardUpdated();
         } catch {
             console.error("Failed to delete flashcard");

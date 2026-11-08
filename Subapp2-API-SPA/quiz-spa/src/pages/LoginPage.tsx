@@ -19,7 +19,7 @@ function LoginPage() {
 
             localStorage.setItem("token", data.token);
 
-            navigate("/flashcards");
+            navigate("/");
         } catch {
             setError("Invalid email or password.");
         }
