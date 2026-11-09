@@ -25,5 +25,11 @@ namespace Quizapp.Models
 
         // Provides access to the associated user.
         public ApplicationUser? User { get; set; }
+
+        // The deck this card belongs to. Nullable so existing cards stay valid.
+        public int? DeckId { get; set; }
+
+        // Provides access to the associated deck.
+        public FlashcardDeck? Deck { get; set; }
     }
 }
