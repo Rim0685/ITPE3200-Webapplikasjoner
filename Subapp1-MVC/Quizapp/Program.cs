@@ -39,6 +39,8 @@ builder.Services.AddScoped<IQuizRepository, QuizRepository>();
 // Registers the study note repository for dependency injection.
 builder.Services.AddScoped<IStudyNoteRepository, StudyNoteRepository>();
 
+builder.Services.AddScoped<IFlashcardRepository, FlashcardRepository>();
+
 var app = builder.Build();
 
 // Shows detailed errors during development.

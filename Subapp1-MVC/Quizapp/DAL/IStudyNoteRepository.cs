@@ -10,6 +10,12 @@ namespace Quizapp.DAL
         // Retrieves all notes belonging to the specified user.
         Task<IEnumerable<StudyNote>> GetAll(string userId);
 
+        // Searches the user's notes by text and creation date.
+        Task<IEnumerable<StudyNote>> Search(
+            string userId,
+            string? searchText,
+            DateTime? createdFrom);
+
         // Retrieves a note only if it belongs to the specified user.
         Task<StudyNote?> GetById(int id, string userId);
 

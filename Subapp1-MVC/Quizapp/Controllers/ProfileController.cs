@@ -1,10 +1,8 @@
-// The Controllers folder contains classes that handle web requests.
-// This controller displays and updates the authenticated user's profile.
+// Displays and updates the authenticated user's profile.
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Quizapp.DAL;
 using Quizapp.Models;
 using Quizapp.ViewModels;
@@ -17,21 +15,20 @@ namespace Quizapp.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IQuizRepository _quizRepository;
         private readonly IStudyNoteRepository _studyNoteRepository;
-        private readonly QuizDbContext _db;
+        private readonly IFlashcardRepository _flashcardRepository;
         private readonly ILogger<ProfileController> _logger;
 
-        // Receives user management, data access and logging services.
         public ProfileController(
             UserManager<ApplicationUser> userManager,
             IQuizRepository quizRepository,
             IStudyNoteRepository studyNoteRepository,
-            QuizDbContext db,
+            IFlashcardRepository flashcardRepository,
             ILogger<ProfileController> logger)
         {
             _userManager = userManager;
             _quizRepository = quizRepository;
             _studyNoteRepository = studyNoteRepository;
-            _db = db;
+            _flashcardRepository = flashcardRepository;
             _logger = logger;
         }
 
@@ -110,7 +107,7 @@ namespace Quizapp.Controllers
                     _logger.LogWarning("Failed to update the user profile.");
                 }
 
-                // Reloads the overview instead of trusting submitted lists.
+                // Reloads personal content after validation errors.
                 await LoadOverview(model, user.Id);
 
                 return View(model);
@@ -165,7 +162,7 @@ namespace Quizapp.Controllers
             }
         }
 
-        // Loads personal overview data for the profile view.
+        // Loads personal content through the repositories.
         private async Task LoadOverview(
             ProfileViewModel model, string userId)
         {
@@ -182,19 +179,17 @@ namespace Quizapp.Controllers
                 })
                 .ToList();
 
-            model.Flashcards = await _db.Flashcards
-                .AsNoTracking()
-                .Where(card => card.UserId == userId)
-                .OrderByDescending(card => card.CreatedAt)
+            var cards = await _flashcardRepository.GetAll(userId);
+
+            model.Flashcards = cards
                 .Select(card => new FlashcardSummaryViewModel
                 {
                     FlashcardId = card.FlashcardId,
                     QuestionText = card.QuestionText,
                     CreatedAt = card.CreatedAt
                 })
-                .ToListAsync();
+                .ToList();
 
-            // Retrieves the user's study notes through the repository.
             var notes = await _studyNoteRepository.GetAll(userId);
 
             model.StudyNotes = notes

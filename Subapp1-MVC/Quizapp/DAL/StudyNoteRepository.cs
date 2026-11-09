@@ -26,6 +26,41 @@ namespace Quizapp.DAL
                 .ToListAsync();
         }
 
+        // Searches the user's notes by text and creation date.
+        // Adapted from Microsoft Learn's ASP.NET Core MVC search tutorial:
+        // https://learn.microsoft.com/aspnet/core/tutorials/first-mvc-app/search
+        public async Task<IEnumerable<StudyNote>> Search(
+            string userId,
+            string? searchText,
+            DateTime? createdFrom)
+        {
+            // Limits all search results to the user's own notes.
+            var notes = _db.StudyNotes
+                .AsNoTracking()
+                .Where(note => note.UserId == userId);
+
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                searchText = searchText.Trim();
+
+                notes = notes.Where(note =>
+                    note.Title.Contains(searchText)
+                    || note.Content.Contains(searchText));
+            }
+
+            if (createdFrom.HasValue)
+            {
+                var fromDate = createdFrom.Value.Date;
+
+                notes = notes.Where(note =>
+                    note.CreatedAt >= fromDate);
+            }
+
+            return await notes
+                .OrderByDescending(note => note.CreatedAt)
+                .ToListAsync();
+        }
+
         // Retrieves a note only if it belongs to the specified user.
         public async Task<StudyNote?> GetById(int id, string userId)
         {
@@ -44,7 +79,8 @@ namespace Quizapp.DAL
 
         // Updates only the title and content of a note owned by the user.
         public async Task<bool> Update(
-            StudyNote studyNote, string userId)
+            StudyNote studyNote,
+            string userId)
         {
             var existingNote = await _db.StudyNotes
                 .FirstOrDefaultAsync(note =>

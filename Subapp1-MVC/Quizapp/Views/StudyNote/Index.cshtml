@@ -1,7 +1,7 @@
 @* The StudyNote folder contains views for personal study notes. *@
-@* This view displays the authenticated user's study notes. *@
+@* This view displays search filters and the user's matching notes. *@
 
-@model IEnumerable<Quizapp.ViewModels.StudyNoteViewModel>
+@model Quizapp.ViewModels.StudyNoteListViewModel
 
 @{
     ViewData["Title"] = "My study notes";
@@ -21,13 +21,51 @@
     Back to profile
 </a>
 
-@if (!Model.Any())
+@* Uses GET so search filters are included in the URL. *@
+<form asp-controller="StudyNote"
+      asp-action="Index"
+      method="get"
+      class="card">
+
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="SearchText"></label>
+        <input asp-for="SearchText"
+               placeholder="Search title or content" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="CreatedFrom"></label>
+        <input asp-for="CreatedFrom" type="date" />
+        <span asp-validation-for="CreatedFrom"
+              class="text-danger"></span>
+    </div>
+
+    <p>
+        <button type="submit" class="btn btn-dark">
+            Search
+        </button>
+
+        <a asp-controller="StudyNote"
+           asp-action="Index"
+           class="btn btn-light">
+            Clear filters
+        </a>
+    </p>
+</form>
+
+@if (!ViewData.ModelState.IsValid)
 {
-    <p>You have not created any study notes yet.</p>
+    <p>Please correct the search filters.</p>
+}
+else if (Model.Notes.Count == 0)
+{
+    <p>No study notes found. Create a note or change your filters.</p>
 }
 else
 {
-    @foreach (var note in Model)
+    @foreach (var note in Model.Notes)
     {
         <article class="card">
             <h2>
@@ -58,4 +96,8 @@ else
             </a>
         </article>
     }
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
 }

@@ -267,26 +267,62 @@ namespace Quizapp.Controllers
                         nameof(Result), new { id });
                 }
 
-                var questionResults = attempt.AttemptAnswers
-                    .Where(answer =>
-                        answer.AnswerOption?.Question != null)
-                    .Select(answer => new QuestionResultViewModel
-                    {
-                        QuestionText =
-                            answer.AnswerOption!.Question!.QuestionText,
+                // Loads all questions, including those the user did not answer.
+var quiz = await _quizRepository.GetQuizById(attempt.QuizId);
 
-                        SelectedAnswerText =
-                            answer.AnswerOption.AnswerText,
+if (quiz == null)
+{
+    return NotFound("The quiz was not found.");
+}
 
-                        IsCorrect =
-                            answer.AnswerOption.IsCorrect,
+var questionResults = new List<QuestionResultViewModel>();
 
-                        CorrectAnswerText =
-                            answer.AnswerOption.Question.AnswerOptions
-                                .FirstOrDefault(option =>
-                                    option.IsCorrect)?.AnswerText
-                    })
-                    .ToList();
+foreach (var question in quiz.Questions)
+{
+    // Retrieves the selected options for this question.
+    var selectedAnswers = attempt.AttemptAnswers
+        .Where(answer =>
+            answer.AnswerOption != null
+            && answer.AnswerOption.QuestionId == question.QuestionId)
+        .ToList();
+
+    var selectedIds = selectedAnswers
+        .Select(answer => answer.AnswerOptionId)
+        .OrderBy(optionId => optionId)
+        .ToList();
+
+    var correctOptions = question.AnswerOptions
+        .Where(option => option.IsCorrect)
+        .ToList();
+
+    var correctIds = correctOptions
+        .Select(option => option.AnswerOptionId)
+        .OrderBy(optionId => optionId)
+        .ToList();
+
+    // Shows one result per question and includes every correct option.
+    questionResults.Add(new QuestionResultViewModel
+    {
+        QuestionText = question.QuestionText,
+
+        SelectedAnswerText = selectedAnswers.Count == 0
+            ? "Not answered"
+            : string.Join("; ", selectedAnswers.Select(answer =>
+                answer.AnswerOption!.AnswerText
+                ?? answer.AnswerOption.ImageUrl
+                ?? "Image option")),
+
+        CorrectAnswerText = string.Join("; ",
+            correctOptions.Select(option =>
+                option.AnswerText
+                ?? option.ImageUrl
+                ?? "Image option")),
+
+        // Uses the same exact-match rule as the score calculation.
+        IsCorrect = correctIds.Count > 0
+            && selectedIds.SequenceEqual(correctIds)
+    });
+}
 
                 var viewModel = new SolutionViewModel
                 {

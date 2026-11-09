@@ -28,9 +28,11 @@ namespace Quizapp.Controllers
             _logger = logger;
         }
 
-        // Displays the user's study notes.
+        // Displays the user's study notes with optional search filters.
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(
+            string? searchText,
+            DateTime? createdFrom)
         {
             try
             {
@@ -41,24 +43,42 @@ namespace Quizapp.Controllers
                     return Challenge();
                 }
 
-                var notes = await _repository.GetAll(userId);
-
-                var model = notes.Select(note => new StudyNoteViewModel
+                var model = new StudyNoteListViewModel
                 {
-                    StudyNoteId = note.StudyNoteId,
-                    Title = note.Title,
-                    Content = note.Content,
-                    CreatedAt = note.CreatedAt
-                }).ToList();
+                    SearchText = searchText,
+                    CreatedFrom = createdFrom
+                };
+
+                // Displays errors if a filter could not be parsed.
+                if (!ModelState.IsValid)
+                {
+                    return View(model);
+                }
+
+                var notes = await _repository.Search(
+                    userId,
+                    searchText,
+                    createdFrom);
+
+                model.Notes = notes
+                    .Select(note => new StudyNoteViewModel
+                    {
+                        StudyNoteId = note.StudyNoteId,
+                        Title = note.Title,
+                        Content = note.Content,
+                        CreatedAt = note.CreatedAt
+                    })
+                    .ToList();
 
                 return View(model);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to load study notes.");
+                _logger.LogError(ex, "Failed to search study notes.");
 
                 return StatusCode(
-                    500, "The notes could not be loaded. Please try again.");
+                    500,
+                    "The notes could not be loaded. Please try again.");
             }
         }
 
@@ -98,7 +118,8 @@ namespace Quizapp.Controllers
                     ex, "Failed to load study note {StudyNoteId}.", id);
 
                 return StatusCode(
-                    500, "The note could not be loaded. Please try again.");
+                    500,
+                    "The note could not be loaded. Please try again.");
             }
         }
 
@@ -139,10 +160,12 @@ namespace Quizapp.Controllers
                 await _repository.Create(note);
 
                 _logger.LogInformation(
-                    "Created study note {StudyNoteId}.", note.StudyNoteId);
+                    "Created study note {StudyNoteId}.",
+                    note.StudyNoteId);
 
                 return RedirectToAction(
-                    nameof(Details), new { id = note.StudyNoteId });
+                    nameof(Details),
+                    new { id = note.StudyNoteId });
             }
             catch (Exception ex)
             {
@@ -194,7 +217,8 @@ namespace Quizapp.Controllers
                     id);
 
                 return StatusCode(
-                    500, "The note could not be loaded. Please try again.");
+                    500,
+                    "The note could not be loaded. Please try again.");
             }
         }
 
@@ -213,7 +237,8 @@ namespace Quizapp.Controllers
                 }
 
                 var note = await _repository.GetById(
-                    model.StudyNoteId, userId);
+                    model.StudyNoteId,
+                    userId);
 
                 if (note == null)
                 {
@@ -246,7 +271,8 @@ namespace Quizapp.Controllers
                     model.StudyNoteId);
 
                 return RedirectToAction(
-                    nameof(Details), new { id = model.StudyNoteId });
+                    nameof(Details),
+                    new { id = model.StudyNoteId });
             }
             catch (Exception ex)
             {
@@ -301,7 +327,8 @@ namespace Quizapp.Controllers
                     id);
 
                 return StatusCode(
-                    500, "The note could not be loaded. Please try again.");
+                    500,
+                    "The note could not be loaded. Please try again.");
             }
         }
 
@@ -327,7 +354,8 @@ namespace Quizapp.Controllers
                 }
 
                 _logger.LogInformation(
-                    "Deleted study note {StudyNoteId}.", id);
+                    "Deleted study note {StudyNoteId}.",
+                    id);
 
                 TempData["SuccessMessage"] =
                     "The note has been deleted.";
@@ -337,10 +365,13 @@ namespace Quizapp.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(
-                    ex, "Failed to delete study note {StudyNoteId}.", id);
+                    ex,
+                    "Failed to delete study note {StudyNoteId}.",
+                    id);
 
                 return StatusCode(
-                    500, "The note could not be deleted. Please try again.");
+                    500,
+                    "The note could not be deleted. Please try again.");
             }
         }
     }

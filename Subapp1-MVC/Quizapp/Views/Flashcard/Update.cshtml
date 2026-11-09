@@ -1,5 +1,5 @@
 @model Flashcard
-@* Form for editing a flashcard. The fields are filled in with the card's current text. *@
+
 @{
     ViewData["Title"] = "Edit flashcard";
 }
@@ -7,19 +7,25 @@
 <h1>Edit <span class="highlight">flashcard</span></h1>
 
 <form asp-action="Update" method="post" class="card">
-    @* Hidden field that sends the card's ID, so the controller knows which card to update. *@
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    @* Identifies the flashcard being updated. *@
     <input type="hidden" asp-for="FlashcardId" />
 
     <label asp-for="QuestionText">Question</label>
     <input asp-for="QuestionText" />
-    <span asp-validation-for="QuestionText"></span>
+    <span asp-validation-for="QuestionText" class="text-danger"></span>
 
     <label asp-for="AnswerText">Answer</label>
     <textarea asp-for="AnswerText" rows="4"></textarea>
-    <span asp-validation-for="AnswerText"></span>
+    <span asp-validation-for="AnswerText" class="text-danger"></span>
 
     <p>
         <button type="submit" class="btn btn-dark">Save changes</button>
         <a asp-action="Index" class="btn btn-light">Cancel</a>
     </p>
 </form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
