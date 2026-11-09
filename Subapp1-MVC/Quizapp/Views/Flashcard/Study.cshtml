@@ -6,6 +6,9 @@
     // Position and number of cards, sent from the controller through ViewBag.
     int index = ViewBag.Index;
     int total = ViewBag.Total;
+
+    // Set when studying a single deck, so the links stay inside that deck.
+    int? deckId = ViewBag.DeckId;
 }
 
 @* index starts at 0, so 1 is added to show "Card 1" instead of "Card 0". *@
@@ -22,13 +25,22 @@
     </details>
 </div>
 
-@* asp-route-index adds ?index=... to the link. "Previous" is not shown on the first card. *@
+@* asp-route-index adds ?index=... to the link. asp-route-deckId keeps the deck filter. "Previous" is not shown on the first card. *@
 <p class="center">
     @if (index > 0)
     {
-        <a asp-action="Study" asp-route-index="@(index - 1)" class="btn btn-light">← Previous</a>
+        <a asp-action="Study" asp-route-deckId="@deckId" asp-route-index="@(index - 1)" class="btn btn-light">← Previous</a>
     }
-    <a asp-action="Study" asp-route-index="@(index + 1)" class="btn btn-dark">Next →</a>
+    <a asp-action="Study" asp-route-deckId="@deckId" asp-route-index="@(index + 1)" class="btn btn-dark">Next →</a>
 </p>
 
-<p class="center"><a asp-action="Index">Back to list</a></p>
+<p class="center">
+    @if (deckId != null)
+    {
+        <a asp-controller="FlashcardDeck" asp-action="Details" asp-route-id="@deckId">Back to deck</a>
+    }
+    else
+    {
+        <a asp-action="Index">Back to list</a>
+    }
+</p>
