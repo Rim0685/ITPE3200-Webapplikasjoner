@@ -1,0 +1,36 @@
+@model IEnumerable<Quizapp.ViewModels.FlashcardDeckViewModel>
+@* Shows all of the user's flashcard decks. *@
+@{
+    ViewData["Title"] = "Decks";
+}
+
+<h1>Your <span class="highlight">decks</span></h1>
+
+@if (TempData["Success"] != null)
+{
+    <p class="muted">@TempData["Success"]</p>
+}
+
+<p>
+    <a asp-action="Create" class="btn btn-light">+ New deck</a>
+    <a asp-controller="Flashcard" asp-action="Create" class="btn btn-light">+ New flashcard</a>
+</p>
+
+@if (!Model.Any())
+{
+    <p class="muted">You have no decks yet. Create your first one!</p>
+}
+
+<div class="grid">
+    @foreach (var deck in Model)
+    {
+        <div class="card">
+            <span class="pill">@deck.CardCount @(deck.CardCount == 1 ? "card" : "cards")</span>
+            <h3>@deck.Name</h3>
+            <p class="muted">@deck.Description</p>
+            <a asp-action="Details" asp-route-id="@deck.FlashcardDeckId" class="btn btn-dark">Open</a>
+            <a asp-action="Update" asp-route-id="@deck.FlashcardDeckId" class="btn btn-light">Edit</a>
+            <a asp-action="Delete" asp-route-id="@deck.FlashcardDeckId" class="btn btn-danger">Delete</a>
+        </div>
+    }
+</div>

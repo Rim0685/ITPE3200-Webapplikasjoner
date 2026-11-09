@@ -1,15 +1,14 @@
 @model Flashcard
-@* Form for creating a new flashcard. *@
+@* Form for creating a new flashcard, optionally in a new deck. *@
 @{
     ViewData["Title"] = "New flashcard";
 }
 
 <h1>New <span class="highlight">flashcard</span></h1>
 
-@* method="post" sends the form to [HttpPost] Create in the controller.
-   asp-for connects each field to the matching property in the Flashcard model,
-   and asp-validation-for shows an error message if the field is invalid. *@
 <form asp-action="Create" method="post" class="card">
+    <div asp-validation-summary="ModelOnly"></div>
+
     <label asp-for="QuestionText">Question</label>
     <input asp-for="QuestionText" />
     <span asp-validation-for="QuestionText"></span>
@@ -17,6 +16,17 @@
     <label asp-for="AnswerText">Answer</label>
     <textarea asp-for="AnswerText" rows="4"></textarea>
     <span asp-validation-for="AnswerText"></span>
+
+    <label asp-for="DeckId">Deck</label>
+    <select asp-for="DeckId"
+            asp-items="@(ViewBag.Decks as IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)">
+        <option value="">No deck</option>
+    </select>
+
+    <label for="newDeckName">Or create a new deck</label>
+    <input id="newDeckName" name="newDeckName" maxlength="100"
+        placeholder="New deck name (overrides the choice above)" />
+    <span asp-validation-for="DeckId"></span>
 
     <p>
         <button type="submit" class="btn btn-dark">Save</button>

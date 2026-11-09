@@ -14,7 +14,7 @@ function Navbar() {
     };
 
     return (
-        <nav>
+        <nav className="nav">
             {/* Link is used instead of <a> to navigate without reloading the SPA */}
             <Link to="/">Home</Link>
             <Link to="/quizzes">Quizzes</Link>
@@ -22,7 +22,11 @@ function Navbar() {
 
             {isLoggedIn ? (
                 // Show Logout when the user has a token
-                <button type="button" onClick={handleLogout}>
+                <button 
+                    type="button" 
+                    className="btn btn-dark"
+                    onClick={handleLogout}
+                >
                     Logout
                 </button>
             ) : (

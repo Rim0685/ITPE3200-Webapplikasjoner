@@ -28,5 +28,21 @@ namespace Quizapp.DAL
         public DbSet<Flashcard> Flashcards { get; set; }
 
         public DbSet<StudyNote> StudyNotes { get; set; }
+
+        public DbSet<FlashcardDeck> FlashcardDecks { get; set; }
+
+        // Configures relationships between the tables.
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            // Required for the Identity tables.
+            base.OnModelCreating(modelBuilder);
+
+            // Deleting a deck also deletes the flashcards inside it.
+            modelBuilder.Entity<FlashcardDeck>()
+                .HasMany(deck => deck.Flashcards)
+                .WithOne(card => card.Deck)
+                .HasForeignKey(card => card.DeckId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
     }
 }

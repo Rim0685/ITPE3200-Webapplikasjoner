@@ -7,6 +7,8 @@
 <h1>Edit <span class="highlight">flashcard</span></h1>
 
 <form asp-action="Update" method="post" class="card">
+    <div asp-validation-summary="ModelOnly"></div>
+
     @* Hidden field that sends the card's ID, so the controller knows which card to update. *@
     <input type="hidden" asp-for="FlashcardId" />
 
@@ -17,6 +19,13 @@
     <label asp-for="AnswerText">Answer</label>
     <textarea asp-for="AnswerText" rows="4"></textarea>
     <span asp-validation-for="AnswerText"></span>
+
+    @* Lets the user move the card to another deck, or remove it from its deck. *@
+    <label asp-for="DeckId">Deck</label>
+    <select asp-for="DeckId"
+            asp-items="@(ViewBag.Decks as IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)">
+        <option value="">No deck</option>
+    </select>
 
     <p>
         <button type="submit" class="btn btn-dark">Save changes</button>

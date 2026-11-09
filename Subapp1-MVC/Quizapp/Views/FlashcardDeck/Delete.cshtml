@@ -1,0 +1,22 @@
+@model Quizapp.ViewModels.FlashcardDeckViewModel
+@* Confirmation page before a deck and its cards are deleted. *@
+@{
+    ViewData["Title"] = "Delete deck";
+}
+
+<h1>Delete <span class="highlight">deck</span></h1>
+
+<div class="card">
+    <h3>@Model.Name</h3>
+    <p class="muted">@Model.Description</p>
+    <p>
+        Deleting this deck also deletes its
+        <strong>@Model.CardCount @(Model.CardCount == 1 ? "card" : "cards")</strong>.
+        This cannot be undone.
+    </p>
+
+    <form asp-action="DeleteConfirmed" asp-route-id="@Model.FlashcardDeckId" method="post">
+        <button type="submit" class="btn btn-danger">Yes, delete</button>
+        <a asp-action="Details" asp-route-id="@Model.FlashcardDeckId" class="btn btn-light">Cancel</a>
+    </form>
+</div>
