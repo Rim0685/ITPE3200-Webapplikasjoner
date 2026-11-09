@@ -5,6 +5,7 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import { QuizListPage } from "./pages/QuizListPage";
 import FlashcardListPage from "./pages/FlashcardListPage";
+import { TakeQuizPage } from "./pages/TakeQuizPage";
 
 // Checks if the user is logged in before showing a protected page
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -30,6 +31,15 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/quiz/:id"
+            element={
+              <ProtectedRoute>
+                <TakeQuizPage />
+              </ProtectedRoute>
+            }
+          />
+
           {/* Redirect users without a token to the login page */}
           <Route
             path="/flashcards"
