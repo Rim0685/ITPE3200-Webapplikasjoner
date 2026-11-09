@@ -26,7 +26,7 @@ function FlashcardForm({ onFlashcardCreated }: FlashcardFormProps) {
     };    
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form className="flashcard-form card" onSubmit={handleSubmit}>
             <div>
                 <label htmlFor="front">Question</label>
                 <input
@@ -49,7 +49,9 @@ function FlashcardForm({ onFlashcardCreated }: FlashcardFormProps) {
                 />
             </div>
 
-            <button type="submit">Create flashcard</button>
+            <button type="submit" className="btn btn-dark">
+                Create flashcard
+            </button>
         </form>
     );
 }

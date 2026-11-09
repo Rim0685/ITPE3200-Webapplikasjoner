@@ -43,7 +43,7 @@ function FlashcardListPage() {
     }
 
     return (
-        <div>
+        <div className="container">
             <h1>My Flashcards</h1>
 
             {/* Form for creating a new flashcard */}
@@ -52,13 +52,15 @@ function FlashcardListPage() {
             {flashcards.length === 0 ? (
                 <p>You have no flashcards yet.</p>
             ) : (
-                flashcards.map((flashcard) => (
-                    <FlashcardCard
-                        key={flashcard.flashcardId}
-                        flashcard={flashcard}
-                        onFlashcardUpdated={refreshFlashcards}
-                    />
-                ))
+                <div className="grid">
+                    {flashcards.map((flashcard) => (
+                        <FlashcardCard
+                            key={flashcard.flashcardId}
+                            flashcard={flashcard}
+                            onFlashcardUpdated={refreshFlashcards}
+                        />
+                    ))}
+                </div>
             )}
         </div>
     );

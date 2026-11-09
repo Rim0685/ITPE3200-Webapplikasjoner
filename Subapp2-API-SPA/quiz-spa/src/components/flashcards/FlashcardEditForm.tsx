@@ -33,7 +33,7 @@ function FlashcardEditForm({
     };    
     
     return (
-        <form onSubmit={handleSubmit}>
+        <form className="flashcard-form" onSubmit={handleSubmit}>
             <div>
                 <label htmlFor={`front-${flashcardId}`}>Question</label>
                 <input
@@ -56,7 +56,9 @@ function FlashcardEditForm({
                 />
             </div>
 
-            <button type="submit">Save changes</button>
+            <button type="submit" className="btn btn-dark">
+                Save changes
+            </button>
         </form>
     );
 }

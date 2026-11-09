@@ -6,6 +6,12 @@ import RegisterPage from "./pages/RegisterPage";
 import { QuizListPage } from "./pages/QuizListPage";
 import FlashcardListPage from "./pages/FlashcardListPage";
 
+// Checks if the user is logged in before showing a protected page
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const token = localStorage.getItem("token");
+
+  return token ? children : <Navigate to="/login" replace />;
+}
 
 function App() {
   return (
@@ -19,11 +25,9 @@ function App() {
           <Route
             path="/quizzes"
             element={
-              localStorage.getItem("token") ? (
-                <QuizListPage />  
-              ) : (
-                <Navigate to="/login" replace />
-              )   
+              <ProtectedRoute>
+                <QuizListPage />
+              </ProtectedRoute>
             }
           />
           {/* Redirect users without a token to the login page */}
