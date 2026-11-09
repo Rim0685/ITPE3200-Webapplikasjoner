@@ -1,6 +1,7 @@
 import type { Quiz, QuizSubmission } from '../types/quiz';
 
-const API_URL = '/api/quizzes';
+//const API_URL = '/api/quizzes';
+const API_URL = 'http://localhost:5268/api/quizzes';
 
 export const quizService = {
   async getQuizzes(search?: string): Promise<Quiz[]> {
