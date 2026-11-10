@@ -15,34 +15,6 @@ namespace QuizApi.DTOs
         public bool IsSolutionUnlocked { get; set; }
     }
 
-    public class CreateQuizDto
-    {
-        [Required]
-        [StringLength(100, MinimumLength = 2)]
-        public string Title { get; set; } = string.Empty;
-
-        [Required]
-        [StringLength(50)]
-        public string Topic { get; set; } = string.Empty;
-
-        [StringLength(500)]
-        public string Description { get; set; } = string.Empty;
-    }
-
-    public class UpdateQuizDto
-    {
-        [Required]
-        [StringLength(100, MinimumLength = 2)]
-        public string Title { get; set; } = string.Empty;
-
-        [Required]
-        [StringLength(50)]
-        public string Topic { get; set; } = string.Empty;
-
-        [StringLength(500)]
-        public string Description { get; set; } = string.Empty;
-    }
-
     // Served when a user starts/takes the quiz. Never includes IsCorrect
     public class QuizTakeDto
     {
