@@ -1,25 +1,25 @@
 // The Services folder contains the application's business logic.
-// These types describe the outcome of a flashcard operation, so the
+// These types describe the outcome of a deck operation, so the
 // controller can choose the correct HTTP response.
 
 using QuizApi.DTOs;
 
 namespace QuizApi.Services
 {
-    public enum FlashcardResultStatus
+    public enum FlashcardDeckResultStatus
     {
         Success,
         NotFound,
         LimitReached,
-        InvalidDeck,
+        DuplicateName,
         Failed
     }
 
-    public class FlashcardResult
+    public class FlashcardDeckResult
     {
-        public FlashcardResultStatus Status { get; set; }
+        public FlashcardDeckResultStatus Status { get; set; }
 
-        // Contains the flashcard when an operation creates one.
-        public FlashcardDto? Flashcard { get; set; }
+        // Contains the deck when an operation creates one.
+        public FlashcardDeckDto? Deck { get; set; }
     }
 }
