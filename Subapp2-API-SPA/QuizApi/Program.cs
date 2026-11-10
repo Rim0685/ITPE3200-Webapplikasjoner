@@ -24,8 +24,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowSpa", policy =>
     {
         policy.WithOrigins("http://localhost:5173") // Vite's default dev port
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+            .AllowAnyHeader()
+            .AllowAnyMethod();
     });
 });
 
@@ -37,6 +37,12 @@ builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
 
 // Registers the flashcard repository for dependency injection.
 builder.Services.AddScoped<IFlashcardRepository, FlashcardRepository>();
+
+// Registers the flashcard deck repository for dependency injection.
+builder.Services.AddScoped<IFlashcardDeckRepository, FlashcardDeckRepository>();
+
+// Registers the flashcard deck service for dependency injection.
+builder.Services.AddScoped<IFlashcardDeckService, FlashcardDeckService>();
 
 // Registers the quiz attempt repository for dependency injection.
 builder.Services.AddScoped<IQuizAttemptRepository, QuizAttemptRepository>();
