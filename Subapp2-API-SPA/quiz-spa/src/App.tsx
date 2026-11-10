@@ -5,6 +5,8 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import { QuizListPage } from "./pages/QuizListPage";
 import FlashcardListPage from "./pages/FlashcardListPage";
+import FlashcardDeckListPage from "./pages/FlashcardDeckListPage";
+import FlashcardDeckDetailPage from "./pages/FlashcardDeckDetailPage";
 import { TakeQuizPage } from "./pages/TakeQuizPage";
 
 // Checks if the user is logged in before showing a protected page
@@ -45,15 +47,31 @@ function App() {
             path="/flashcards"
             element={
               localStorage.getItem("token") ? (
-                <FlashcardListPage />  
+                <FlashcardListPage />
               ) : (
                 <Navigate to="/login" replace />
-              )   
+              )
+            }
+          />
+                    <Route
+            path="/decks"
+            element={
+              <ProtectedRoute>
+                <FlashcardDeckListPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/decks/:deckId"
+            element={
+              <ProtectedRoute>
+                <FlashcardDeckDetailPage />
+              </ProtectedRoute>
             }
           />
         </Route>
       </Routes>
-    </BrowserRouter>                          
+    </BrowserRouter>
   );
 }
 
