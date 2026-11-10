@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
-import type { Flashcard } from "../types/flashcards";
+import { Link } from "react-router-dom";
+import type { Flashcard, FlashcardDeck } from "../types/flashcards";
 import { getFlashcards } from "../services/flashcardService";
+import { getDecks } from "../services/flashcardDeckService";
 import FlashcardCard from "../components/flashcards/FlashcardCard";
 import FlashcardForm from "../components/flashcards/FlashcardForm";
 
@@ -8,12 +10,17 @@ function FlashcardListPage() {
     const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [decks, setDecks] = useState<FlashcardDeck[]>([]);
 
     useEffect(() => {
         async function loadFlashcards() {
             try {
-                const data = await getFlashcards();
+                const [data, deckData] = await Promise.all([
+                    getFlashcards(),
+                    getDecks(),
+                ]);
                 setFlashcards(data);
+                setDecks(deckData);
             } catch {
                 setError("Could not load flashcards.");
             } finally {
@@ -27,8 +34,12 @@ function FlashcardListPage() {
     // Fetch the updated flashcard list after creating a new flashcard
     const refreshFlashcards = async () => {
         try {
-            const data = await getFlashcards();
+            const [data, deckData] = await Promise.all([
+                getFlashcards(),
+                getDecks(),
+            ]);
             setFlashcards(data);
+            setDecks(deckData);
         } catch {
             setError("Could not refresh flashcards.");
         }
@@ -45,9 +56,10 @@ function FlashcardListPage() {
     return (
         <div className="container">
             <h1>My Flashcards</h1>
+            <p><Link to="/decks" className="btn btn-light">My decks</Link></p>
 
             {/* Form for creating a new flashcard */}
-            <FlashcardForm onFlashcardCreated={refreshFlashcards}/>
+            <FlashcardForm decks={decks} onFlashcardCreated={refreshFlashcards}/>
 
             {flashcards.length === 0 ? (
                 <p>You have no flashcards yet.</p>
@@ -57,6 +69,7 @@ function FlashcardListPage() {
                         <FlashcardCard
                             key={flashcard.flashcardId}
                             flashcard={flashcard}
+                            decks={decks}
                             onFlashcardUpdated={refreshFlashcards}
                         />
                     ))}

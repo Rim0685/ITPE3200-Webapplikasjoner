@@ -13,11 +13,12 @@ export async function getFlashcards(): Promise<Flashcard[]> {
 
 export async function createFlashcard(
     front: string,
-    back: string
+    back: string,
+    deckId: number | null = null
 ): Promise<Flashcard> {
     const response = await apiRequest("/api/flashcards", {
         method: "POST",
-        body: JSON.stringify({ front, back }),
+        body: JSON.stringify({ front, back, deckId }),
     });
 
     if (!response.ok) {
@@ -30,11 +31,12 @@ export async function createFlashcard(
 export async function updateFlashcard(
     flashcardId: number,
     front: string,
-    back: string
+    back: string,
+    deckId: number | null = null
 ): Promise<void> {
     const response = await apiRequest(`/api/flashcards/${flashcardId}`, {
         method: "PUT",
-        body: JSON.stringify({ front, back }),
+        body: JSON.stringify({ front, back, deckId }),
     });
 
     if (!response.ok) {
