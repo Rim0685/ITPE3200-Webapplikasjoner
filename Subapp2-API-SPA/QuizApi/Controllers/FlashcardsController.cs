@@ -79,6 +79,11 @@ namespace QuizApi.Controllers
                         $"You can have at most {FlashcardService.MaxFlashcardsPerUser} flashcards. Delete one to add a new one.");
                 }
 
+                if (result.Status == FlashcardResultStatus.InvalidDeck)
+                {
+                    return BadRequest("The selected deck does not exist.");
+                }
+
                 if (result.Status != FlashcardResultStatus.Success)
                 {
                     return StatusCode(500, "Could not create the flashcard.");
@@ -137,6 +142,7 @@ namespace QuizApi.Controllers
             {
                 FlashcardResultStatus.Success => NoContent(),
                 FlashcardResultStatus.NotFound => NotFound("The flashcard was not found."),
+                FlashcardResultStatus.InvalidDeck => BadRequest("The selected deck does not exist."),
                 _ => StatusCode(500, failureMessage)
             };
         }

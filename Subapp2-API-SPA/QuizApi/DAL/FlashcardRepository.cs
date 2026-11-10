@@ -112,6 +112,7 @@ namespace QuizApi.DAL
 
                 existingFlashcard.Front = flashcard.Front;
                 existingFlashcard.Back = flashcard.Back;
+                existingFlashcard.DeckId = flashcard.DeckId;
 
                 await _db.SaveChangesAsync();
 

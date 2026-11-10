@@ -11,6 +11,7 @@ namespace QuizApi.Services
         Success,
         NotFound,
         LimitReached,
+        InvalidDeck,
         Failed
     }
 

@@ -15,12 +15,15 @@ namespace QuizApi.Services
 
         private readonly IFlashcardRepository _flashcardRepository;
         private readonly ILogger<FlashcardService> _logger;
+        private readonly IFlashcardDeckRepository _deckRepository;
 
         public FlashcardService(
             IFlashcardRepository flashcardRepository,
+            IFlashcardDeckRepository deckRepository,
             ILogger<FlashcardService> logger)
         {
             _flashcardRepository = flashcardRepository;
+            _deckRepository = deckRepository;
             _logger = logger;
         }
 
@@ -52,6 +55,13 @@ namespace QuizApi.Services
                     userId);
 
                 return new FlashcardResult { Status = FlashcardResultStatus.LimitReached };
+            }
+
+            // A flashcard can only be placed in a deck the user owns.
+            if (dto.DeckId != null &&
+                !await _deckRepository.ExistsAsync(dto.DeckId.Value, userId))
+            {
+                return new FlashcardResult { Status = FlashcardResultStatus.InvalidDeck };
             }
 
             // The owner comes from the caller's token, never from the client's data.
@@ -89,8 +99,15 @@ namespace QuizApi.Services
                 return new FlashcardResult { Status = FlashcardResultStatus.NotFound };
             }
 
+            if (dto.DeckId != null &&
+                !await _deckRepository.ExistsAsync(dto.DeckId.Value, userId))
+            {
+                return new FlashcardResult { Status = FlashcardResultStatus.InvalidDeck };
+            }
+
             existing.Front = dto.Front.Trim();
             existing.Back = dto.Back.Trim();
+            existing.DeckId = dto.DeckId;
 
             var updated = await _flashcardRepository.UpdateAsync(existing, userId);
 
@@ -125,7 +142,8 @@ namespace QuizApi.Services
             {
                 FlashcardId = flashcard.FlashcardId,
                 Front = flashcard.Front,
-                Back = flashcard.Back
+                Back = flashcard.Back,
+                DeckId = flashcard.DeckId
             };
         }
     }
