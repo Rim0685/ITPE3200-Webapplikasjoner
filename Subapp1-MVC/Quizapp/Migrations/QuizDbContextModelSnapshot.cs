@@ -288,6 +288,9 @@ namespace Quizapp.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("DeckId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("QuestionText")
                         .IsRequired()
                         .HasMaxLength(500)
@@ -298,9 +301,40 @@ namespace Quizapp.Migrations
 
                     b.HasKey("FlashcardId");
 
+                    b.HasIndex("DeckId");
+
                     b.HasIndex("UserId");
 
                     b.ToTable("Flashcards");
+                });
+
+            modelBuilder.Entity("Quizapp.Models.FlashcardDeck", b =>
+                {
+                    b.Property<int>("FlashcardDeckId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("FlashcardDeckId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("FlashcardDecks");
                 });
 
             modelBuilder.Entity("Quizapp.Models.Question", b =>
@@ -493,9 +527,27 @@ namespace Quizapp.Migrations
 
             modelBuilder.Entity("Quizapp.Models.Flashcard", b =>
                 {
+                    b.HasOne("Quizapp.Models.FlashcardDeck", "Deck")
+                        .WithMany("Flashcards")
+                        .HasForeignKey("DeckId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("Quizapp.Models.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
+
+                    b.Navigation("Deck");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Quizapp.Models.FlashcardDeck", b =>
+                {
+                    b.HasOne("Quizapp.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
@@ -542,6 +594,11 @@ namespace Quizapp.Migrations
             modelBuilder.Entity("Quizapp.Models.AnswerOption", b =>
                 {
                     b.Navigation("AttemptAnswers");
+                });
+
+            modelBuilder.Entity("Quizapp.Models.FlashcardDeck", b =>
+                {
+                    b.Navigation("Flashcards");
                 });
 
             modelBuilder.Entity("Quizapp.Models.Question", b =>

@@ -31,7 +31,7 @@ function RegisterPage() {
     };
 
     return (
-        <div>
+        <div className="form-container">
             <h1>Register</h1>
 
             <form onSubmit={handleSubmit}>
@@ -72,7 +72,7 @@ function RegisterPage() {
                 {error && <p role="alert">{error}</p>}
                 {success && <p>{success}</p>}
 
-                <button type="submit">Register</button>        
+                <button type="submit" className="btn btn-dark">Register</button>        
             </form>
 
             <p>

@@ -1,0 +1,24 @@
+@model Quizapp.ViewModels.FlashcardDeckViewModel
+@* Form for creating a new deck. *@
+@{
+    ViewData["Title"] = "New deck";
+}
+
+<h1>New <span class="highlight">deck</span></h1>
+
+<form asp-action="Create" method="post" class="card">
+    <div asp-validation-summary="ModelOnly"></div>
+
+    <label asp-for="Name">Name</label>
+    <input asp-for="Name" />
+    <span asp-validation-for="Name"></span>
+
+    <label asp-for="Description">Description (optional)</label>
+    <textarea asp-for="Description" rows="3"></textarea>
+    <span asp-validation-for="Description"></span>
+
+    <p>
+        <button type="submit" class="btn btn-dark">Save</button>
+        <a asp-action="Index" class="btn btn-light">Cancel</a>
+    </p>
+</form>

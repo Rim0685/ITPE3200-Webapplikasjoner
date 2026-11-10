@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import type { Quiz } from '../types/quiz';
 import { quizService } from '../services/quizService';
@@ -12,6 +13,7 @@ export const QuizListPage: React.FC = () => {
     try {
       setLoading(true);
       const data = await quizService.getQuizzes(search);
+      console.log("Hentede quizer fra API:", data);
       setQuizzes(data);
       setError(null);
     } catch (err) {
@@ -37,15 +39,22 @@ export const QuizListPage: React.FC = () => {
         <p>Ingen quizer funnet.</p>
       ) : (
         <ul>
-          {quizzes.map((quiz) => (
-            <li key={quiz.id} style={{ marginBottom: '15px', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>
-              <h3>{quiz.title}</h3>
-              <p>{quiz.description}</p>
-              <p>Forsøk: {quiz.attemptsCount || 0} | Siste resultat: {quiz.lastResult !== undefined ? `${quiz.lastResult} poeng` : 'Ingen forsøk'}</p>
-              <a href={`/quiz/${quiz.id}`}>Start Quiz</a>
-              {quiz.isSolutionAvailable && <a href={`/quiz/${quiz.id}/solution`} style={{ marginLeft: '10px' }}>Se fasit</a>}
-            </li>
-          ))}
+          {quizzes.map((quiz) => {
+            console.log("Quiz-objekt:", quiz);
+            return (
+              <li key={quiz.id} style={{ marginBottom: '15px', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>
+                <h3>{quiz.title}</h3>
+                <p>{quiz.description}</p>
+                <p>Forsøk: {quiz.attemptsCount || 0} | Siste resultat: {quiz.lastResult !== undefined ? `${quiz.lastResult} poeng` : 'Ingen forsøk'}</p>
+               <Link to={`/quiz/${quiz.id || (quiz as any).quizId}`}>Start Quiz</Link>
+                {quiz.isSolutionAvailable && (
+                  <Link to={`/quiz/${quiz.id || (quiz as any).quizId}/solution`} style={{ marginLeft: '10px' }}>
+                    Se fasit
+                  </Link>
+                )}
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>

@@ -9,7 +9,8 @@
 @* These buttons apply to all cards, so they are outside the loop and shown only once. *@
 <p>
     <a asp-action="Create" class="btn btn-light">+ New flashcard</a>
-    <a asp-action="Study" class="btn btn-dark">Study</a>
+    <a asp-controller="FlashcardDeck" asp-action="Index" class="btn btn-light">My decks</a>
+    <a asp-action="Study" class="btn btn-dark">Study all</a>
 </p>
 
 @if (!Model.Any())
@@ -22,7 +23,15 @@
     @foreach (var card in Model)
     {
         <div class="card">
-            <span class="pill">Flashcard</span>
+            @if (card.Deck != null)
+            {
+                <a asp-controller="FlashcardDeck" asp-action="Details"
+                asp-route-id="@card.DeckId" class="pill">@card.Deck.Name</a>
+            }
+            else
+            {
+                <span class="pill">No deck</span>
+            }
             <h3>@card.QuestionText</h3>
             <p class="muted">@card.AnswerText</p>
             <a asp-action="Update" asp-route-id="@card.FlashcardId" class="btn btn-light">Edit</a>

@@ -19,14 +19,14 @@ function LoginPage() {
 
             localStorage.setItem("token", data.token);
 
-            navigate("/flashcards");
+            navigate("/");
         } catch {
             setError("Invalid email or password.");
         }
     };
     
     return (
-        <div>
+        <div className="form-container">
             <h1>Login</h1>
 
             <form onSubmit={handleSubmit}>
@@ -54,7 +54,7 @@ function LoginPage() {
 
                 {error && <p role="alert">{error}</p>}
                 
-                <button type="submit">Login</button>
+                <button type="submit" className="btn btn-dark">Login</button>
             </form>
         </div>
     );

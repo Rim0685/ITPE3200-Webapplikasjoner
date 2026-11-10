@@ -1,0 +1,42 @@
+@model Quizapp.ViewModels.FlashcardDeckViewModel
+@* Shows one deck with its cards and buttons to add cards and study the deck. *@
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<h1><span class="highlight">@Model.Name</span></h1>
+
+@if (!string.IsNullOrWhiteSpace(Model.Description))
+{
+    <p class="muted">@Model.Description</p>
+}
+
+<p class="muted">@Model.CardCount @(Model.CardCount == 1 ? "card" : "cards")</p>
+
+<p>
+    <a asp-controller="Flashcard" asp-action="Create" asp-route-deckId="@Model.FlashcardDeckId" class="btn btn-light">+ Add card</a>
+    @if (Model.CardCount > 0)
+    {
+        <a asp-controller="Flashcard" asp-action="Study" asp-route-deckId="@Model.FlashcardDeckId" class="btn btn-dark">Study deck</a>
+    }
+    <a asp-action="Update" asp-route-id="@Model.FlashcardDeckId" class="btn btn-light">Edit deck</a>
+    <a asp-action="Delete" asp-route-id="@Model.FlashcardDeckId" class="btn btn-danger">Delete deck</a>
+</p>
+
+@if (Model.CardCount == 0)
+{
+    <p class="muted">This deck has no cards yet. Add your first one!</p>
+}
+
+<div class="grid">
+    @foreach (var card in Model.Cards)
+    {
+        <div class="card">
+            <h3>@card.QuestionText</h3>
+            <a asp-controller="Flashcard" asp-action="Update" asp-route-id="@card.FlashcardId" class="btn btn-light">Edit</a>
+            <a asp-controller="Flashcard" asp-action="Delete" asp-route-id="@card.FlashcardId" class="btn btn-danger">Delete</a>
+        </div>
+    }
+</div>
+
+<p><a asp-action="Index">Back to decks</a></p>

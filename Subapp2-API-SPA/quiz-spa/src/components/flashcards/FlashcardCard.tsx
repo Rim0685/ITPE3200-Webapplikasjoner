@@ -31,7 +31,7 @@ function FlashcardCard({
             // Delete the flashcard through the API
             await deleteFlashcard(flashcard.flashcardId);
 
-            // Refresh the flashcard list after delection
+            // Refresh the flashcard list after deletion
             onFlashcardUpdated();
         } catch {
             console.error("Failed to delete flashcard");
@@ -39,12 +39,13 @@ function FlashcardCard({
     };
 
     return (
-        <div>
+        <div className="card">
             <h2>{flashcard.front}</h2>
             <p>{flashcard.back}</p>
 
             <button
                 type="button"
+                className="btn btn-light"
                 onClick={() => setIsEditing(!isEditing)}
             >
                 {isEditing ? "Cancel" : "Edit"}
@@ -52,6 +53,7 @@ function FlashcardCard({
 
             <button
                 type="button"
+                className="btn btn-danger"
                 onClick={handleDelete}
             >
                 Delete
