@@ -23,6 +23,7 @@ namespace QuizApi.DAL
         public DbSet<Flashcard> Flashcards { get; set; }
         public DbSet<QuizAttempt> QuizAttempts { get; set; }
         public DbSet<AttemptAnswer> AttemptAnswers { get; set; }
+        public DbSet<FlashcardDeck> FlashcardDecks { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -34,6 +35,19 @@ namespace QuizApi.DAL
                 .HasOne(f => f.User)
                 .WithMany(u => u.Flashcards)
                 .HasForeignKey(f => f.UserId);
+
+            // A user owns multiple flashcard decks.
+            modelBuilder.Entity<FlashcardDeck>()
+                .HasOne(d => d.User)
+                .WithMany(u => u.FlashcardDecks)
+                .HasForeignKey(d => d.UserId);
+
+            // A deck contains flashcards, and deleting the deck deletes them.
+            modelBuilder.Entity<FlashcardDeck>()
+                .HasMany(d => d.Flashcards)
+                .WithOne(f => f.Deck)
+                .HasForeignKey(f => f.DeckId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             // A user can complete multiple quiz attempts.
             modelBuilder.Entity<QuizAttempt>()

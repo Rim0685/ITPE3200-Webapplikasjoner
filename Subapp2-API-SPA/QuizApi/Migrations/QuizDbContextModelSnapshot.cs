@@ -293,6 +293,9 @@ namespace QuizApi.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("DeckId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Front")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -303,9 +306,38 @@ namespace QuizApi.Migrations
 
                     b.HasKey("FlashcardId");
 
+                    b.HasIndex("DeckId");
+
                     b.HasIndex("UserId");
 
                     b.ToTable("Flashcards");
+                });
+
+            modelBuilder.Entity("QuizApi.Models.FlashcardDeck", b =>
+                {
+                    b.Property<int>("FlashcardDeckId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("FlashcardDeckId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("FlashcardDecks");
                 });
 
             modelBuilder.Entity("QuizApi.Models.Question", b =>
@@ -503,8 +535,26 @@ namespace QuizApi.Migrations
 
             modelBuilder.Entity("QuizApi.Models.Flashcard", b =>
                 {
+                    b.HasOne("QuizApi.Models.FlashcardDeck", "Deck")
+                        .WithMany("Flashcards")
+                        .HasForeignKey("DeckId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("QuizApi.Models.ApplicationUser", "User")
                         .WithMany("Flashcards")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Deck");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("QuizApi.Models.FlashcardDeck", b =>
+                {
+                    b.HasOne("QuizApi.Models.ApplicationUser", "User")
+                        .WithMany("FlashcardDecks")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -552,9 +602,16 @@ namespace QuizApi.Migrations
 
             modelBuilder.Entity("QuizApi.Models.ApplicationUser", b =>
                 {
+                    b.Navigation("FlashcardDecks");
+
                     b.Navigation("Flashcards");
 
                     b.Navigation("QuizAttempts");
+                });
+
+            modelBuilder.Entity("QuizApi.Models.FlashcardDeck", b =>
+                {
+                    b.Navigation("Flashcards");
                 });
 
             modelBuilder.Entity("QuizApi.Models.Question", b =>

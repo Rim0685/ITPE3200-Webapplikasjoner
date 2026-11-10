@@ -15,5 +15,10 @@ namespace QuizApi.Models
         public string UserId { get; set; } = string.Empty;
 
         public ApplicationUser? User { get; set; }
+
+        // A flashcard can belong to one deck, or to none.
+        public int? DeckId { get; set; }
+
+        public FlashcardDeck? Deck { get; set; }
     }
 }
