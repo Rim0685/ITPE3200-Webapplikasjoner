@@ -1,23 +1,24 @@
-// The DAL folder contains database configuration and data access code.
-// This class implements database operations for a user's study notes.
-
 using Microsoft.EntityFrameworkCore;
 using Quizapp.Models;
 
-namespace Quizapp.DAL
+namespace Quizapp.DAL;
+
+public class StudyNoteRepository : IStudyNoteRepository
 {
-    public class StudyNoteRepository : IStudyNoteRepository
+    private readonly QuizDbContext _db;
+    private readonly ILogger<StudyNoteRepository> _logger;
+
+    public StudyNoteRepository(
+        QuizDbContext db,
+        ILogger<StudyNoteRepository> logger)
     {
-        private readonly QuizDbContext _db;
+        _db = db;
+        _logger = logger;
+    }
 
-        // Receives the database context through dependency injection.
-        public StudyNoteRepository(QuizDbContext db)
-        {
-            _db = db;
-        }
-
-        // Retrieves the user's notes, with the newest notes first.
-        public async Task<IEnumerable<StudyNote>> GetAll(string userId)
+    public async Task<IEnumerable<StudyNote>?> GetAll(string userId)
+    {
+        try
         {
             return await _db.StudyNotes
                 .AsNoTracking()
@@ -25,16 +26,21 @@ namespace Quizapp.DAL
                 .OrderByDescending(note => note.CreatedAt)
                 .ToListAsync();
         }
-
-        // Searches the user's notes by text and creation date.
-        // Adapted from Microsoft Learn's ASP.NET Core MVC search tutorial:
-        // https://learn.microsoft.com/aspnet/core/tutorials/first-mvc-app/search
-        public async Task<IEnumerable<StudyNote>> Search(
-            string userId,
-            string? searchText,
-            DateTime? createdFrom)
+        catch (Exception ex)
         {
-            // Limits all search results to the user's own notes.
+            _logger.LogError(ex, "Failed to load study notes.");
+            return null;
+        }
+    }
+
+    // Filters only the authenticated user's notes.
+    public async Task<IEnumerable<StudyNote>?> Search(
+        string userId,
+        string? searchText,
+        DateTime? createdFrom)
+    {
+        try
+        {
             var notes = _db.StudyNotes
                 .AsNoTracking()
                 .Where(note => note.UserId == userId);
@@ -60,27 +66,52 @@ namespace Quizapp.DAL
                 .OrderByDescending(note => note.CreatedAt)
                 .ToListAsync();
         }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to search study notes.");
+            return null;
+        }
+    }
 
-        // Retrieves a note only if it belongs to the specified user.
-        public async Task<StudyNote?> GetById(int id, string userId)
+    public async Task<StudyNote?> GetById(int id, string userId)
+    {
+        try
         {
             return await _db.StudyNotes
+                .AsNoTracking()
                 .FirstOrDefaultAsync(note =>
                     note.StudyNoteId == id
                     && note.UserId == userId);
         }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex, "Failed to load study note {StudyNoteId}.", id);
 
-        // Saves a new study note.
-        public async Task Create(StudyNote studyNote)
+            return null;
+        }
+    }
+
+    public async Task<bool> Create(StudyNote studyNote)
+    {
+        try
         {
             _db.StudyNotes.Add(studyNote);
             await _db.SaveChangesAsync();
-        }
 
-        // Updates only the title and content of a note owned by the user.
-        public async Task<bool> Update(
-            StudyNote studyNote,
-            string userId)
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to create a study note.");
+            return false;
+        }
+    }
+
+    public async Task<bool> Update(
+        StudyNote studyNote, string userId)
+    {
+        try
         {
             var existingNote = await _db.StudyNotes
                 .FirstOrDefaultAsync(note =>
@@ -92,6 +123,7 @@ namespace Quizapp.DAL
                 return false;
             }
 
+            // Preserves the owner and creation date.
             existingNote.Title = studyNote.Title;
             existingNote.Content = studyNote.Content;
 
@@ -99,24 +131,42 @@ namespace Quizapp.DAL
 
             return true;
         }
-
-        // Deletes a note only if it belongs to the specified user.
-        public async Task<bool> Delete(int id, string userId)
+        catch (Exception ex)
         {
-            var studyNote = await _db.StudyNotes
+            _logger.LogError(
+                ex,
+                "Failed to update study note {StudyNoteId}.",
+                studyNote.StudyNoteId);
+
+            return false;
+        }
+    }
+
+    public async Task<bool> Delete(int id, string userId)
+    {
+        try
+        {
+            var note = await _db.StudyNotes
                 .FirstOrDefaultAsync(note =>
                     note.StudyNoteId == id
                     && note.UserId == userId);
 
-            if (studyNote == null)
+            if (note == null)
             {
                 return false;
             }
 
-            _db.StudyNotes.Remove(studyNote);
+            _db.StudyNotes.Remove(note);
             await _db.SaveChangesAsync();
 
             return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex, "Failed to delete study note {StudyNoteId}.", id);
+
+            return false;
         }
     }
 }

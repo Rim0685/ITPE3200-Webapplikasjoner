@@ -191,6 +191,11 @@ namespace Quizapp.Controllers
                 .ToList();
 
             var notes = await _studyNoteRepository.GetAll(userId);
+            if (notes == null)
+                {
+                    throw new InvalidOperationException(
+                    "The study notes could not be loaded.");
+                }
 
             model.StudyNotes = notes
                 .Select(note => new StudyNoteViewModel

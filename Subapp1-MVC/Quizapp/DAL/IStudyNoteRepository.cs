@@ -1,31 +1,19 @@
-// The DAL folder contains database configuration and data access code.
-// This interface defines database operations for a user's study notes.
-
 using Quizapp.Models;
 
-namespace Quizapp.DAL
+namespace Quizapp.DAL;
+
+public interface IStudyNoteRepository
 {
-    public interface IStudyNoteRepository
-    {
-        // Retrieves all notes belonging to the specified user.
-        Task<IEnumerable<StudyNote>> GetAll(string userId);
+    Task<IEnumerable<StudyNote>?> GetAll(string userId);
 
-        // Searches the user's notes by text and creation date.
-        Task<IEnumerable<StudyNote>> Search(
-            string userId,
-            string? searchText,
-            DateTime? createdFrom);
+    Task<IEnumerable<StudyNote>?> Search(
+        string userId, string? searchText, DateTime? createdFrom);
 
-        // Retrieves a note only if it belongs to the specified user.
-        Task<StudyNote?> GetById(int id, string userId);
+    Task<StudyNote?> GetById(int id, string userId);
 
-        // Saves a new study note.
-        Task Create(StudyNote studyNote);
+    Task<bool> Create(StudyNote studyNote);
 
-        // Updates an existing note belonging to the specified user.
-        Task<bool> Update(StudyNote studyNote, string userId);
+    Task<bool> Update(StudyNote studyNote, string userId);
 
-        // Deletes a note only if it belongs to the specified user.
-        Task<bool> Delete(int id, string userId);
-    }
+    Task<bool> Delete(int id, string userId);
 }

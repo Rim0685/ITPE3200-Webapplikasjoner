@@ -1,6 +1,3 @@
-// The Controllers folder contains classes that handle web requests.
-// This controller manages the authenticated user's flashcards.
-
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -15,21 +12,25 @@ namespace Quizapp.Controllers
     public class FlashcardController : Controller
     {
         private readonly QuizDbContext _db;
+        private readonly IFlashcardRepository _flashcardRepository;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<FlashcardController> _logger;
 
         public FlashcardController(
             QuizDbContext db,
+            IFlashcardRepository flashcardRepository,
             UserManager<ApplicationUser> userManager,
             ILogger<FlashcardController> logger)
         {
             _db = db;
+            _flashcardRepository = flashcardRepository;
             _userManager = userManager;
             _logger = logger;
         }
 
-        // Fills the deck dropdown with the user's own decks.
-        private async Task LoadDecksAsync(string userId, int? selectedDeckId)
+        // Fills the dropdown with the user's own decks.
+        private async Task LoadDecksAsync(
+            string userId, int? selectedDeckId)
         {
             var decks = await _db.FlashcardDecks
                 .Where(deck => deck.UserId == userId)
@@ -40,7 +41,7 @@ namespace Quizapp.Controllers
                 decks, "FlashcardDeckId", "Name", selectedDeckId);
         }
 
-        // Displays the authenticated user's flashcards.
+        // Retrieves flashcards through the repository.
         public async Task<IActionResult> Index()
         {
             try
@@ -52,11 +53,8 @@ namespace Quizapp.Controllers
                     return Challenge();
                 }
 
-                var flashcards = await _db.Flashcards
-                    .Include(card => card.Deck)
-                    .Where(card => card.UserId == userId)
-                    .OrderByDescending(card => card.CreatedAt)
-                    .ToListAsync();
+                var flashcards =
+                    await _flashcardRepository.GetAll(userId);
 
                 return View(flashcards);
             }
@@ -70,7 +68,6 @@ namespace Quizapp.Controllers
             }
         }
 
-        // Displays the form for creating a flashcard.
         [HttpGet]
         public async Task<IActionResult> Create(int? deckId)
         {
@@ -86,8 +83,6 @@ namespace Quizapp.Controllers
             return View(new Flashcard { DeckId = deckId });
         }
 
-        // Creates a flashcard. If a new deck name is typed, the deck is
-        // created first and the card is placed in it.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
@@ -103,7 +98,8 @@ namespace Quizapp.Controllers
 
             newDeckName = newDeckName?.Trim();
 
-            if (!string.IsNullOrEmpty(newDeckName) && newDeckName.Length > 100)
+            if (!string.IsNullOrEmpty(newDeckName)
+                && newDeckName.Length > 100)
             {
                 ModelState.AddModelError(
                     "newDeckName",
@@ -128,7 +124,6 @@ namespace Quizapp.Controllers
 
                 if (!string.IsNullOrEmpty(newDeckName))
                 {
-                    // Creates the new deck and places the card in it.
                     flashcard.Deck = new FlashcardDeck
                     {
                         Name = newDeckName,
@@ -138,10 +133,10 @@ namespace Quizapp.Controllers
                 }
                 else if (model.DeckId != null)
                 {
-                    // Only allows decks owned by the current user.
-                    var ownsDeck = await _db.FlashcardDecks.AnyAsync(deck =>
-                        deck.FlashcardDeckId == model.DeckId
-                        && deck.UserId == userId);
+                    var ownsDeck = await _db.FlashcardDecks
+                        .AnyAsync(deck =>
+                            deck.FlashcardDeckId == model.DeckId
+                            && deck.UserId == userId);
 
                     if (!ownsDeck)
                     {
@@ -170,7 +165,8 @@ namespace Quizapp.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to create a flashcard.");
+                _logger.LogError(
+                    ex, "Failed to create a flashcard.");
 
                 ModelState.AddModelError(
                     string.Empty,
@@ -181,7 +177,6 @@ namespace Quizapp.Controllers
             }
         }
 
-        // Displays the edit form for a card owned by the user.
         [HttpGet]
         public async Task<IActionResult> Update(int id)
         {
@@ -196,7 +191,8 @@ namespace Quizapp.Controllers
 
                 var flashcard = await _db.Flashcards
                     .FirstOrDefaultAsync(card =>
-                        card.FlashcardId == id && card.UserId == userId);
+                        card.FlashcardId == id
+                        && card.UserId == userId);
 
                 if (flashcard == null)
                 {
@@ -218,11 +214,11 @@ namespace Quizapp.Controllers
             }
         }
 
-        // Updates the editable fields of a card owned by the user.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(
-            [Bind("FlashcardId,QuestionText,AnswerText,DeckId")] Flashcard model)
+            [Bind("FlashcardId,QuestionText,AnswerText,DeckId")]
+            Flashcard model)
         {
             try
             {
@@ -251,9 +247,10 @@ namespace Quizapp.Controllers
 
                 if (model.DeckId != null)
                 {
-                    var ownsDeck = await _db.FlashcardDecks.AnyAsync(deck =>
-                        deck.FlashcardDeckId == model.DeckId
-                        && deck.UserId == userId);
+                    var ownsDeck = await _db.FlashcardDecks
+                        .AnyAsync(deck =>
+                            deck.FlashcardDeckId == model.DeckId
+                            && deck.UserId == userId);
 
                     if (!ownsDeck)
                     {
@@ -285,6 +282,7 @@ namespace Quizapp.Controllers
                     "The changes could not be saved. Please try again.");
 
                 var userId = _userManager.GetUserId(User);
+
                 if (!string.IsNullOrEmpty(userId))
                 {
                     await LoadDecksAsync(userId, model.DeckId);
@@ -294,7 +292,6 @@ namespace Quizapp.Controllers
             }
         }
 
-        // Displays a deletion confirmation for a card owned by the user.
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
@@ -309,7 +306,8 @@ namespace Quizapp.Controllers
 
                 var flashcard = await _db.Flashcards
                     .FirstOrDefaultAsync(card =>
-                        card.FlashcardId == id && card.UserId == userId);
+                        card.FlashcardId == id
+                        && card.UserId == userId);
 
                 if (flashcard == null)
                 {
@@ -331,7 +329,6 @@ namespace Quizapp.Controllers
             }
         }
 
-        // Deletes a card after confirming its ownership.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -347,7 +344,8 @@ namespace Quizapp.Controllers
 
                 var flashcard = await _db.Flashcards
                     .FirstOrDefaultAsync(card =>
-                        card.FlashcardId == id && card.UserId == userId);
+                        card.FlashcardId == id
+                        && card.UserId == userId);
 
                 if (flashcard == null)
                 {
@@ -373,10 +371,9 @@ namespace Quizapp.Controllers
             }
         }
 
-        // Displays one card at a time. If deckId is given, only that
-        // deck's cards are studied.
         [HttpGet]
-        public async Task<IActionResult> Study(int? deckId, int index = 0)
+        public async Task<IActionResult> Study(
+            int? deckId, int index = 0)
         {
             try
             {
@@ -392,7 +389,8 @@ namespace Quizapp.Controllers
 
                 if (deckId != null)
                 {
-                    query = query.Where(card => card.DeckId == deckId);
+                    query = query.Where(card =>
+                        card.DeckId == deckId);
                 }
 
                 var flashcards = await query
@@ -403,7 +401,9 @@ namespace Quizapp.Controllers
                 {
                     return deckId != null
                         ? RedirectToAction(
-                            "Details", "FlashcardDeck", new { id = deckId })
+                            "Details",
+                            "FlashcardDeck",
+                            new { id = deckId })
                         : RedirectToAction(nameof(Index));
                 }
 

@@ -1,6 +1,3 @@
-// The Controllers folder contains classes that handle web requests.
-// This controller manages study notes belonging to the authenticated user.
-
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -8,371 +5,234 @@ using Quizapp.DAL;
 using Quizapp.Models;
 using Quizapp.ViewModels;
 
-namespace Quizapp.Controllers
+namespace Quizapp.Controllers;
+
+[Authorize]
+public class StudyNoteController : Controller
 {
-    [Authorize]
-    public class StudyNoteController : Controller
+    private readonly IStudyNoteRepository _repository;
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly ILogger<StudyNoteController> _logger;
+
+    public StudyNoteController(
+        IStudyNoteRepository repository,
+        UserManager<ApplicationUser> userManager,
+        ILogger<StudyNoteController> logger)
     {
-        private readonly IStudyNoteRepository _repository;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly ILogger<StudyNoteController> _logger;
+        _repository = repository;
+        _userManager = userManager;
+        _logger = logger;
+    }
 
-        // Receives repository, user management and logging services.
-        public StudyNoteController(
-            IStudyNoteRepository repository,
-            UserManager<ApplicationUser> userManager,
-            ILogger<StudyNoteController> logger)
+    [HttpGet]
+    public async Task<IActionResult> Index(
+        string? searchText, DateTime? createdFrom)
+    {
+        var userId = _userManager.GetUserId(User);
+        if (string.IsNullOrEmpty(userId))
+            return Challenge();
+
+        var model = new StudyNoteListViewModel
         {
-            _repository = repository;
-            _userManager = userManager;
-            _logger = logger;
+            SearchText = searchText,
+            CreatedFrom = createdFrom
+        };
+
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var notes = await _repository.Search(
+            userId, searchText, createdFrom);
+
+        if (notes == null)
+        {
+            _logger.LogError("Study note search failed.");
+            return StatusCode(500, "The notes could not be loaded.");
         }
 
-        // Displays the user's study notes with optional search filters.
-        [HttpGet]
-        public async Task<IActionResult> Index(
-            string? searchText,
-            DateTime? createdFrom)
+        model.Notes = notes.Select(note => new StudyNoteViewModel
         {
-            try
-            {
-                var userId = _userManager.GetUserId(User);
+            StudyNoteId = note.StudyNoteId,
+            Title = note.Title,
+            Content = note.Content,
+            CreatedAt = note.CreatedAt
+        }).ToList();
 
-                if (string.IsNullOrEmpty(userId))
-                {
-                    return Challenge();
-                }
+        return View(model);
+    }
 
-                var model = new StudyNoteListViewModel
-                {
-                    SearchText = searchText,
-                    CreatedFrom = createdFrom
-                };
+    [HttpGet]
+    public async Task<IActionResult> Details(int id)
+    {
+        var userId = _userManager.GetUserId(User);
+        if (string.IsNullOrEmpty(userId))
+            return Challenge();
 
-                // Displays errors if a filter could not be parsed.
-                if (!ModelState.IsValid)
-                {
-                    return View(model);
-                }
+        var note = await _repository.GetById(id, userId);
+        if (note == null)
+        {
+            _logger.LogWarning(
+                "Study note {StudyNoteId} was not available.", id);
 
-                var notes = await _repository.Search(
-                    userId,
-                    searchText,
-                    createdFrom);
-
-                model.Notes = notes
-                    .Select(note => new StudyNoteViewModel
-                    {
-                        StudyNoteId = note.StudyNoteId,
-                        Title = note.Title,
-                        Content = note.Content,
-                        CreatedAt = note.CreatedAt
-                    })
-                    .ToList();
-
-                return View(model);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to search study notes.");
-
-                return StatusCode(
-                    500,
-                    "The notes could not be loaded. Please try again.");
-            }
+            return NotFound();
         }
 
-        // Displays a note only if it belongs to the authenticated user.
-        [HttpGet]
-        public async Task<IActionResult> Details(int id)
+        var model = new StudyNoteViewModel
         {
-            try
-            {
-                var userId = _userManager.GetUserId(User);
+            StudyNoteId = note.StudyNoteId,
+            Title = note.Title,
+            Content = note.Content,
+            CreatedAt = note.CreatedAt
+        };
 
-                if (string.IsNullOrEmpty(userId))
-                {
-                    return Challenge();
-                }
+        return View(model);
+    }
 
-                var note = await _repository.GetById(id, userId);
+    [HttpGet]
+    public IActionResult Create()
+    {
+        return View(new StudyNoteViewModel());
+    }
 
-                if (note == null)
-                {
-                    return NotFound();
-                }
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(StudyNoteViewModel model)
+    {
+        var userId = _userManager.GetUserId(User);
+        if (string.IsNullOrEmpty(userId))
+            return Challenge();
 
-                var model = new StudyNoteViewModel
-                {
-                    StudyNoteId = note.StudyNoteId,
-                    Title = note.Title,
-                    Content = note.Content,
-                    CreatedAt = note.CreatedAt
-                };
-
-                return View(model);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(
-                    ex, "Failed to load study note {StudyNoteId}.", id);
-
-                return StatusCode(
-                    500,
-                    "The note could not be loaded. Please try again.");
-            }
-        }
-
-        // Displays an empty creation form.
-        [HttpGet]
-        public IActionResult Create()
+        if (ModelState.IsValid)
         {
-            return View(new StudyNoteViewModel());
-        }
-
-        // Creates a note with ownership and creation time set on the server.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(StudyNoteViewModel model)
-        {
-            if (!ModelState.IsValid)
+            var note = new StudyNote
             {
-                return View(model);
-            }
+                Title = model.Title,
+                Content = model.Content,
+                UserId = userId,
+                CreatedAt = DateTime.UtcNow
+            };
 
-            try
-            {
-                var userId = _userManager.GetUserId(User);
-
-                if (string.IsNullOrEmpty(userId))
-                {
-                    return Challenge();
-                }
-
-                var note = new StudyNote
-                {
-                    Title = model.Title,
-                    Content = model.Content,
-                    UserId = userId,
-                    CreatedAt = DateTime.UtcNow
-                };
-
-                await _repository.Create(note);
-
-                _logger.LogInformation(
-                    "Created study note {StudyNoteId}.",
-                    note.StudyNoteId);
-
+            bool returnOk = await _repository.Create(note);
+            if (returnOk)
                 return RedirectToAction(
-                    nameof(Details),
-                    new { id = note.StudyNoteId });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to create a study note.");
+                    nameof(Details), new { id = note.StudyNoteId });
 
-                ModelState.AddModelError(
-                    string.Empty,
-                    "The note could not be saved. Please try again.");
-
-                return View(model);
-            }
+            ModelState.AddModelError(
+                string.Empty, "The note could not be saved.");
         }
 
-        // Displays the edit form for a note owned by the user.
-        [HttpGet]
-        public async Task<IActionResult> Update(int id)
+        _logger.LogWarning("Study note creation failed.");
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Update(int id)
+    {
+        var userId = _userManager.GetUserId(User);
+        if (string.IsNullOrEmpty(userId))
+            return Challenge();
+
+        var note = await _repository.GetById(id, userId);
+        if (note == null)
         {
-            try
-            {
-                var userId = _userManager.GetUserId(User);
+            _logger.LogWarning(
+                "Study note {StudyNoteId} was not available for editing.", id);
 
-                if (string.IsNullOrEmpty(userId))
-                {
-                    return Challenge();
-                }
-
-                var note = await _repository.GetById(id, userId);
-
-                if (note == null)
-                {
-                    return NotFound();
-                }
-
-                var model = new StudyNoteViewModel
-                {
-                    StudyNoteId = note.StudyNoteId,
-                    Title = note.Title,
-                    Content = note.Content,
-                    CreatedAt = note.CreatedAt
-                };
-
-                return View(model);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(
-                    ex,
-                    "Failed to load study note {StudyNoteId} for editing.",
-                    id);
-
-                return StatusCode(
-                    500,
-                    "The note could not be loaded. Please try again.");
-            }
+            return NotFound();
         }
 
-        // Updates the title and content after checking ownership.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(StudyNoteViewModel model)
+        var model = new StudyNoteViewModel
         {
-            try
-            {
-                var userId = _userManager.GetUserId(User);
+            StudyNoteId = note.StudyNoteId,
+            Title = note.Title,
+            Content = note.Content,
+            CreatedAt = note.CreatedAt
+        };
 
-                if (string.IsNullOrEmpty(userId))
-                {
-                    return Challenge();
-                }
+        return View(model);
+    }
 
-                var note = await _repository.GetById(
-                    model.StudyNoteId,
-                    userId);
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Update(StudyNoteViewModel model)
+    {
+        var userId = _userManager.GetUserId(User);
+        if (string.IsNullOrEmpty(userId))
+            return Challenge();
 
-                if (note == null)
-                {
-                    return NotFound();
-                }
+        var note = await _repository.GetById(model.StudyNoteId, userId);
+        if (note == null)
+            return NotFound();
 
-                if (!ModelState.IsValid)
-                {
-                    model.CreatedAt = note.CreatedAt;
-                    return View(model);
-                }
+        // Restores the stored date when redisplaying the form.
+        model.CreatedAt = note.CreatedAt;
 
-                // The repository preserves ownership and creation time.
-                bool updated = await _repository.Update(
-                    new StudyNote
-                    {
-                        StudyNoteId = model.StudyNoteId,
-                        Title = model.Title,
-                        Content = model.Content
-                    },
-                    userId);
+        if (ModelState.IsValid)
+        {
+            note.Title = model.Title;
+            note.Content = model.Content;
 
-                if (!updated)
-                {
-                    return NotFound();
-                }
-
-                _logger.LogInformation(
-                    "Updated study note {StudyNoteId}.",
-                    model.StudyNoteId);
-
+            bool returnOk = await _repository.Update(note, userId);
+            if (returnOk)
                 return RedirectToAction(
-                    nameof(Details),
-                    new { id = model.StudyNoteId });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(
-                    ex,
-                    "Failed to update study note {StudyNoteId}.",
-                    model.StudyNoteId);
+                    nameof(Details), new { id = note.StudyNoteId });
 
-                ModelState.AddModelError(
-                    string.Empty,
-                    "The changes could not be saved. Please try again.");
-
-                return View(model);
-            }
+            ModelState.AddModelError(
+                string.Empty, "The changes could not be saved.");
         }
 
-        // Displays a confirmation page before deleting a note.
-        [HttpGet]
-        public async Task<IActionResult> Delete(int id)
+        _logger.LogWarning(
+            "Study note update failed for {StudyNoteId}.",
+            model.StudyNoteId);
+
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var userId = _userManager.GetUserId(User);
+        if (string.IsNullOrEmpty(userId))
+            return Challenge();
+
+        var note = await _repository.GetById(id, userId);
+        if (note == null)
         {
-            try
-            {
-                var userId = _userManager.GetUserId(User);
+            _logger.LogWarning(
+                "Study note {StudyNoteId} was not available for deletion.", id);
 
-                if (string.IsNullOrEmpty(userId))
-                {
-                    return Challenge();
-                }
-
-                var note = await _repository.GetById(id, userId);
-
-                if (note == null)
-                {
-                    return NotFound();
-                }
-
-                var model = new StudyNoteViewModel
-                {
-                    StudyNoteId = note.StudyNoteId,
-                    Title = note.Title,
-                    Content = note.Content,
-                    CreatedAt = note.CreatedAt
-                };
-
-                return View(model);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(
-                    ex,
-                    "Failed to load study note {StudyNoteId} for deletion.",
-                    id);
-
-                return StatusCode(
-                    500,
-                    "The note could not be loaded. Please try again.");
-            }
+            return NotFound();
         }
 
-        // Deletes a note only after verifying its ownership.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        var model = new StudyNoteViewModel
         {
-            try
-            {
-                var userId = _userManager.GetUserId(User);
+            StudyNoteId = note.StudyNoteId,
+            Title = note.Title,
+            Content = note.Content,
+            CreatedAt = note.CreatedAt
+        };
 
-                if (string.IsNullOrEmpty(userId))
-                {
-                    return Challenge();
-                }
+        return View(model);
+    }
 
-                bool deleted = await _repository.Delete(id, userId);
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(int id)
+    {
+        var userId = _userManager.GetUserId(User);
+        if (string.IsNullOrEmpty(userId))
+            return Challenge();
 
-                if (!deleted)
-                {
-                    return NotFound();
-                }
+        bool returnOk = await _repository.Delete(id, userId);
+        if (!returnOk)
+        {
+            _logger.LogWarning(
+                "Study note deletion failed for {StudyNoteId}.", id);
 
-                _logger.LogInformation(
-                    "Deleted study note {StudyNoteId}.",
-                    id);
-
-                TempData["SuccessMessage"] =
-                    "The note has been deleted.";
-
-                return RedirectToAction("Index", "Profile");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(
-                    ex,
-                    "Failed to delete study note {StudyNoteId}.",
-                    id);
-
-                return StatusCode(
-                    500,
-                    "The note could not be deleted. Please try again.");
-            }
+            return BadRequest("The note could not be deleted.");
         }
+
+        TempData["SuccessMessage"] = "The note has been deleted.";
+        return RedirectToAction("Index", "Profile");
     }
 }
