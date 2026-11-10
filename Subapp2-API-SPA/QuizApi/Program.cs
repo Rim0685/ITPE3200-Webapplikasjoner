@@ -32,9 +32,6 @@ builder.Services.AddCors(options =>
 // Registers the quiz repository for dependency injection.
 builder.Services.AddScoped<IQuizRepository, QuizRepository>();
 
-// Registers the question repository for dependency injection.
-builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
-
 // Registers the flashcard repository for dependency injection.
 builder.Services.AddScoped<IFlashcardRepository, FlashcardRepository>();
 

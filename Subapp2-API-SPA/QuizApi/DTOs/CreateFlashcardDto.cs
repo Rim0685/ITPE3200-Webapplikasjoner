@@ -16,5 +16,7 @@ namespace QuizApi.DTOs
         [Required(ErrorMessage = "The answer is required.")]
         [StringLength(1000, ErrorMessage = "The answer cannot be longer than 1000 characters.")]
         public string Back { get; set; } = string.Empty;
+
+        public int? DeckId { get; set; }
     }
 }
