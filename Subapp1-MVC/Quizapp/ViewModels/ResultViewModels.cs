@@ -1,6 +1,6 @@
 namespace Quizapp.ViewModels
 {
-    // Represents the answer the student selected for one question.
+    // Represents the selected answer options for one question.
     public class SubmitAnswerViewModel
     {
         public int QuestionId { get; set; }
@@ -14,21 +14,18 @@ namespace Quizapp.ViewModels
         public List<SubmitAnswerViewModel> Answers { get; set; } = new();
     }
 
-    // What is shown on the result page.
-        // Contains the result and the server-calculated solution status.
     // Contains the result and the server-calculated solution status.
-public class ResultViewModel
-{
-    public int QuizAttemptId { get; set; }
-    public string QuizTitle { get; set; } = string.Empty;
-    public int Score { get; set; }
-    public int TotalQuestions { get; set; }
+    public class ResultViewModel
+    {
+        public int QuizAttemptId { get; set; }
+        public string QuizTitle { get; set; } = string.Empty;
+        public int Score { get; set; }
+        public int TotalQuestions { get; set; }
+        public int AttemptCount { get; set; }
+        public bool SolutionUnlocked { get; set; }
+    }
 
-    public int AttemptCount { get; set; }
-    public bool SolutionUnlocked { get; set; }
-}
-
-    // One row in the overview on the solution page.
+    // Represents one question's result on the solution page.
     public class QuestionResultViewModel
     {
         public string QuestionText { get; set; } = string.Empty;
@@ -37,7 +34,7 @@ public class ResultViewModel
         public bool IsCorrect { get; set; }
     }
 
-    // What is shown on the solution page.
+    // Contains the questions displayed on the solution page.
     public class SolutionViewModel
     {
         public int QuizAttemptId { get; set; }

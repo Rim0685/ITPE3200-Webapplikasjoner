@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Quizapp.DAL;
 using Quizapp.Models;
@@ -18,100 +19,88 @@ namespace Quizapp.Controllers
             _logger = logger;
         }
 
+        // Displays all available quizzes.
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            try
-            {
-                var quizzes = await _quizRepository.GetAll();
+            var quizzes = await _quizRepository.GetAll();
 
-                var viewModel = quizzes.Select(quiz => new QuizListItemViewModel
+            if (quizzes == null)
+            {
+                _logger.LogError(
+                    "[QuizController] Failed to retrieve the quiz list.");
+
+                return StatusCode(
+                    500,
+                    "The quizzes could not be loaded. Please try again.");
+            }
+
+            var viewModel = quizzes.Select(quiz =>
+                new QuizListItemViewModel
                 {
                     QuizId = quiz.QuizId,
                     PageTitle = quiz.Title,
                     Description = quiz.Description
                 }).ToList();
 
-                return View(viewModel);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(
-                    ex,
-                    "An error occurred while fetching the list of quizzes.");
-
-                return RedirectToAction("Error", "Home");    
-            }
+            return View(viewModel);
         }
 
+        // Displays information about the selected quiz.
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
-            try
+            var quiz = await _quizRepository.GetQuizById(id);
+
+            if (quiz == null)
             {
-                var quiz = await _quizRepository.GetQuizById(id);
-
-                if (quiz == null)
-                {
-                    _logger.LogWarning(
-                        "An error occurred while fetching the quiz with QuizId {QuizId}.",
-                        id);
-
-                    return NotFound();    
-                }
-
-                var viewModel = new QuizDetailsViewModel
-                {
-                    QuizId = quiz.QuizId,
-                    PageTitle = quiz.Title,
-                    Description = quiz.Description,
-                    QuestionCount = quiz.Questions.Count
-                };
-
-                return View(viewModel);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(
-                    ex,
-                    "An error occurred while fetching the quiz with QuizId {QuizId}.",
+                _logger.LogWarning(
+                    "[QuizController] Quiz was not available for QuizId {QuizId}.",
                     id);
 
-                return RedirectToAction("Error", "Home");    
+                return NotFound("The quiz was not found.");
             }
+
+            var viewModel = new QuizDetailsViewModel
+            {
+                QuizId = quiz.QuizId,
+                PageTitle = quiz.Title,
+                Description = quiz.Description,
+                QuestionCount = quiz.Questions.Count
+            };
+
+            return View(viewModel);
         }
 
+        // Displays the quiz questions to an authenticated user.
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> Play(int id)
         {
-            try
+            var quiz = await _quizRepository.GetQuizById(id);
+
+            if (quiz == null)
             {
-                var quiz = await _quizRepository.GetQuizById(id);
+                _logger.LogWarning(
+                    "[QuizController] Quiz was not available when starting QuizId {QuizId}.",
+                    id);
 
-                if (quiz == null)
-                {
-                    _logger.LogWarning(
-                        "An error occurred while starting the quiz with QuizId {QuizId}.",
-                        id);
+                return NotFound("The quiz was not found.");
+            }
 
-                    return NotFound();    
-                }
+            var viewModel = new QuizPlayViewModel
+            {
+                QuizId = quiz.QuizId,
+                PageTitle = quiz.Title,
 
-                var viewModel = new QuizPlayViewModel
-                {
-                    QuizId = quiz.QuizId,
-                    PageTitle = quiz.Title,
-
-                    Questions = quiz.Questions.Select((question, index) => new QuestionViewModel
+                Questions = quiz.Questions
+                    .Select((question, index) => new QuestionViewModel
                     {
                         QuestionId = question.QuestionId,
-
                         QuestionText = question.QuestionText,
-
                         ImageUrl = question.ImageUrl,
-
                         QuestionIndex = index,
-                        
+
                         IsMultipleChoice =
                             question.QuestionType == QuestionType.TextMultiple ||
                             question.QuestionType == QuestionType.ImageMultiple,
@@ -120,27 +109,17 @@ namespace Quizapp.Controllers
                             question.QuestionType == QuestionType.ImageSingle ||
                             question.QuestionType == QuestionType.ImageMultiple,
 
-                        
-                        Options = question.AnswerOptions.Select(option => new AnswerOptionViewModel
-                        {
-                            Id = option.AnswerOptionId,
-                            Text = option.AnswerText,
-                            ImageUrl = option.ImageUrl
-                        }).ToList()
+                        Options = question.AnswerOptions
+                            .Select(option => new AnswerOptionViewModel
+                            {
+                                Id = option.AnswerOptionId,
+                                Text = option.AnswerText,
+                                ImageUrl = option.ImageUrl
+                            }).ToList()
                     }).ToList()
-                };
+            };
 
-                return View(viewModel);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(
-                    ex,
-                    "An error occurred while starting the quiz with QuizId {QuizId}.",
-                    id);
-
-                return RedirectToAction("Error", "Home");
-            }
+            return View(viewModel);
         }
     }
 }

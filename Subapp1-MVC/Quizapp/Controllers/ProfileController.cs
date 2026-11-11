@@ -162,11 +162,20 @@ namespace Quizapp.Controllers
             }
         }
 
-        // Loads personal content through the repositories.
+                // Loads personal content through the repositories.
         private async Task LoadOverview(
             ProfileViewModel model, string userId)
         {
             var attempts = await _quizRepository.GetUserQuizAttempts(userId);
+
+            if (attempts == null)
+            {
+                _logger.LogError(
+                    "[ProfileController] Failed to retrieve the user's quiz attempts.");
+
+                throw new InvalidOperationException(
+                    "The quiz attempts could not be loaded.");
+            }
 
             model.QuizAttempts = attempts
                 .Select(attempt => new QuizAttemptViewModel
@@ -181,6 +190,15 @@ namespace Quizapp.Controllers
 
             var cards = await _flashcardRepository.GetAll(userId);
 
+            if (cards == null)
+            {
+                _logger.LogError(
+                    "[ProfileController] Failed to retrieve the user's flashcards.");
+
+                throw new InvalidOperationException(
+                    "The flashcards could not be loaded.");
+            }
+
             model.Flashcards = cards
                 .Select(card => new FlashcardSummaryViewModel
                 {
@@ -191,11 +209,15 @@ namespace Quizapp.Controllers
                 .ToList();
 
             var notes = await _studyNoteRepository.GetAll(userId);
+
             if (notes == null)
-                {
-                    throw new InvalidOperationException(
+            {
+                _logger.LogError(
+                    "[ProfileController] Failed to retrieve the user's study notes.");
+
+                throw new InvalidOperationException(
                     "The study notes could not be loaded.");
-                }
+            }
 
             model.StudyNotes = notes
                 .Select(note => new StudyNoteViewModel
