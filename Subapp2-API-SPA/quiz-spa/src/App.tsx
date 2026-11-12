@@ -6,6 +6,7 @@ import RegisterPage from "./pages/RegisterPage";
 import { QuizListPage } from "./pages/QuizListPage";
 import FlashcardListPage from "./pages/FlashcardListPage";
 import { TakeQuizPage } from "./pages/TakeQuizPage";
+import { QuizResultPage } from "./pages/QuizResultPage"; // <-- 1. Legg til import her
 
 // Checks if the user is logged in before showing a protected page
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -36,6 +37,16 @@ function App() {
             element={
               <ProtectedRoute>
                 <TakeQuizPage />
+              </ProtectedRoute>
+            }
+          />
+          
+          {/* 2. Legg til denne ruten for resultatsiden */}
+          <Route
+            path="/quiz/:id/result"
+            element={
+              <ProtectedRoute>
+                <QuizResultPage />
               </ProtectedRoute>
             }
           />

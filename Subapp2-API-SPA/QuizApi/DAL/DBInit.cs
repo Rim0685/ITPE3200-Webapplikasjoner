@@ -126,12 +126,12 @@ namespace QuizApi.DAL
                             new AnswerOption
                             {
                                 Text = "Use case diagram",
-                                IsCorrect = false
+                                IsCorrect = true
                             },
                             new AnswerOption
                             {
                                 Text = "Sequence diagram",
-                                IsCorrect = true
+                                IsCorrect = false
                             }
                         }
                     },
@@ -151,12 +151,12 @@ namespace QuizApi.DAL
                             new AnswerOption
                             {
                                 Text = "Use case diagram",
-                                IsCorrect = true
+                                IsCorrect = false
                             },
                             new AnswerOption
                             {
                                 Text = "Sequence diagram",
-                                IsCorrect = false
+                                IsCorrect = true
                             },
                             new AnswerOption
                             {

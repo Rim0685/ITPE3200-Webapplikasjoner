@@ -122,6 +122,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseStaticFiles(); //la til denne
+
 // Must come before MapControllers so cross-origin requests from the SPA are allowed.
 app.UseCors("AllowSpa");
 

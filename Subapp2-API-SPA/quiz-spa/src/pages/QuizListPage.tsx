@@ -13,7 +13,6 @@ export const QuizListPage: React.FC = () => {
     try {
       setLoading(true);
       const data = await quizService.getQuizzes(search);
-      console.log("Hentede quizer fra API:", data);
       setQuizzes(data);
       setError(null);
     } catch (err) {
@@ -46,7 +45,7 @@ export const QuizListPage: React.FC = () => {
                 <h3>{quiz.title}</h3>
                 <p>{quiz.description}</p>
                 <p>Forsøk: {quiz.attemptsCount || 0} | Siste resultat: {quiz.lastResult !== undefined ? `${quiz.lastResult} poeng` : 'Ingen forsøk'}</p>
-               <Link to={`/quiz/${quiz.id || (quiz as any).quizId}`}>Start Quiz</Link>
+                <Link to={`/quiz/${quiz.id || (quiz as any).quizId}`}>Start Quiz</Link>
                 {quiz.isSolutionAvailable && (
                   <Link to={`/quiz/${quiz.id || (quiz as any).quizId}/solution`} style={{ marginLeft: '10px' }}>
                     Se fasit

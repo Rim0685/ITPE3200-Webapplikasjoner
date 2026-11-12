@@ -13,23 +13,29 @@ export const AnswerOption: React.FC<Props> = ({ option, isMultipleChoice, isSele
     <div 
       className={`answer-option ${isSelected ? 'selected' : ''}`}
       onClick={() => onSelect(option.id)}
-      style={{ cursor: 'pointer', margin: '8px 0', padding: '8px', border: isSelected ? '2px solid blue' : '1px solid #ccc' }}
+      style={{ cursor: 'pointer', margin: '8px 0', padding: '8px', border: isSelected ? '2px solid blue' : '1px solid #ccc', display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}
     >
-      {isMultipleChoice ? (
-        <input type="checkbox" checked={isSelected} onChange={() => {}} />
-      ) : (
-        <input type="radio" checked={isSelected} onChange={() => {}} />
-      )}
+      <input 
+        type={isMultipleChoice ? 'checkbox' : 'radio'} 
+        checked={isSelected} 
+        onChange={(e) => {
+          e.stopPropagation();
+          onSelect(option.id);
+        }} 
+        style={{ marginRight: '8px', cursor: 'pointer' }}
+      />
+
+      <span style={{ flexGrow: 1 }}>{option.text}</span>
 
       {option.imageUrl && (
-        <img 
-          src={option.imageUrl} 
-          alt="Svaralternativ" 
-          style={{ width: '100px', display: 'block', marginTop: '5px' }} 
-        />
+        <div style={{ width: '100%', marginTop: '5px' }}>
+          <img 
+            src={option.imageUrl} 
+            alt="Svaralternativ" 
+            style={{ maxWidth: '150px', maxHeight: '100px', display: 'block', borderRadius: '4px', objectFit: 'contain' }} 
+          />
+        </div>
       )}
-      
-      <span style={{ marginLeft: '8px' }}>{option.text}</span>
     </div>
   );
 };
