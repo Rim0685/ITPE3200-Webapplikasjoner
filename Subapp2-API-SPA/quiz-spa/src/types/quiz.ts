@@ -20,6 +20,7 @@ export interface Quiz {
   isSolutionAvailable: boolean;
   lastResult?: number;
   attemptsCount?: number;
+  lastAttemptId?: number;
   questions?: Question[];
 }
 

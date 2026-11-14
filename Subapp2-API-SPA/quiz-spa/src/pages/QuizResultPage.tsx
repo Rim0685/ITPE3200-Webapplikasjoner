@@ -1,8 +1,7 @@
 import React from 'react';
-import { useLocation, useParams, Link } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 
 export const QuizResultPage: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
   const location = useLocation();
   
   // Henter resultatet fra navigate-state (sendt fra TakeQuizPage)
@@ -25,8 +24,8 @@ export const QuizResultPage: React.FC = () => {
                 {(result.questionResults || result.QuestionResults).map((qRes: any, index: number) => (
                   <li key={index} style={{ marginBottom: '8px' }}>
                     Spørsmål ID {qRes.questionId ?? qRes.QuestionId}:{' '}
-                    <strong style={{ color: (qRes.isCorrect ?? qRes.IsCorrect) ? 'green' : 'red' }}>
-                      {(qRes.isCorrect ?? qRes.IsCorrect) ? 'Riktig' : 'Feil'}
+                    <strong style={{ color: qRes.wasFullyCorrect ? 'green' : 'red' }}>
+                      {qRes.wasFullyCorrect ? 'Riktig' : 'Feil'}
                     </strong>
                   </li>
                 ))}

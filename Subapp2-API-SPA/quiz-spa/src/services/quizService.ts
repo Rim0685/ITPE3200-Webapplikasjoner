@@ -1,13 +1,57 @@
-import type { Quiz, QuizSubmission } from '../types/quiz';
+import type { Quiz } from '../types/quiz';
+import { apiRequest } from './apiClient';
 
 //const API_URL = '/api/quizzes';
 const API_URL = 'http://localhost:5268/api/quizzes';
 
 export const quizService = {
   async getQuizzes(search?: string): Promise<Quiz[]> {
-    const url = search ? `${API_URL}?search=${encodeURIComponent(search)}` : API_URL;
-    const response = await fetch(url);
-    if (!response.ok) throw new Error('Kunne ikke hente quizer.');
+    const endpoint = search
+      ? `/api/quizzes?search=${encodeURIComponent(search)}`
+      : '/api/quizzes';
+
+    // apiRequest includes the signed-in user's token.
+    const response = await apiRequest(endpoint);
+
+    if (!response.ok) {
+      throw new Error('Kunne ikke hente quizer.');
+    }
+
+    const data: {
+      quizId: number;
+      title: string;
+      description: string;
+      attemptCount: number;
+      lastScore: number | null;
+      lastAttemptId: number | null;
+      isSolutionUnlocked: boolean;
+    }[] = await response.json();
+
+    // Maps the API's field names to the frontend's existing model.
+    return data.map(quiz => ({
+      id: quiz.quizId,
+      title: quiz.title,
+      description: quiz.description,
+      attemptsCount: quiz.attemptCount,
+      lastResult: quiz.lastScore ?? undefined,
+      lastAttemptId: quiz.lastAttemptId ?? undefined,
+      isSolutionAvailable: quiz.isSolutionUnlocked
+    }));
+  },
+
+  async getSolution(attemptId: number) {
+    const response = await apiRequest(
+      `/api/quizattempts/${attemptId}/solution`
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        response.status === 403
+          ? 'Fasiten er ikke tilgjengelig for dette forsøket.'
+          : 'Kunne ikke hente fasiten.'
+      );
+    }
+
     return response.json();
   },
 
@@ -37,6 +81,7 @@ export const quizService = {
     // Legger til fullstendig URL og /images/-mappen på spørsmål- og svaralternativ-bilder automatisk
     const quizWithImages: Quiz = {
       ...data,
+      id: data.quizId,
       questions: data.questions.map((q: any) => {
         const rawImgUrl = q.imageUrl ?? q.ImageUrl;
         let questionImageUrl = undefined;
@@ -53,6 +98,8 @@ export const quizService = {
 
         return {
           ...q,
+          id: q.questionId,
+          isMultipleChoice: q.allowMultipleAnswers,
           imageUrl: questionImageUrl,
           answerOptions: q.answerOptions.map((opt: any) => {
             const rawOptImgUrl = opt.imageUrl ?? opt.ImageUrl;
@@ -70,6 +117,7 @@ export const quizService = {
 
             return {
               ...opt,
+              id: opt.answerOptionId,
               imageUrl: optionImageUrl,
             };
           }),
@@ -84,12 +132,16 @@ export const quizService = {
     const token = localStorage.getItem('token');
     
     const answersDict = submission?.answers || submission?.Answers || {};
-    const formattedAnswers = Object.entries(answersDict).map(([qId, optIds]) => ({
-      QuestionId: Number(qId),
-      AnswerOptionIds: Array.isArray(optIds) ? optIds.map(Number) : [Number(optIds)]
-    }));
 
-    // Sender payload direkte uten 'submission'-wrapperen, i tilfelle C# [FromBody] tar imot DTO-en direkte
+    const formattedAnswers = Object.entries(answersDict).map(
+      ([qId, optIds]) => ({
+        QuestionId: Number(qId),
+        SelectedAnswerOptionIds: Array.isArray(optIds)
+          ? optIds.map(Number)
+          : [Number(optIds)]
+      })
+    );
+        // Sender payload direkte uten 'submission'-wrapperen, i tilfelle C# [FromBody] tar imot DTO-en direkte
     const payload = {
       QuizId: Number(quizId),
       Answers: formattedAnswers

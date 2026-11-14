@@ -98,11 +98,14 @@ namespace QuizApi.DAL
             try
             {
                 return await _db.QuizAttempts
-                    .Include(a => a.AttemptAnswers)
-                        .ThenInclude(a => a.SelectedOptions)
-                    .FirstOrDefaultAsync(a =>
-                        a.QuizAttemptId == quizAttemptId &&
-                        a.UserId == userId);
+                    .Include(attempt => attempt.AttemptAnswers)
+                        .ThenInclude(answer => answer.SelectedOptions)
+                    .Include(attempt => attempt.AttemptAnswers)
+                        .ThenInclude(answer => answer.Question)
+                            .ThenInclude(question => question!.AnswerOptions)
+                    .FirstOrDefaultAsync(attempt =>
+                        attempt.QuizAttemptId == quizAttemptId
+                        && attempt.UserId == userId);
             }
             catch (Exception ex)
             {

@@ -17,19 +17,27 @@
     <span class="pill">Question</span>
     <h2 class="study-question">@Model.QuestionText</h2>
 
-    @* Hides the answer until the user chooses to reveal it. *@
+    @* Shows and hides the answer using the HTML details and summary elements.
+   Technical references, checked after implementation:
+   https://www.w3schools.com/tags/tag_details.asp
+   https://www.w3schools.com/tags/tag_summary.asp
+   Adapted to display the flashcard answer. *@
     <details>
         <summary class="btn btn-light">Show answer</summary>
         <p><span class="highlight">@Model.AnswerText</span></p>
     </details>
 </div>
 
-@* Preserves the deck filter when navigating between cards. *@
+@* Navigates between flashcards using ASP.NET Core Anchor Tag Helpers.
+   Technical reference, checked after implementation:
+   https://learn.microsoft.com/en-us/aspnet/core/mvc/views/tag-helpers/built-in/anchor-tag-helper?view=aspnetcore-10.0#asp-route-value *@
+
+
 <p class="center">
     @if (index > 0)
     {
         <a asp-action="Study"
-           asp-route-deckId="@deckId"
+           asp-route-deckId="@deckId"git 
            asp-route-index="@(index - 1)"
            class="btn btn-light">← Previous</a>
     }
