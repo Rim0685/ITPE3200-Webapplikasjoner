@@ -8,6 +8,8 @@ import FlashcardListPage from "./pages/FlashcardListPage";
 import FlashcardDeckListPage from "./pages/FlashcardDeckListPage";
 import FlashcardDeckDetailPage from "./pages/FlashcardDeckDetailPage";
 import { TakeQuizPage } from "./pages/TakeQuizPage";
+import { QuizResultPage } from "./pages/QuizResultPage"; // <-- 1. Legg til import her
+import { QuizSolutionPage } from './pages/QuizSolutionPage';
 
 // Checks if the user is logged in before showing a protected page
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -41,6 +43,16 @@ function App() {
               </ProtectedRoute>
             }
           />
+          
+          {/* 2. Legg til denne ruten for resultatsiden */}
+          <Route
+            path="/quiz/:id/result"
+            element={
+              <ProtectedRoute>
+                <QuizResultPage />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Redirect users without a token to the login page */}
           <Route
@@ -66,6 +78,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <FlashcardDeckDetailPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/quiz/:id/solution"
+            element={
+              <ProtectedRoute>
+                <QuizSolutionPage />
               </ProtectedRoute>
             }
           />

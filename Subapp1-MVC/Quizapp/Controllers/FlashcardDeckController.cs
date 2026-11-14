@@ -1,6 +1,3 @@
-// The Controllers folder contains classes that handle web requests.
-// This controller manages flashcard decks belonging to the signed-in user.
-
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +14,6 @@ namespace Quizapp.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<FlashcardDeckController> _logger;
 
-        // Receives repository, user management and logging services.
         public FlashcardDeckController(
             IFlashcardDeckRepository repository,
             UserManager<ApplicationUser> userManager,
@@ -32,67 +28,60 @@ namespace Quizapp.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            try
+            var userId = _userManager.GetUserId(User);
+
+            if (string.IsNullOrEmpty(userId))
             {
-                var userId = _userManager.GetUserId(User);
-
-                if (string.IsNullOrEmpty(userId))
-                {
-                    return Challenge();
-                }
-
-                var decks = await _repository.GetAll(userId);
-
-                var model = decks.Select(deck => new FlashcardDeckViewModel
-                {
-                    FlashcardDeckId = deck.FlashcardDeckId,
-                    Name = deck.Name,
-                    Description = deck.Description,
-                    CreatedAt = deck.CreatedAt,
-                    CardCount = deck.Flashcards.Count
-                }).ToList();
-
-                return View(model);
+                return Challenge();
             }
-            catch (Exception ex)
+
+            var decks = await _repository.GetAll(userId);
+
+            if (decks == null)
             {
-                _logger.LogError(ex, "Failed to load flashcard decks.");
+                _logger.LogError(
+                    "[FlashcardDeckController] Failed to retrieve flashcard decks.");
 
                 return StatusCode(
-                    500, "The decks could not be loaded. Please try again.");
+                    500,
+                    "The decks could not be loaded. Please try again.");
             }
+
+            var model = decks.Select(deck => new FlashcardDeckViewModel
+            {
+                FlashcardDeckId = deck.FlashcardDeckId,
+                Name = deck.Name,
+                Description = deck.Description,
+                CreatedAt = deck.CreatedAt,
+                CardCount = deck.Flashcards.Count
+            }).ToList();
+
+            return View(model);
         }
 
-        // Displays a deck and its cards, only if the user owns it.
+        // Displays a deck and its cards only if the user owns it.
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
-            try
+            var userId = _userManager.GetUserId(User);
+
+            if (string.IsNullOrEmpty(userId))
             {
-                var userId = _userManager.GetUserId(User);
-
-                if (string.IsNullOrEmpty(userId))
-                {
-                    return Challenge();
-                }
-
-                var deck = await _repository.GetById(id, userId);
-
-                if (deck == null)
-                {
-                    return NotFound();
-                }
-
-                return View(ToViewModel(deck, includeCards: true));
+                return Challenge();
             }
-            catch (Exception ex)
+
+            var deck = await _repository.GetById(id, userId);
+
+            if (deck == null)
             {
-                _logger.LogError(
-                    ex, "Failed to load flashcard deck {DeckId}.", id);
+                _logger.LogWarning(
+                    "[FlashcardDeckController] DeckId {DeckId} was not available.",
+                    id);
 
-                return StatusCode(
-                    500, "The deck could not be loaded. Please try again.");
+                return NotFound("The deck was not found.");
             }
+
+            return View(ToViewModel(deck, includeCards: true));
         }
 
         // Displays an empty creation form.
@@ -105,22 +94,18 @@ namespace Quizapp.Controllers
         // Creates a deck with ownership and creation time set on the server.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(FlashcardDeckViewModel model)
+        public async Task<IActionResult> Create(
+            FlashcardDeckViewModel model)
         {
-            if (!ModelState.IsValid)
+            var userId = _userManager.GetUserId(User);
+
+            if (string.IsNullOrEmpty(userId))
             {
-                return View(model);
+                return Challenge();
             }
 
-            try
+            if (ModelState.IsValid)
             {
-                var userId = _userManager.GetUserId(User);
-
-                if (string.IsNullOrEmpty(userId))
-                {
-                    return Challenge();
-                }
-
                 var deck = new FlashcardDeck
                 {
                     Name = model.Name,
@@ -129,82 +114,87 @@ namespace Quizapp.Controllers
                     CreatedAt = DateTime.UtcNow
                 };
 
-                await _repository.Create(deck);
+                bool returnOk = await _repository.Create(deck);
 
-                _logger.LogInformation(
-                    "Created flashcard deck {DeckId}.",
-                    deck.FlashcardDeckId);
+                if (returnOk)
+                {
+                    _logger.LogInformation(
+                        "[FlashcardDeckController] Created DeckId {DeckId}.",
+                        deck.FlashcardDeckId);
 
-                return RedirectToAction(
-                    nameof(Details), new { id = deck.FlashcardDeckId });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to create a flashcard deck.");
+                    return RedirectToAction(
+                        nameof(Details),
+                        new { id = deck.FlashcardDeckId });
+                }
+
+                _logger.LogWarning(
+                    "[FlashcardDeckController] Flashcard deck creation failed.");
 
                 ModelState.AddModelError(
                     string.Empty,
                     "The deck could not be saved. Please try again.");
-
-                return View(model);
             }
+
+            return View(model);
         }
 
         // Displays the edit form for a deck owned by the user.
         [HttpGet]
         public async Task<IActionResult> Update(int id)
         {
-            try
+            var userId = _userManager.GetUserId(User);
+
+            if (string.IsNullOrEmpty(userId))
             {
-                var userId = _userManager.GetUserId(User);
-
-                if (string.IsNullOrEmpty(userId))
-                {
-                    return Challenge();
-                }
-
-                var deck = await _repository.GetById(id, userId);
-
-                if (deck == null)
-                {
-                    return NotFound();
-                }
-
-                return View(ToViewModel(deck, includeCards: false));
+                return Challenge();
             }
-            catch (Exception ex)
+
+            var deck = await _repository.GetById(id, userId);
+
+            if (deck == null)
             {
-                _logger.LogError(
-                    ex,
-                    "Failed to load flashcard deck {DeckId} for editing.",
+                _logger.LogWarning(
+                    "[FlashcardDeckController] DeckId {DeckId} was not available for editing.",
                     id);
 
-                return StatusCode(
-                    500, "The deck could not be loaded. Please try again.");
+                return NotFound("The deck was not found.");
             }
+
+            return View(ToViewModel(deck, includeCards: false));
         }
 
-        // Updates name and description after checking ownership.
+        // Updates the editable fields of a deck owned by the user.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(FlashcardDeckViewModel model)
+        public async Task<IActionResult> Update(
+            FlashcardDeckViewModel model)
         {
-            if (!ModelState.IsValid)
+            var userId = _userManager.GetUserId(User);
+
+            if (string.IsNullOrEmpty(userId))
             {
-                return View(model);
+                return Challenge();
             }
 
-            try
+            var deck = await _repository.GetById(
+                model.FlashcardDeckId, userId);
+
+            if (deck == null)
             {
-                var userId = _userManager.GetUserId(User);
+                _logger.LogWarning(
+                    "[FlashcardDeckController] DeckId {DeckId} was not available for editing.",
+                    model.FlashcardDeckId);
 
-                if (string.IsNullOrEmpty(userId))
-                {
-                    return Challenge();
-                }
+                return NotFound("The deck was not found.");
+            }
 
-                // The repository only changes name and description.
-                bool updated = await _repository.Update(
+            // Restores display information from the database.
+            model.CreatedAt = deck.CreatedAt;
+            model.CardCount = deck.Flashcards.Count;
+
+            if (ModelState.IsValid)
+            {
+                bool returnOk = await _repository.Update(
                     new FlashcardDeck
                     {
                         FlashcardDeckId = model.FlashcardDeckId,
@@ -213,107 +203,87 @@ namespace Quizapp.Controllers
                     },
                     userId);
 
-                if (!updated)
+                if (returnOk)
                 {
-                    return NotFound();
+                    _logger.LogInformation(
+                        "[FlashcardDeckController] Updated DeckId {DeckId}.",
+                        model.FlashcardDeckId);
+
+                    return RedirectToAction(
+                        nameof(Details),
+                        new { id = model.FlashcardDeckId });
                 }
 
-                _logger.LogInformation(
-                    "Updated flashcard deck {DeckId}.",
-                    model.FlashcardDeckId);
-
-                return RedirectToAction(
-                    nameof(Details),
-                    new { id = model.FlashcardDeckId });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(
-                    ex,
-                    "Failed to update flashcard deck {DeckId}.",
+                _logger.LogWarning(
+                    "[FlashcardDeckController] Update failed for DeckId {DeckId}.",
                     model.FlashcardDeckId);
 
                 ModelState.AddModelError(
                     string.Empty,
                     "The changes could not be saved. Please try again.");
-
-                return View(model);
             }
+
+            return View(model);
         }
 
         // Displays a confirmation page before deleting a deck.
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            try
+            var userId = _userManager.GetUserId(User);
+
+            if (string.IsNullOrEmpty(userId))
             {
-                var userId = _userManager.GetUserId(User);
-
-                if (string.IsNullOrEmpty(userId))
-                {
-                    return Challenge();
-                }
-
-                var deck = await _repository.GetById(id, userId);
-
-                if (deck == null)
-                {
-                    return NotFound();
-                }
-
-                return View(ToViewModel(deck, includeCards: false));
+                return Challenge();
             }
-            catch (Exception ex)
+
+            var deck = await _repository.GetById(id, userId);
+
+            if (deck == null)
             {
-                _logger.LogError(
-                    ex,
-                    "Failed to load flashcard deck {DeckId} for deletion.",
+                _logger.LogWarning(
+                    "[FlashcardDeckController] DeckId {DeckId} was not available for deletion.",
                     id);
 
-                return StatusCode(
-                    500, "The deck could not be loaded. Please try again.");
+                return NotFound("The deck was not found.");
             }
+
+            return View(ToViewModel(deck, includeCards: false));
         }
 
-        // Deletes a deck and its cards after verifying ownership.
+        // Deletes a deck and its cards after checking ownership in the repository.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            try
+            var userId = _userManager.GetUserId(User);
+
+            if (string.IsNullOrEmpty(userId))
             {
-                var userId = _userManager.GetUserId(User);
-
-                if (string.IsNullOrEmpty(userId))
-                {
-                    return Challenge();
-                }
-
-                bool deleted = await _repository.Delete(id, userId);
-
-                if (!deleted)
-                {
-                    return NotFound();
-                }
-
-                _logger.LogInformation(
-                    "Deleted flashcard deck {DeckId}.", id);
-
-                TempData["SuccessMessage"] = "The deck has been deleted.";
-
-                return RedirectToAction(nameof(Index));
+                return Challenge();
             }
-            catch (Exception ex)
+
+            bool returnOk = await _repository.Delete(id, userId);
+
+            if (!returnOk)
             {
-                _logger.LogError(
-                    ex, "Failed to delete flashcard deck {DeckId}.", id);
+                _logger.LogWarning(
+                    "[FlashcardDeckController] Deletion failed for DeckId {DeckId}.",
+                    id);
 
-                return StatusCode(
-                    500, "The deck could not be deleted. Please try again.");
+                return BadRequest("The deck could not be deleted.");
             }
+
+            _logger.LogInformation(
+                "[FlashcardDeckController] Deleted DeckId {DeckId}.",
+                id);
+
+            TempData["SuccessMessage"] = "The deck has been deleted.";
+
+            return RedirectToAction(nameof(Index));
         }
 
-        // Converts a deck to a view model, optionally with its cards.
+        // Converts a deck to a view model, optionally including its cards.
         private static FlashcardDeckViewModel ToViewModel(
             FlashcardDeck deck, bool includeCards)
         {
@@ -324,6 +294,7 @@ namespace Quizapp.Controllers
                 Description = deck.Description,
                 CreatedAt = deck.CreatedAt,
                 CardCount = deck.Flashcards.Count,
+
                 Cards = includeCards
                     ? deck.Flashcards
                         .OrderByDescending(card => card.CreatedAt)

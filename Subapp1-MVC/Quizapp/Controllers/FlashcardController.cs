@@ -2,72 +2,63 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using Quizapp.DAL;
 using Quizapp.Models;
+using Quizapp.ViewModels;
 
 namespace Quizapp.Controllers
 {
     [Authorize]
     public class FlashcardController : Controller
     {
-        private readonly QuizDbContext _db;
         private readonly IFlashcardRepository _flashcardRepository;
+        private readonly IFlashcardDeckRepository _deckRepository;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<FlashcardController> _logger;
 
         public FlashcardController(
-            QuizDbContext db,
             IFlashcardRepository flashcardRepository,
+            IFlashcardDeckRepository deckRepository,
             UserManager<ApplicationUser> userManager,
             ILogger<FlashcardController> logger)
         {
-            _db = db;
             _flashcardRepository = flashcardRepository;
+            _deckRepository = deckRepository;
             _userManager = userManager;
             _logger = logger;
         }
 
-        // Fills the dropdown with the user's own decks.
-        private async Task LoadDecksAsync(
-            string userId, int? selectedDeckId)
-        {
-            var decks = await _db.FlashcardDecks
-                .Where(deck => deck.UserId == userId)
-                .OrderBy(deck => deck.Name)
-                .ToListAsync();
-
-            ViewBag.Decks = new SelectList(
-                decks, "FlashcardDeckId", "Name", selectedDeckId);
-        }
-
-        // Retrieves flashcards through the repository.
+        // Displays the user's flashcards.
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
-            try
+            var userId = _userManager.GetUserId(User);
+
+            if (string.IsNullOrEmpty(userId))
             {
-                var userId = _userManager.GetUserId(User);
-
-                if (string.IsNullOrEmpty(userId))
-                {
-                    return Challenge();
-                }
-
-                var flashcards =
-                    await _flashcardRepository.GetAll(userId);
-
-                return View(flashcards);
+                return Challenge();
             }
-            catch (Exception ex)
+
+            var flashcards = await _flashcardRepository.GetAll(userId);
+
+            if (flashcards == null)
             {
-                _logger.LogError(ex, "Failed to load flashcards.");
+                _logger.LogError(
+                    "[FlashcardController] Failed to retrieve flashcards.");
 
                 return StatusCode(
                     500,
                     "The flashcards could not be loaded. Please try again.");
             }
+
+            var model = flashcards
+                .Select(card => ToViewModel(card))
+                .ToList();
+
+            return View(model);
         }
 
+        // Displays the creation form with the user's available decks.
         [HttpGet]
         public async Task<IActionResult> Create(int? deckId)
         {
@@ -78,16 +69,38 @@ namespace Quizapp.Controllers
                 return Challenge();
             }
 
-            await LoadDecksAsync(userId, deckId);
+            if (deckId.HasValue)
+            {
+                var deck = await _deckRepository.GetById(
+                    deckId.Value, userId);
 
-            return View(new Flashcard { DeckId = deckId });
+                if (deck == null)
+                {
+                    return NotFound("The deck was not found.");
+                }
+            }
+
+            var model = new FlashcardViewModel
+            {
+                DeckId = deckId
+            };
+
+            bool decksLoaded = await LoadDecksAsync(userId, model);
+
+            if (!decksLoaded)
+            {
+                return StatusCode(
+                    500,
+                    "The decks could not be loaded. Please try again.");
+            }
+
+            return View(model);
         }
 
+        // Creates a flashcard, optionally together with a new deck.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            [Bind("QuestionText,AnswerText,DeckId")] Flashcard model,
-            string? newDeckName)
+        public async Task<IActionResult> Create(FlashcardViewModel model)
         {
             var userId = _userManager.GetUserId(User);
 
@@ -96,23 +109,7 @@ namespace Quizapp.Controllers
                 return Challenge();
             }
 
-            newDeckName = newDeckName?.Trim();
-
-            if (!string.IsNullOrEmpty(newDeckName)
-                && newDeckName.Length > 100)
-            {
-                ModelState.AddModelError(
-                    "newDeckName",
-                    "The deck name can be at most 100 characters.");
-            }
-
-            if (!ModelState.IsValid)
-            {
-                await LoadDecksAsync(userId, model.DeckId);
-                return View(model);
-            }
-
-            try
+            if (ModelState.IsValid)
             {
                 var flashcard = new Flashcard
                 {
@@ -122,311 +119,353 @@ namespace Quizapp.Controllers
                     CreatedAt = DateTime.UtcNow
                 };
 
-                if (!string.IsNullOrEmpty(newDeckName))
+                if (!string.IsNullOrWhiteSpace(model.NewDeckName))
                 {
+                    // Saves the new deck and flashcard together.
                     flashcard.Deck = new FlashcardDeck
                     {
-                        Name = newDeckName,
+                        Name = model.NewDeckName.Trim(),
                         UserId = userId,
                         CreatedAt = DateTime.UtcNow
                     };
                 }
-                else if (model.DeckId != null)
+                else if (model.DeckId.HasValue)
                 {
-                    var ownsDeck = await _db.FlashcardDecks
-                        .AnyAsync(deck =>
-                            deck.FlashcardDeckId == model.DeckId
-                            && deck.UserId == userId);
+                    var deck = await _deckRepository.GetById(
+                        model.DeckId.Value, userId);
 
-                    if (!ownsDeck)
+                    if (deck == null)
                     {
-                        return NotFound();
+                        return NotFound("The deck was not found.");
                     }
 
-                    flashcard.DeckId = model.DeckId;
+                    flashcard.DeckId = deck.FlashcardDeckId;
                 }
 
-                _db.Flashcards.Add(flashcard);
-                await _db.SaveChangesAsync();
+                bool returnOk = await _flashcardRepository.Create(
+                    flashcard);
 
-                _logger.LogInformation(
-                    "Created flashcard {FlashcardId}.",
-                    flashcard.FlashcardId);
-
-                if (flashcard.DeckId != null)
+                if (returnOk)
                 {
-                    return RedirectToAction(
-                        "Details",
-                        "FlashcardDeck",
-                        new { id = flashcard.DeckId });
+                    _logger.LogInformation(
+                        "[FlashcardController] Created FlashcardId {FlashcardId}.",
+                        flashcard.FlashcardId);
+
+                    if (flashcard.DeckId.HasValue)
+                    {
+                        return RedirectToAction(
+                            "Details",
+                            "FlashcardDeck",
+                            new { id = flashcard.DeckId });
+                    }
+
+                    return RedirectToAction(nameof(Index));
                 }
 
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(
-                    ex, "Failed to create a flashcard.");
+                _logger.LogWarning(
+                    "[FlashcardController] Flashcard creation failed.");
 
                 ModelState.AddModelError(
                     string.Empty,
                     "The flashcard could not be saved. Please try again.");
-
-                await LoadDecksAsync(userId, model.DeckId);
-                return View(model);
             }
+
+            bool decksLoaded = await LoadDecksAsync(userId, model);
+
+            if (!decksLoaded)
+            {
+                return StatusCode(
+                    500,
+                    "The decks could not be loaded. Please try again.");
+            }
+
+            return View(model);
         }
 
+        // Displays the edit form for a flashcard owned by the user.
         [HttpGet]
         public async Task<IActionResult> Update(int id)
         {
-            try
+            var userId = _userManager.GetUserId(User);
+
+            if (string.IsNullOrEmpty(userId))
             {
-                var userId = _userManager.GetUserId(User);
-
-                if (string.IsNullOrEmpty(userId))
-                {
-                    return Challenge();
-                }
-
-                var flashcard = await _db.Flashcards
-                    .FirstOrDefaultAsync(card =>
-                        card.FlashcardId == id
-                        && card.UserId == userId);
-
-                if (flashcard == null)
-                {
-                    return NotFound();
-                }
-
-                await LoadDecksAsync(userId, flashcard.DeckId);
-
-                return View(flashcard);
+                return Challenge();
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(
-                    ex, "Failed to load flashcard {FlashcardId}.", id);
 
+            var flashcard = await _flashcardRepository.GetById(
+                id, userId);
+
+            if (flashcard == null)
+            {
+                _logger.LogWarning(
+                    "[FlashcardController] FlashcardId {FlashcardId} was not available for editing.",
+                    id);
+
+                return NotFound("The flashcard was not found.");
+            }
+
+            var model = ToViewModel(flashcard);
+
+            bool decksLoaded = await LoadDecksAsync(userId, model);
+
+            if (!decksLoaded)
+            {
                 return StatusCode(
                     500,
-                    "The flashcard could not be loaded. Please try again.");
+                    "The decks could not be loaded. Please try again.");
             }
+
+            return View(model);
         }
 
+        // Updates a flashcard after checking card and deck ownership.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(
-            [Bind("FlashcardId,QuestionText,AnswerText,DeckId")]
-            Flashcard model)
+        public async Task<IActionResult> Update(FlashcardViewModel model)
         {
-            try
+            var userId = _userManager.GetUserId(User);
+
+            if (string.IsNullOrEmpty(userId))
             {
-                var userId = _userManager.GetUserId(User);
+                return Challenge();
+            }
 
-                if (string.IsNullOrEmpty(userId))
+            var flashcard = await _flashcardRepository.GetById(
+                model.FlashcardId, userId);
+
+            if (flashcard == null)
+            {
+                _logger.LogWarning(
+                    "[FlashcardController] FlashcardId {FlashcardId} was not available for editing.",
+                    model.FlashcardId);
+
+                return NotFound("The flashcard was not found.");
+            }
+
+            // Restores the stored creation time for redisplaying the form.
+            model.CreatedAt = flashcard.CreatedAt;
+
+            if (ModelState.IsValid)
+            {
+                if (model.DeckId.HasValue)
                 {
-                    return Challenge();
-                }
+                    var deck = await _deckRepository.GetById(
+                        model.DeckId.Value, userId);
 
-                var flashcard = await _db.Flashcards
-                    .FirstOrDefaultAsync(card =>
-                        card.FlashcardId == model.FlashcardId
-                        && card.UserId == userId);
-
-                if (flashcard == null)
-                {
-                    return NotFound();
-                }
-
-                if (!ModelState.IsValid)
-                {
-                    await LoadDecksAsync(userId, model.DeckId);
-                    return View(model);
-                }
-
-                if (model.DeckId != null)
-                {
-                    var ownsDeck = await _db.FlashcardDecks
-                        .AnyAsync(deck =>
-                            deck.FlashcardDeckId == model.DeckId
-                            && deck.UserId == userId);
-
-                    if (!ownsDeck)
+                    if (deck == null)
                     {
-                        return NotFound();
+                        return NotFound("The deck was not found.");
                     }
                 }
 
-                flashcard.QuestionText = model.QuestionText;
-                flashcard.AnswerText = model.AnswerText;
-                flashcard.DeckId = model.DeckId;
+                bool returnOk = await _flashcardRepository.Update(
+                    new Flashcard
+                    {
+                        FlashcardId = model.FlashcardId,
+                        QuestionText = model.QuestionText,
+                        AnswerText = model.AnswerText,
+                        DeckId = model.DeckId
+                    },
+                    userId);
 
-                await _db.SaveChangesAsync();
+                if (returnOk)
+                {
+                    _logger.LogInformation(
+                        "[FlashcardController] Updated FlashcardId {FlashcardId}.",
+                        model.FlashcardId);
 
-                _logger.LogInformation(
-                    "Updated flashcard {FlashcardId}.",
-                    flashcard.FlashcardId);
+                    return RedirectToAction(nameof(Index));
+                }
 
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(
-                    ex,
-                    "Failed to update flashcard {FlashcardId}.",
+                _logger.LogWarning(
+                    "[FlashcardController] Update failed for FlashcardId {FlashcardId}.",
                     model.FlashcardId);
 
                 ModelState.AddModelError(
                     string.Empty,
                     "The changes could not be saved. Please try again.");
-
-                var userId = _userManager.GetUserId(User);
-
-                if (!string.IsNullOrEmpty(userId))
-                {
-                    await LoadDecksAsync(userId, model.DeckId);
-                }
-
-                return View(model);
             }
+
+            bool decksLoaded = await LoadDecksAsync(userId, model);
+
+            if (!decksLoaded)
+            {
+                return StatusCode(
+                    500,
+                    "The decks could not be loaded. Please try again.");
+            }
+
+            return View(model);
         }
 
+        // Displays a confirmation page before deleting a flashcard.
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            try
+            var userId = _userManager.GetUserId(User);
+
+            if (string.IsNullOrEmpty(userId))
             {
-                var userId = _userManager.GetUserId(User);
-
-                if (string.IsNullOrEmpty(userId))
-                {
-                    return Challenge();
-                }
-
-                var flashcard = await _db.Flashcards
-                    .FirstOrDefaultAsync(card =>
-                        card.FlashcardId == id
-                        && card.UserId == userId);
-
-                if (flashcard == null)
-                {
-                    return NotFound();
-                }
-
-                return View(flashcard);
+                return Challenge();
             }
-            catch (Exception ex)
+
+            var flashcard = await _flashcardRepository.GetById(
+                id, userId);
+
+            if (flashcard == null)
             {
-                _logger.LogError(
-                    ex,
-                    "Failed to load flashcard {FlashcardId} for deletion.",
+                _logger.LogWarning(
+                    "[FlashcardController] FlashcardId {FlashcardId} was not available for deletion.",
                     id);
 
-                return StatusCode(
-                    500,
-                    "The flashcard could not be loaded. Please try again.");
+                return NotFound("The flashcard was not found.");
             }
+
+            return View(ToViewModel(flashcard));
         }
 
+        // Deletes a flashcard owned by the user.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            try
+            var userId = _userManager.GetUserId(User);
+
+            if (string.IsNullOrEmpty(userId))
             {
-                var userId = _userManager.GetUserId(User);
-
-                if (string.IsNullOrEmpty(userId))
-                {
-                    return Challenge();
-                }
-
-                var flashcard = await _db.Flashcards
-                    .FirstOrDefaultAsync(card =>
-                        card.FlashcardId == id
-                        && card.UserId == userId);
-
-                if (flashcard == null)
-                {
-                    return NotFound();
-                }
-
-                _db.Flashcards.Remove(flashcard);
-                await _db.SaveChangesAsync();
-
-                _logger.LogInformation(
-                    "Deleted flashcard {FlashcardId}.", id);
-
-                return RedirectToAction(nameof(Index));
+                return Challenge();
             }
-            catch (Exception ex)
+
+            bool returnOk = await _flashcardRepository.Delete(id, userId);
+
+            if (!returnOk)
             {
-                _logger.LogError(
-                    ex, "Failed to delete flashcard {FlashcardId}.", id);
+                _logger.LogWarning(
+                    "[FlashcardController] Deletion failed for FlashcardId {FlashcardId}.",
+                    id);
 
-                return StatusCode(
-                    500,
-                    "The flashcard could not be deleted. Please try again.");
+                return BadRequest("The flashcard could not be deleted.");
             }
+
+            _logger.LogInformation(
+                "[FlashcardController] Deleted FlashcardId {FlashcardId}.",
+                id);
+
+            return RedirectToAction(nameof(Index));
         }
 
+        // Displays one flashcard at a time.
         [HttpGet]
         public async Task<IActionResult> Study(
             int? deckId, int index = 0)
         {
-            try
+            var userId = _userManager.GetUserId(User);
+
+            if (string.IsNullOrEmpty(userId))
             {
-                var userId = _userManager.GetUserId(User);
-
-                if (string.IsNullOrEmpty(userId))
-                {
-                    return Challenge();
-                }
-
-                var query = _db.Flashcards
-                    .Where(card => card.UserId == userId);
-
-                if (deckId != null)
-                {
-                    query = query.Where(card =>
-                        card.DeckId == deckId);
-                }
-
-                var flashcards = await query
-                    .OrderBy(card => card.FlashcardId)
-                    .ToListAsync();
-
-                if (flashcards.Count == 0)
-                {
-                    return deckId != null
-                        ? RedirectToAction(
-                            "Details",
-                            "FlashcardDeck",
-                            new { id = deckId })
-                        : RedirectToAction(nameof(Index));
-                }
-
-                if (index < 0 || index >= flashcards.Count)
-                {
-                    index = 0;
-                }
-
-                ViewBag.Index = index;
-                ViewBag.Total = flashcards.Count;
-                ViewBag.DeckId = deckId;
-
-                return View(flashcards[index]);
+                return Challenge();
             }
-            catch (Exception ex)
+
+            if (deckId.HasValue)
+            {
+                var deck = await _deckRepository.GetById(
+                    deckId.Value, userId);
+
+                if (deck == null)
+                {
+                    return NotFound("The deck was not found.");
+                }
+            }
+
+            var cards = await _flashcardRepository.GetAll(userId);
+
+            if (cards == null)
             {
                 _logger.LogError(
-                    ex, "Failed to load flashcard study mode.");
+                    "[FlashcardController] Failed to retrieve cards for study mode.");
 
                 return StatusCode(
                     500,
                     "Study mode could not be loaded. Please try again.");
             }
+
+            if (deckId.HasValue)
+            {
+                cards = cards.Where(card => card.DeckId == deckId.Value);
+            }
+
+            var flashcards = cards
+                .OrderBy(card => card.FlashcardId)
+                .ToList();
+
+            if (flashcards.Count == 0)
+            {
+                if (deckId.HasValue)
+                {
+                    return RedirectToAction(
+                        "Details",
+                        "FlashcardDeck",
+                        new { id = deckId });
+                }
+
+                return RedirectToAction(nameof(Index));
+            }
+
+            if (index < 0 || index >= flashcards.Count)
+            {
+                index = 0;
+            }
+
+            var model = ToViewModel(flashcards[index]);
+
+            model.StudyIndex = index;
+            model.StudyTotal = flashcards.Count;
+
+            // Preserves the current study filter for navigation.
+            model.DeckId = deckId;
+
+            return View(model);
+        }
+
+        // Loads the user's decks into the form view model.
+        private async Task<bool> LoadDecksAsync(
+            string userId, FlashcardViewModel model)
+        {
+            var decks = await _deckRepository.GetAll(userId);
+
+            if (decks == null)
+            {
+                _logger.LogError(
+                    "[FlashcardController] Failed to retrieve decks for the form.");
+
+                return false;
+            }
+
+            model.Decks = decks
+                .OrderBy(deck => deck.Name)
+                .Select(deck => new SelectListItem
+                {
+                    Value = deck.FlashcardDeckId.ToString(),
+                    Text = deck.Name,
+                    Selected = deck.FlashcardDeckId == model.DeckId
+                }).ToList();
+
+            return true;
+        }
+
+        // Converts a flashcard to data used by the views.
+        private static FlashcardViewModel ToViewModel(Flashcard card)
+        {
+            return new FlashcardViewModel
+            {
+                FlashcardId = card.FlashcardId,
+                QuestionText = card.QuestionText,
+                AnswerText = card.AnswerText,
+                CreatedAt = card.CreatedAt,
+                DeckId = card.DeckId,
+                DeckName = card.Deck?.Name
+            };
         }
     }
 }

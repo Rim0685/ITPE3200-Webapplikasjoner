@@ -1,4 +1,5 @@
-@model Flashcard
+@model Quizapp.ViewModels.FlashcardViewModel
+
 @* Form for creating a new flashcard, optionally in a new deck. *@
 @{
     ViewData["Title"] = "New flashcard";
@@ -9,27 +10,32 @@
 <form asp-action="Create" method="post" class="card">
     <div asp-validation-summary="ModelOnly"></div>
 
-    <label asp-for="QuestionText">Question</label>
+    <label asp-for="QuestionText"></label>
     <input asp-for="QuestionText" />
     <span asp-validation-for="QuestionText"></span>
 
-    <label asp-for="AnswerText">Answer</label>
+    <label asp-for="AnswerText"></label>
     <textarea asp-for="AnswerText" rows="4"></textarea>
     <span asp-validation-for="AnswerText"></span>
 
-    <label asp-for="DeckId">Deck</label>
-    <select asp-for="DeckId"
-            asp-items="@(ViewBag.Decks as IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)">
+    <label asp-for="DeckId"></label>
+    <select asp-for="DeckId" asp-items="Model.Decks">
         <option value="">No deck</option>
     </select>
-
-    <label for="newDeckName">Or create a new deck</label>
-    <input id="newDeckName" name="newDeckName" maxlength="100"
-        placeholder="New deck name (overrides the choice above)" />
     <span asp-validation-for="DeckId"></span>
+
+    <label asp-for="NewDeckName"></label>
+    <input asp-for="NewDeckName"
+           maxlength="100"
+           placeholder="New deck name (overrides the choice above)" />
+    <span asp-validation-for="NewDeckName"></span>
 
     <p>
         <button type="submit" class="btn btn-dark">Save</button>
         <a asp-action="Index" class="btn btn-light">Cancel</a>
     </p>
 </form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

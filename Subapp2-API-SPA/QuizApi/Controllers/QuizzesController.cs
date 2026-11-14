@@ -62,6 +62,7 @@ namespace QuizApi.Controllers
                     Topic = quiz.Topic,
                     Description = quiz.Description,
                     QuestionCount = quiz.QuizQuestions.Count,
+                    LastAttemptId = latest?.QuizAttemptId,
                     LastScore = latest?.Score,
                     LastMaxScore = latest?.MaxScore,
                     AttemptCount = attemptCount,

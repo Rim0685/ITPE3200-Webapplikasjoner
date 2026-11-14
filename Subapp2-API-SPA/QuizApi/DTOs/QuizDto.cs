@@ -13,6 +13,7 @@ namespace QuizApi.DTOs
         public decimal? LastMaxScore { get; set; }
         public int AttemptCount { get; set; }
         public bool IsSolutionUnlocked { get; set; }
+        public int? LastAttemptId { get; set; }
     }
 
     // Served when a user starts/takes the quiz. Never includes IsCorrect

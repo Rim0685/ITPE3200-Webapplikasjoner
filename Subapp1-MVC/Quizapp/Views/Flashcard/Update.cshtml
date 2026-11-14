@@ -1,5 +1,6 @@
-@model Flashcard
-@* Form for editing a flashcard. The fields are filled in with the card's current text. *@
+@model Quizapp.ViewModels.FlashcardViewModel
+
+@* Form for editing a flashcard. *@
 @{
     ViewData["Title"] = "Edit flashcard";
 }
@@ -9,26 +10,30 @@
 <form asp-action="Update" method="post" class="card">
     <div asp-validation-summary="ModelOnly"></div>
 
-    @* Hidden field that sends the card's ID, so the controller knows which card to update. *@
+    @* Identifies the flashcard to update. Ownership is checked on the server. *@
     <input type="hidden" asp-for="FlashcardId" />
 
-    <label asp-for="QuestionText">Question</label>
+    <label asp-for="QuestionText"></label>
     <input asp-for="QuestionText" />
     <span asp-validation-for="QuestionText"></span>
 
-    <label asp-for="AnswerText">Answer</label>
+    <label asp-for="AnswerText"></label>
     <textarea asp-for="AnswerText" rows="4"></textarea>
     <span asp-validation-for="AnswerText"></span>
 
-    @* Lets the user move the card to another deck, or remove it from its deck. *@
-    <label asp-for="DeckId">Deck</label>
-    <select asp-for="DeckId"
-            asp-items="@(ViewBag.Decks as IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)">
+    @* Allows the user to change or remove the associated deck. *@
+    <label asp-for="DeckId"></label>
+    <select asp-for="DeckId" asp-items="Model.Decks">
         <option value="">No deck</option>
     </select>
+    <span asp-validation-for="DeckId"></span>
 
     <p>
         <button type="submit" class="btn btn-dark">Save changes</button>
         <a asp-action="Index" class="btn btn-light">Cancel</a>
     </p>
 </form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
