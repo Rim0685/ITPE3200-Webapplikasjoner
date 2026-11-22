@@ -10,11 +10,11 @@ namespace Subapp1_MVC.Tests
 {
     public class NegativeTests
     {
-        // Test 1
+        // Test 1: Verifies that Index() returns status code 500 when the repository returns null
         [Fact]
         public async Task Index_WhenQuizzesIsNull_ReturnsStatusCode500()
         {
-            // Arrange
+            // Arrange: Creates mocks for the repository and logger, and forces GetAll() to return null
             var mockRepo = Substitute.For<IQuizRepository>();
             var mockLogger = Substitute.For<ILogger<QuizController>>();
 
@@ -22,19 +22,19 @@ namespace Subapp1_MVC.Tests
 
             var controller = new QuizController(mockRepo, mockLogger);
 
-            // Act
+            // Act: Calls Index() on the controller
             var result = await controller.Index();
 
-            // Assert
+            // Assert:   Confirms the result is an ObjectResult with status code 500
             var statusCodeResult = Assert.IsType<ObjectResult>(result);
             Assert.Equal(500, statusCodeResult.StatusCode);
         }
 
-        // Test 2
+        // Test 2: Verifies that Details() returns NotFound with an error message when quiz ID 99 does not exist
         [Fact]
         public async Task Details_WhenQuizNotFound_ReturnsNotFound()
         {
-            // Arrange
+            // Arrange:Simulates that quiz ID 99 is not found in the database (returns null)
             var mockRepo = Substitute.For<IQuizRepository>();
             var mockLogger = Substitute.For<ILogger<QuizController>>();
 
@@ -42,19 +42,19 @@ namespace Subapp1_MVC.Tests
 
             var controller = new QuizController(mockRepo, mockLogger);
 
-            // Act
+            // Act: Requests details for quiz 99
             var result = await controller.Details(99);
 
-            // Assert
+            // Assert: Confirms the controller returns a NotFoundObjectResult with the expected message
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal("The quiz was not found.", notFoundResult.Value);
         }
 
-        // Test 3
+        // Test 3: Verifies that Play() returns NotFound with an error message when quiz ID 99 does not exist
         [Fact]
         public async Task Play_WhenQuizNotFound_ReturnsNotFound()
         {
-            // Arrange
+            // Arrange: Simulates that quiz ID 99 does not exist (returns null)
             var mockRepo = Substitute.For<IQuizRepository>();
             var mockLogger = Substitute.For<ILogger<QuizController>>();
 
@@ -62,19 +62,19 @@ namespace Subapp1_MVC.Tests
 
             var controller = new QuizController(mockRepo, mockLogger);
 
-            // Act
+            // Act: Attempts to start quiz 99
             var result = await controller.Play(99);
 
-            // Assert
+            // Assert: Confirms the result is a NotFoundObjectResult with the expected message
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal("The quiz was not found.", notFoundResult.Value);
         }
 
-        // Test 4 
+        // Test 4: Verifies that Index() throws an exception when the database fails ("Database crash")
         [Fact]
         public async Task Index_WhenDatabaseThrowsException_HandlesOrThrows()
         {
-            // Arrange
+            // Arrange: Simulates GetAll() failing with an exception
             var mockRepo = Substitute.For<IQuizRepository>();
             var mockLogger = Substitute.For<ILogger<QuizController>>();
 
@@ -82,15 +82,15 @@ namespace Subapp1_MVC.Tests
 
             var controller = new QuizController(mockRepo, mockLogger);
 
-            // Act & Assert
+            // Act & Assert: Verifies that an exception is thrown when Index() is called
             await Assert.ThrowsAsync<Exception>(async () => await controller.Index());
         }
 
-        // Test 5 
+        // Test 5: Verifies that Details() throws an exception on a database timeout
         [Fact]
         public async Task Details_WhenDatabaseThrowsException_HandlesOrThrows()
         {
-            // Arrange
+            // Arrange: Simulates a database timeout for any quiz ID
             var mockRepo = Substitute.For<IQuizRepository>();
             var mockLogger = Substitute.For<ILogger<QuizController>>();
 
@@ -98,15 +98,15 @@ namespace Subapp1_MVC.Tests
 
             var controller = new QuizController(mockRepo, mockLogger);
 
-            // Act & Assert
+            // Act & Assert: Verifies that an exception is thrown when Details(1) is called
             await Assert.ThrowsAsync<Exception>(async () => await controller.Details(1));
         }
 
-        // Test 6 
+        // Test 6:Verifies that Play() throws an exception when the database connection is lost
         [Fact]
         public async Task Play_WhenDatabaseThrowsException_HandlesOrThrows()
         {
-            // Arrange
+            // Arrange: Simulates a lost database connection for any quiz ID
             var mockRepo = Substitute.For<IQuizRepository>();
             var mockLogger = Substitute.For<ILogger<QuizController>>();
 
@@ -114,7 +114,7 @@ namespace Subapp1_MVC.Tests
 
             var controller = new QuizController(mockRepo, mockLogger);
 
-            // Act & Assert
+            // Act & Assert: Verifies that an exception is thrown when Play(1) is called
             await Assert.ThrowsAsync<Exception>(async () => await controller.Play(1));
         }
     }
