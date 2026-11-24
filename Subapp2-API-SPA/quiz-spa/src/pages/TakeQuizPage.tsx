@@ -67,21 +67,19 @@ export const TakeQuizPage: React.FC = () => {
     }
   };
 
-  if (loading) return <div>Laster quiz...</div>;
-  if (error) return <div style={{ color: 'red' }}>{error}</div>;
-  if (!quiz) return <div>Fant ikke quizen.</div>;
+  if (loading) return <div className="quiz-page-container" role="status">Loading quiz...</div>;
+  if (error) return <div className="quiz-page-container"><p role="alert">{error}</p></div>;
+  if (!quiz) return <div className="quiz-page-container"><p className="muted">Quiz not found.</p></div>;
 
   const rawQuestions = quiz.questions || (quiz as any).Questions || [];
 
   return (
-    <div style={{ padding: '20px' }}>
+    <div className="quiz-page-container">
       <h1>{quiz.title}</h1>
-      <p>{quiz.description}</p>
+      <p className="muted">{quiz.description}</p>
 
       {rawQuestions.length === 0 ? (
-        <p style={{ color: 'orange', fontWeight: 'bold' }}>
-          Ingen spørsmål registrert i denne quizen ennå.
-        </p>
+        <p className="muted">This quiz has no questions yet.</p>
       ) : (
         rawQuestions.map((q: any, idx: number) => {
           // Sikrer gyldig ID (faktisk ID eller 1-basert indeks unna 0)
@@ -129,9 +127,7 @@ export const TakeQuizPage: React.FC = () => {
       )}
 
       {rawQuestions.length > 0 && (
-        <button onClick={handleSubmit} style={{ marginTop: '20px', padding: '10px 20px', cursor: 'pointer' }}>
-          Send inn svar
-        </button>
+        <button className="btn btn-dark" onClick={handleSubmit}>Submit answers</button>
       )}
     </div>
   );
