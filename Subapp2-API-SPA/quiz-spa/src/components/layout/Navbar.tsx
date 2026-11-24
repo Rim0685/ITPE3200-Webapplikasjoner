@@ -25,14 +25,17 @@ function Navbar() {
                 <Link to="/decks">Decks</Link>
 
                 {isLoggedIn ? (
-                    // Show Logout when the user has a token
-                    <button
-                        type="button"
-                        className="btn btn-light"
-                        onClick={handleLogout}
-                    >
-                        Log out
-                    </button>
+                    // Show Profile and Logout when the user has a token
+                    <>
+                        <Link to="/profile">Profile</Link>
+                            <button
+                                type="button"
+                                className="btn btn-light"
+                                onClick={handleLogout}
+                            >
+                                Log out
+                            </button>
+                    </>
                 ) : (
                     // Show Register and Log in when the user is logged out
                     <>
