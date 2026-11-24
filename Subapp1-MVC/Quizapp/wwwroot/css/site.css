@@ -134,3 +134,39 @@ details summary::-webkit-details-marker { display: none; }
     color: white; width: 24px; height: 24px; border-radius: 50%;
     align-items: center; justify-content: center; font-weight: bold;
 }
+
+/* Flatter, plainer look (same as Subapp2) */
+.nav { max-width: none; margin: 0; padding: 12px 24px; border-radius: 0; border-bottom: 1px solid var(--border); }
+.nav a { border-radius: 6px; }
+.nav .logo { font-size: 18px; }
+
+h1 { font-size: 36px; font-weight: 700; letter-spacing: -0.01em; }
+.highlight { background: none; padding: 0; color: var(--purple); }
+
+.card, .quiz-question { border-radius: 10px; border: 1px solid var(--border); padding: 20px; }
+.border-success { border: 2px solid var(--purple-light); }
+.border-danger { border: 2px solid var(--danger-light); }
+.pill, .badge { border-radius: 6px; font-weight: 600; font-size: 12px; }
+
+.btn { border-radius: 8px; padding: 10px 20px; font-weight: 600; }
+input:not([type=checkbox]):not([type=radio]), textarea, select {
+    width: 100%; box-sizing: border-box; padding: 10px 12px;
+    border: 1px solid #DADDE6; border-radius: 8px; font: inherit; background: white; color: var(--text); }
+input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 2px solid var(--purple); outline-offset: 1px; }
+
+.option-card { border-radius: 8px; }
+.quiz-question img, .image-wrapper, .image-wrapper img { border-radius: 8px; }
+
+/* Mobile */
+@media (max-width: 700px) {
+    .nav { padding: 12px 16px; }
+    .nav > div { width: 100%; }
+    .nav a { padding: 8px 12px; }
+    .nav .btn { padding: 8px 16px; margin: 0; }
+
+    .container { padding: 24px 16px; }
+    h1 { font-size: 30px; }
+    .study-question { font-size: 26px; }
+    .display-4 { font-size: 48px; }
+    .card, .quiz-question { padding: 16px; }
+}
