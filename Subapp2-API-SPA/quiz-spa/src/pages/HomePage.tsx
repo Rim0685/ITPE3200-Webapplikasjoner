@@ -1,19 +1,32 @@
-import { Link } from "react-router-dom"; 
+import { Link } from "react-router-dom";
 
 function HomePage() {
     return (
         <div className="container">
-            <div className="card">
-                <h1>Study Platform</h1>
-                <p>Practice course content with quizzes and flashcards.</p>
+            <h1>Study dashboard</h1>
+            <p className="muted">Take a quiz, or practice with your own flashcards.</p>
 
-                <Link to="/quizzes" className="btn tbn-dark">
-                    Go to Quizzes
-                </Link>
+            <div className="grid">
+                <div className="card">
+                    <h3>Quizzes</h3>
+                    <p className="muted">Answer questions and see your score.</p>
+                    <Link to="/quizzes" className="btn btn-dark">
+                        View quizzes
+                    </Link>
+                </div>
 
-                <Link to="/flashcards" className="btn tbn-light">
-                    Go to Flashcards
-                </Link>
+                <div className="card">
+                    <h3>Flashcards</h3>
+                    <p className="muted">
+                        Make your own cards and group them in decks.
+                    </p>
+                    <Link to="/flashcards" className="btn btn-dark">
+                        My flashcards
+                    </Link>
+                    <Link to="/decks" className="btn btn-light">
+                        My decks
+                    </Link>
+                </div>
             </div>
         </div>
     );
