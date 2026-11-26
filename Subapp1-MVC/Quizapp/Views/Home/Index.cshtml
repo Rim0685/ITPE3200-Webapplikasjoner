@@ -2,20 +2,18 @@
     ViewData["Title"] = "Home";
 }
 
-<h1>What do you want to <span class="highlight">practice</span> today?</h1>
-<p class="muted">Take a quiz or practice with your own flashcards.</p>
+<h1>Study dashboard</h1>
+<p class="muted">Take a quiz, or practice with your own flashcards.</p>
 
 <div class="grid">
     <div class="card">
-        <span class="pill">Quiz</span>
         <h3>Quizzes</h3>
-        <p class="muted">Text and image questions with answers.</p>
+        <p class="muted">Answer questions and see your score.</p>
         <a asp-controller="Quiz" asp-action="Index" class="btn btn-dark">View quizzes</a>
     </div>
     <div class="card">
-        <span class="pill">Flashcards</span>
         <h3>Flashcards</h3>
-        <p class="muted">Create your own cards, group them in decks and practice them.</p>
+        <p class="muted">Make your own cards and group them in decks.</p>
         <a asp-controller="Flashcard" asp-action="Index" class="btn btn-dark">My flashcards</a>
         <a asp-controller="FlashcardDeck" asp-action="Index" class="btn btn-light">My decks</a>
     </div>

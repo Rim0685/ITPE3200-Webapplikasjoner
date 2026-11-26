@@ -1,9 +1,8 @@
-
 /* Shared colours and styling for Subapp2.
-   Same colour palette as Subapp1.
+   This is the same design as Subapp1, so both apps look alike.
    Colors are defined once here, so they can be changed in one place. */
 
-:root {
+   :root {
     --purple: #4B3FD6;
     --purple-light: #E9E6FD;
     --yellow: #F2D57E;
@@ -15,178 +14,106 @@
     --danger-light: #FDF1F0;
 }
 
-/* General page styling */
-body {
-    margin: 0;
-    font-family: 'Figtree', sans-serif;
-    background-color: var(--background);
-    color: var(--text);
-}
-
-/* Page content */
-.container {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 32px 20px;
-    box-sizing: border-box;
-}
-
-/* Headings */
-h1 {
-    font-size: 44px;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    marging: 0 0 12px;
-}
-
-h2, h3 {
-    font-weight: 700;
-}
+body { margin: 0; font-family: 'Figtree', sans-serif; background: var(--background); color: var(--text); }
+img { max-width: 100%; }
 
 /* Navigation bar */
-.nav {
-    max-width: 1100px;
-    margin: 16px auto 0;
-    padding: 8px 8px 8px 20px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    gap: 8px;
-    background: white;
-    border-radius: 999px;
-}
+.nav { max-width: 1100px; margin: 16px auto 0; padding: 8px 8px 8px 20px; display: flex; flex-wrap: wrap;
+       justify-content: space-between; align-items: center; gap: 8px; background: white; border-radius: 999px; }
+.nav a { padding: 8px 16px; border-radius: 999px; color: var(--muted); text-decoration: none; font-weight: 600; }
+.nav a:hover { background: var(--background); color: var(--text); }
+.nav .logo { font-weight: 800; font-size: 20px; color: var(--text); padding-left: 0; }
+.nav .logo:hover { background: none; }
+.nav-links { display: flex; flex-wrap: wrap; align-items: center; gap: 0; }
 
-.nav a {
-    padding: 8px 16px;
-    border-radius: 999px;
-    color: var(--muted);
-    text-decoration: none;
-    font-weight: 600;
-}
+/* Page content */
+.container { max-width: 1100px; margin: 0 auto; padding: 32px 20px; box-sizing: border-box; }
+h1 { font-size: 44px; font-weight: 800; letter-spacing: -0.03em; margin: 0 0 12px; }
+h2, h3 { font-weight: 700; }
+a { color: var(--purple); }
+.highlight { background: var(--yellow); border-radius: 14px; padding: 0 10px; }
+.muted { color: var(--muted); }
+.center { text-align: center; }
 
-.nav a:hover {
-    background: var(--background);
-    color: var(--text);
-}
-
-.nav .logo {
-    font-weight: 800;
-    font-size: 20px;
-    color: var(--text);
-    padding-left: 0;
-}
-
-.nav .logo:hover {
-    background: none;
-}
-
-
-/* Cards */
-.card {
-    background: white;
-    border-radius: 24px;
-    padding: 24px;
-    margin-bottom: 16px;
-}
-
-/* Grid layout */
-.grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280, 1fr));
-    gap: 16px;
-}
+/* Cards and grid */
+.card { background: white; border-radius: 24px; padding: 24px; margin-bottom: 16px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.grid .card { margin-bottom: 0; }
+.pill { display: inline-block; background: var(--purple-light); color: var(--purple); border-radius: 999px;
+        padding: 4px 12px; font-size: 13px; font-weight: 700; }
 
 /* Buttons */
-.btn {
-    display: inline-block;
-    padding: 12px 24px;
-    border-radius: 999px;
-    border: none;
-    font: inherit;
-    font-weight: 700;
-    text-decoration: none;
-    cursor: pointer;
-    margin: 4px 4px 4px 0;
+.btn { display: inline-block; padding: 12px 24px; border-radius: 999px; border: none; font: inherit;
+       font-weight: 700; text-decoration: none; cursor: pointer; margin: 4px 4px 4px 0; }
+.btn-dark { background: var(--text); color: white; }
+.btn-light { background: white; color: var(--text); border: 1px solid var(--border); }
+.btn-danger { background: var(--danger-light); color: var(--danger); }
+.btn:hover { opacity: 0.85; }
+
+/* Forms */
+label { display: block; font-weight: 600; margin: 16px 0 6px; }
+input:not([type=checkbox]):not([type=radio]), textarea, select {
+    width: 100%; box-sizing: border-box; padding: 14px 16px;
+    border: 1px solid #DADDE6; border-radius: 14px; font: inherit; background: white; color: var(--text); }
+input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 2px solid var(--purple); outline-offset: 1px; }
+.form-container { max-width: 450px; margin: 32px auto; padding: 24px; background: white; border-radius: 24px; }
+.form-container button { margin-top: 16px; }
+.flashcard-form button { margin-top: 16px; }
+.checkbox-row { display: flex; align-items: center; gap: 10px; margin-top: 16px; }
+.checkbox-row input { width: auto; margin: 0; accent-color: var(--purple); }
+.checkbox-row label { margin: 0; }
+[role="alert"] { color: var(--danger); font-weight: 600; margin: 12px 0 0; }
+
+/* Flashcard study mode */
+details summary { list-style: none; }
+details summary::-webkit-details-marker { display: none; }
+.study-question { font-size: 34px; margin: 16px 0 28px; }
+
+/* Flatter, plainer look */
+.nav { max-width: none; margin: 0; padding: 12px 24px; border-radius: 0; border-bottom: 1px solid var(--border); }
+.nav a { border-radius: 6px; }
+.nav .logo { font-size: 18px; }
+
+h1 { font-size: 36px; font-weight: 700; letter-spacing: -0.01em; }
+.highlight { background: none; padding: 0; color: var(--purple); }
+
+.card { border-radius: 10px; border: 1px solid var(--border); padding: 20px; }
+.pill { border-radius: 6px; font-weight: 600; font-size: 12px; }
+
+.btn { border-radius: 8px; padding: 10px 20px; font-weight: 600; }
+input:not([type=checkbox]):not([type=radio]), textarea, select { border-radius: 8px; padding: 10px 12px; }
+.form-container { border-radius: 10px; border: 1px solid var(--border); }
+
+/* Mobile */
+@media (max-width: 700px) {
+    .nav { padding: 12px 16px; }
+    .nav-links { width: 100%; gap: 4px; }
+    .nav a { padding: 8px 12px; }
+    .nav .btn { padding: 8px 16px; margin: 0; }
+
+    .container { padding: 24px 16px; }
+    h1 { font-size: 30px; }
+    .study-question { font-size: 26px; }
+    .card { padding: 16px; }
+    .form-container { margin: 16px; padding: 20px; }
 }
-
-.btn-dark {
-    background: var(--text);
-    color: white;
-}
-
-.btn-light {
-    background: white;
-    color: var(--text);
-    border: 1px solid var(--border);
-}
-
-.btn-danger {
-    background: var(--danger-light);
-    color: var(--danger);
-}
-
-.btn:hover {
-    opacity: 0.85;
-}
-
-/* Forms - Login and Register */
-.form-container {
-    max-width: 450px;
-    margin: 32px auto;
-    padding: 24px;
-    background: white;
-    border-radius: 24px;
-}
-
-/* Form labels */
-.form-container label {
-    display: block;
-    font-weight: 600;
-    margin: 16px 0 6px;
-}
-
-/* Forms inputs */
-.form-container input {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 14px 16px;
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    font: inherit;
-}
-
-/* Space between form elements */
-.form-container button {
-    margin-top: 16px;
-}
-
-/* Flashcard form */
-
-
-
 
 /* ---------- Study notes ---------- */
-/* Obsidian-inspired layout: a list on the left and the selected note on the right */
-
-/* Uses the app's own colours, so the page also looks right in dark mode */
-.notes-page h1,
-.notes-page h2 {
-    color: var(--text);
-}
+/* Obsidian-inspired layout: a list on the left and the selected note on the right.
+   Follows the flat look above: thin borders and small corner radius. */
 
 .notes-layout {
     display: grid;
-    grid-template-columns: 320px minmax(0, 1fr);
+    grid-template-columns: 300px minmax(0, 1fr);
     gap: 20px;
     align-items: start;
-    text-align: left;
 }
 
 /* Sidebar */
 .notes-sidebar {
     background: white;
-    border-radius: 20px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
     overflow: hidden;
     position: sticky;
     top: 16px;
@@ -195,73 +122,71 @@ h2, h3 {
 .notes-sidebar-header {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    padding: 20px 20px 14px;
+    gap: 10px;
+    padding: 16px;
     border-bottom: 1px solid var(--border);
 }
 
 .notes-sidebar-header h2 {
     margin: 0;
     font-size: 18px;
-    font-weight: 800;
 }
 
-.notes-search {
+/* label.notes-search beats the global label rule */
+label.notes-search {
     display: flex;
     align-items: center;
     gap: 8px;
-    background: var(--background);
-    border: 2px solid transparent;
-    border-radius: 12px;
-    padding: 8px 12px;
+    margin: 0;
+    padding: 0 10px;
+    font-weight: 400;
     color: var(--muted);
-}
-
-.notes-search:focus-within {
-    border-color: var(--purple);
+    border: 1px solid #DADDE6;
+    border-radius: 8px;
     background: white;
 }
 
-.notes-search input {
-    flex: 1;
-    min-width: 0;
+label.notes-search:focus-within {
+    outline: 2px solid var(--purple);
+    outline-offset: 1px;
+}
+
+/* The border sits on the label, so the input itself has none */
+.notes-search input:not([type=checkbox]) {
     border: none;
-    background: transparent;
     outline: none;
-    font: inherit;
-    font-size: 14px;
-    color: var(--text);
+    padding: 10px 0;
+    background: transparent;
 }
 
 .notes-new-button {
     width: 100%;
     margin: 0;
-    border-radius: 12px;
 }
 
 /* The list scrolls on its own, so the page stays tidy with many notes */
 .notes-list {
     max-height: 520px;
     overflow-y: auto;
-    padding: 8px;
+    padding: 6px;
 }
 
 .notes-list-empty {
     color: var(--muted);
     font-size: 14px;
-    padding: 12px;
+    padding: 10px;
 }
 
 .note-item {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 2px;
     width: 100%;
     text-align: left;
     background: transparent;
     border: none;
-    border-radius: 12px;
-    padding: 12px 14px;
+    border-radius: 6px;
+    padding: 10px 12px;
     margin-bottom: 2px;
     font: inherit;
     color: var(--text);
@@ -297,6 +222,10 @@ h2, h3 {
     font-size: 15px;
 }
 
+.note-item-selected .note-item-title {
+    color: var(--purple);
+}
+
 .note-item-date {
     flex-shrink: 0;
     font-size: 12px;
@@ -311,8 +240,9 @@ h2, h3 {
 /* Reading pane */
 .notes-pane {
     background: white;
-    border-radius: 20px;
-    padding: 40px 48px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 32px 40px;
     min-height: 520px;
     box-sizing: border-box;
 }
@@ -336,12 +266,9 @@ h2, h3 {
     font-size: 14px;
 }
 
-/* index.css sets a fixed line height for the whole page (about 26px),
-   so a large title needs its own, or wrapped lines overlap */
 .note-view h1 {
     font-size: 30px;
     line-height: 1.2;
-    letter-spacing: -0.02em;
     margin: 16px 0;
     overflow-wrap: anywhere;
 }
@@ -358,6 +285,7 @@ h2, h3 {
     overflow-wrap: anywhere;
     font-size: 17px;
     line-height: 1.7;
+    margin: 0;
 }
 
 .notes-pane-empty {
@@ -373,49 +301,35 @@ h2, h3 {
     margin-bottom: 4px;
 }
 
-/* Form used both for creating and editing, styled like the note it becomes */
+/* Form used both for creating and editing, styled like the note it becomes.
+   input./textarea. in the selectors beat the global input rule. */
 .note-form {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
-.note-form-title,
-.note-form-content {
-    border: 2px solid transparent;
-    border-radius: 14px;
-    background: var(--background);
-    color: var(--text);
-    font: inherit;
-    padding: 12px 16px;
-    box-sizing: border-box;
-    width: 100%;
-}
-
-.note-form-title {
+.note-form input.note-form-title {
     font-size: 24px;
-    font-weight: 800;
+    font-weight: 700;
     line-height: 1.3;
 }
 
-.note-form-content {
+.note-form textarea.note-form-content {
     min-height: 300px;
     font-size: 17px;
     line-height: 1.7;
     resize: vertical;
 }
 
-.note-form-title:focus,
-.note-form-content:focus {
-    outline: none;
-    border-color: var(--purple);
-    background: white;
-}
-
 .note-form-footer {
     display: flex;
     align-items: center;
     gap: 8px;
+}
+
+.note-form-footer .btn {
+    margin: 0;
 }
 
 .note-char-count {
@@ -429,49 +343,29 @@ h2, h3 {
     color: white;
 }
 
-.note-btn-primary:disabled {
+.note-btn-primary:disabled,
+.note-btn-danger:disabled {
     opacity: 0.6;
     cursor: default;
 }
 
 .note-error {
-    color: var(--danger);
     background: var(--danger-light);
     padding: 10px 14px;
-    border-radius: 12px;
+    border-radius: 8px;
     font-size: 14px;
     margin: 0 0 12px;
-}
-
-/* On small screens the list goes above the note */
-@media (max-width: 800px) {
-    .notes-layout {
-        grid-template-columns: 1fr;
-    }
-
-    .notes-sidebar {
-        position: static;
-    }
-
-    .notes-list {
-        max-height: 260px;
-    }
-
-    .notes-pane {
-        padding: 24px;
-        min-height: 0;
-    }
 }
 
 /* Delete confirmation dialog */
 .note-dialog {
     width: min(420px, calc(100% - 32px));
     box-sizing: border-box;
-    border: none;
-    border-radius: 24px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
     padding: 28px;
     text-align: center;
-    /* Set explicitly, or the browser's dark mode makes the dialog black */
+    /* Set explicitly, or the browser's dark mode can make the dialog black */
     color-scheme: light;
     background: white;
     color: var(--text);
@@ -498,7 +392,6 @@ h2, h3 {
 .note-dialog h2 {
     margin: 0 0 8px;
     font-size: 22px;
-    color: var(--text);
 }
 
 .note-dialog p {
@@ -527,7 +420,22 @@ h2, h3 {
     color: white;
 }
 
-.note-btn-danger:disabled {
-    opacity: 0.6;
-    cursor: default;
+/* On small screens the list goes above the note */
+@media (max-width: 800px) {
+    .notes-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .notes-sidebar {
+        position: static;
+    }
+
+    .notes-list {
+        max-height: 260px;
+    }
+
+    .notes-pane {
+        padding: 20px;
+        min-height: 0;
+    }
 }

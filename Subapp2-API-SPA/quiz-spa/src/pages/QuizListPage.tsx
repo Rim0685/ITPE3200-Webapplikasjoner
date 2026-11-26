@@ -15,8 +15,8 @@ export const QuizListPage: React.FC = () => {
       const data = await quizService.getQuizzes(search);
       setQuizzes(data);
       setError(null);
-    } catch (err) {
-      setError('Kunne ikke laste inn quizer.');
+    } catch {
+      setError('Could not load the quizzes.');
     } finally {
       setLoading(false);
     }
@@ -26,38 +26,46 @@ export const QuizListPage: React.FC = () => {
     loadQuizzes();
   }, []);
 
-  if (loading) return <div>Laster quizer...</div>;
-  if (error) return <div style={{ color: 'red' }}>{error}</div>;
+  if (loading) return <div className="container" role="status">Loading quizzes...</div>;
+  if (error) return <div className="container"><p role="alert">{error}</p></div>;
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>Tilgjengelige Quizer</h1>
+    <div className="container">
+        <h1>Quizzes</h1>
+        <p className="muted">Pick a quiz and answer the questions.</p>
+
       <QuizFilters onSearch={(term) => loadQuizzes(term)} />
 
       {quizzes.length === 0 ? (
-        <p>Ingen quizer funnet.</p>
+        <p className="muted">No quizzes are available right now.</p>
       ) : (
-        <ul>
+        <div className="grid">
           {quizzes.map((quiz) => {
-            console.log("Quiz-objekt:", quiz);
+            const quizId = quiz.id || (quiz as any).quizId;
+
             return (
-              <li key={quiz.id} style={{ marginBottom: '15px', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>
+              <div className="card" key={quizId}>
                 <h3>{quiz.title}</h3>
-                <p>{quiz.description}</p>
-                <p>Forsøk: {quiz.attemptsCount || 0} | Siste resultat: {quiz.lastResult !== undefined ? `${quiz.lastResult} poeng` : 'Ingen forsøk'}</p>
-                <Link to={`/quiz/${quiz.id || (quiz as any).quizId}`}>Start Quiz</Link>
+                {quiz.description && <p className="muted">{quiz.description}</p>}
+                <p>
+                  <span className="pill">Attempts: {quiz.attemptsCount || 0}</span>{' '}
+                  <span className="pill">
+                    Last result: {quiz.lastResult !== undefined ? `${quiz.lastResult} points` : 'No attempts'}
+                  </span>
+                </p>
+                <Link to={`/quiz/${quizId}`} className="btn btn-dark">Start quiz</Link>
                 {quiz.isSolutionAvailable && quiz.lastAttemptId != null && (
                   <Link
-                    to={`/quiz/${quiz.id}/solution?attemptId=${quiz.lastAttemptId}`}
-                    style={{ marginLeft: '10px' }}
+                    to={`/quiz/${quizId}/solution?attemptId=${quiz.lastAttemptId}`}
+                    className="btn btn-light"
                   >
-                    Se fasit
+                    View solution
                   </Link>
                 )}
-              </li>
+              </div>
             );
           })}
-        </ul>
+        </div>
       )}
     </div>
   );

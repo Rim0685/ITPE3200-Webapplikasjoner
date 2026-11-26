@@ -13,14 +13,14 @@ export const QuizFilters: React.FC<Props> = ({ onSearch }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ marginBottom: '20px' }}>
-      <input 
-        type="text" 
-        placeholder="Søk etter quiz..." 
-        value={text} 
-        onChange={(e) => setText(e.target.value)} 
+    <form className="quiz-filters" onSubmit={handleSubmit}>
+      <input
+        type="text"
+        placeholder="Search for a quiz..."
+        value={text}
+        onChange={(e) => setText(e.target.value)}
       />
-      <button type="submit">Søk</button>
+      <button type="submit" className="btn btn-dark">Search</button>
     </form>
   );
 };
