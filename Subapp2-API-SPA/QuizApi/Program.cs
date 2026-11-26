@@ -41,6 +41,9 @@ builder.Services.AddScoped<IFlashcardDeckRepository, FlashcardDeckRepository>();
 // Registers the flashcard deck service for dependency injection.
 builder.Services.AddScoped<IFlashcardDeckService, FlashcardDeckService>();
 
+// Registers the study note repository for dependency injection.
+builder.Services.AddScoped<IStudyNoteRepository, StudyNoteRepository>();
+
 // Registers the quiz attempt repository for dependency injection.
 builder.Services.AddScoped<IQuizAttemptRepository, QuizAttemptRepository>();
 

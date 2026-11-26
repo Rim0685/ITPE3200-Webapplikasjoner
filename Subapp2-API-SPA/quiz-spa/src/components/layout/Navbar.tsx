@@ -20,6 +20,7 @@ function Navbar() {
             <Link to="/quizzes">Quizzes</Link>
             <Link to="/flashcards">Flashcards</Link>
             <Link to="/decks">Decks</Link>
+            <Link to="/notes">Study notes</Link>
 
             {isLoggedIn ? (
                 // Show Logout when the user has a token

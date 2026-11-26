@@ -437,6 +437,34 @@ namespace QuizApi.Migrations
                     b.ToTable("QuizQuestions");
                 });
 
+            modelBuilder.Entity("QuizApi.Models.StudyNote", b =>
+                {
+                    b.Property<int>("StudyNoteId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("StudyNoteId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("StudyNotes");
+                });
+
             modelBuilder.Entity("AttemptAnswerOptions", b =>
                 {
                     b.HasOne("QuizApi.Models.AttemptAnswer", null)
@@ -600,6 +628,17 @@ namespace QuizApi.Migrations
                     b.Navigation("Quiz");
                 });
 
+            modelBuilder.Entity("QuizApi.Models.StudyNote", b =>
+                {
+                    b.HasOne("QuizApi.Models.ApplicationUser", "User")
+                        .WithMany("StudyNotes")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("QuizApi.Models.ApplicationUser", b =>
                 {
                     b.Navigation("FlashcardDecks");
@@ -607,6 +646,8 @@ namespace QuizApi.Migrations
                     b.Navigation("Flashcards");
 
                     b.Navigation("QuizAttempts");
+
+                    b.Navigation("StudyNotes");
                 });
 
             modelBuilder.Entity("QuizApi.Models.FlashcardDeck", b =>

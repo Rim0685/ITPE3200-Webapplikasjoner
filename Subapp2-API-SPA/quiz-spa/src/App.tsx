@@ -10,6 +10,7 @@ import FlashcardDeckDetailPage from "./pages/FlashcardDeckDetailPage";
 import { TakeQuizPage } from "./pages/TakeQuizPage";
 import { QuizResultPage } from "./pages/QuizResultPage"; // <-- 1. Legg til import her
 import { QuizSolutionPage } from './pages/QuizSolutionPage';
+import StudyNoteListPage from "./pages/StudyNoteListPage";
 
 // Checks if the user is logged in before showing a protected page
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -86,6 +87,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <QuizSolutionPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/notes"
+            element={
+              <ProtectedRoute>
+                <StudyNoteListPage />
               </ProtectedRoute>
             }
           />

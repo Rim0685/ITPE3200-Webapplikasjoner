@@ -21,6 +21,10 @@ namespace QuizApi.Models
         public List<FlashcardDeck> FlashcardDecks { get; set; }
             = new List<FlashcardDeck>();
 
+        // Contains the study notes written by this user.
+        public List<StudyNote> StudyNotes { get; set; }
+            = new List<StudyNote>();
+
         // Contains the quiz attempts completed by this user.
         public List<QuizAttempt> QuizAttempts { get; set; }
             = new List<QuizAttempt>();
