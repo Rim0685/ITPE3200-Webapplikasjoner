@@ -60,11 +60,9 @@ function App() {
           <Route
             path="/flashcards"
             element={
-              localStorage.getItem("token") ? (
+              <ProtectedRoute>
                 <FlashcardListPage />
-              ) : (
-                <Navigate to="/login" replace />
-              )
+              </ProtectedRoute>
             }
           />
                     <Route
